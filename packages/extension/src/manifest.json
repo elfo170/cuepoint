@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "CuePoint",
+  "short_name": "CuePoint",
+  "description": "Curadoria musical rápida durante a reprodução no SoundCloud.",
+  "version": "0.1.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzqwgfTwMkf2uIHCjLZVt8CnzWJXZfbBahBos+7IBgoD2dqHnY0zEYUV1zwuiJoq5oWBJuD0YOalvM8pHnoB95uboNjrLRShVqlYqjTV4hyDZzJPMjeQsiKceDwn4fxA2dAmKVPkLBdel/AGKzWIVx+M/XzuJCahA950ysM4tAXq6ntV4gnlqJ8Zvk9XeC2arl3qN5B9+bNkQ4PiYa37p9E2KNfbTkjIMEcVpUsHpB/+mmLmHLuMcpLEBDoVyZOiYxzaUZEPqi9W0LXq8tyfX++rxTahXGYd58F26ZTSkCQPF+s19kAQr0n21L925smP/lQqaXkO1cTuc9CGVukio6wIDAQAB",
+  "minimum_chrome_version": "116",
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": { "default_title": "CuePoint", "default_popup": "popup.html" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "content_scripts": [
+    {
+      "matches": ["https://soundcloud.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage", "unlimitedStorage", "alarms", "downloads", "notifications"],
+  "host_permissions": ["https://soundcloud.com/*"]
+}

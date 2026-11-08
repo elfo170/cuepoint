@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "types": ["chrome", "node", "vite/client"] },
+  "include": ["src", "test", "e2e", "scripts", "*.ts"]
+}

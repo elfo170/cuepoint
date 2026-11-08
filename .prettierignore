@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+android
+package-lock.json
+CuePoint_PRD_v1.0.md
+PLANEJAMENTO.md
+*.md
+test-results
+playwright-report

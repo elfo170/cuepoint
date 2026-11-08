@@ -1,0 +1,1 @@
+export const CUEPOINT_SCHEMA_VERSION = 1;

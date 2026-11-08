@@ -413,4 +413,5 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 
 | Sprint | Situação |
 |---|---|
-| 0–15 | Pendente |
+| 0 | Concluída — ambiente verificado (Node 22.16, Chrome, JBR 21, SDK 35, AVD Medium_Phone_API_36.0, Gradle 8.11.1) |
+| 1–15 | Pendente |
