@@ -1,1 +1,14 @@
 @import 'tailwindcss';
+
+:root {
+  color-scheme: light dark;
+}
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}

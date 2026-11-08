@@ -33,7 +33,16 @@ export type Response<T = unknown> = { ok: true; data: T } | { ok: false; error: 
 export const CHANGED_MESSAGE = 'cuepoint:changed';
 
 export async function send<T>(request: Request): Promise<T> {
-  const res = (await chrome.runtime.sendMessage(request)) as Response<T> | undefined;
+  let res: Response<T> | undefined;
+  try {
+    res = (await chrome.runtime.sendMessage(request)) as Response<T> | undefined;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/context invalidated/i.test(msg) || !chrome.runtime?.id) {
+      throw new Error('O CuePoint foi atualizado. Recarregue a página para continuar.');
+    }
+    throw new Error(`Não foi possível falar com o CuePoint: ${msg}`);
+  }
   if (!res) throw new Error('Sem resposta do CuePoint (service worker indisponível).');
   if (!res.ok) throw new Error(res.error);
   return res.data;

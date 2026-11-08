@@ -419,4 +419,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 3 | Concluída — Dexie (entidades + sync_events + conflicts + meta), repositório transacional com log de operações, identidade local, RPC service worker ⇄ widget, aprovação/rejeição/categorias persistidas, faixa provisória → definitiva |
 | 4 | Concluída — biblioteca (library.html): pesquisas (criar/editar/arquivar/excluir), abas Aprovadas/Rejeitadas/Pendentes, filtro por categoria e busca, visão global de músicas por pesquisa, identificação de provisórias por URL, categorias; popup com pesquisa ativa |
 | 5 | Concluída — playlists internas (manual, por pesquisa e/ou categoria; ordem por chave fracionária; exportação URLs/CSV/JSON), backup `cuepoint-backup` v1 com SHA-256, automático (alarme + a cada N alterações) em Downloads/CuePoint/backups, restauração validada e transacional com backup de segurança |
-| 6–15 | Pendente |
+| 6 | Concluída — configurações (nome do aparelho, estado do log), acessibilidade (foco visível, aria-live), mensagens de erro do widget, suíte e2e com os 12 critérios do PRD §18 (latência medida: ~40–90 ms até gravar no IndexedDB), README de instalação e uso. **MVP Chrome (P0) concluído.** |
+| 7–15 | Pendente |
+
+**Checkpoint manual pendente (Sprint 6):** validar o widget em playlists reais do SoundCloud no Chrome (PRD §19, Fase 1). Apoio: `npm run e2e:soundcloud:live -w @cuepoint/extension`.

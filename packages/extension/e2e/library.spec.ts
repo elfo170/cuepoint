@@ -108,3 +108,13 @@ test('visão de músicas mostra decisões por pesquisa e permite editar e arquiv
   await lib.getByLabel(/Mostrar arquivadas/).check();
   await expect(lib.getByTestId('research-list')).toContainText('Techno Peak');
 });
+
+test('configurações: renomear o aparelho', async ({ context }) => {
+  const lib = await openLibrary(context, '/settings');
+  await expect(lib.getByLabel('Nome do aparelho')).toHaveValue(/Chrome/);
+  await lib.getByLabel('Nome do aparelho').fill('PC do estúdio');
+  await lib.getByRole('button', { name: 'Salvar' }).click();
+  await expect(lib.getByRole('status')).toHaveText('Nome salvo.');
+  await lib.reload();
+  await expect(lib.getByLabel('Nome do aparelho')).toHaveValue('PC do estúdio');
+});

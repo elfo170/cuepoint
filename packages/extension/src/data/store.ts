@@ -98,6 +98,15 @@ export class Store {
     return this.identity;
   }
 
+  /** Renomeia este aparelho (PRD §4.3). */
+  async renameDevice(name: string): Promise<void> {
+    const { device } = await this.init();
+    const clean = name.trim();
+    if (!clean) throw new Error('Informe um nome.');
+    await this.db.devices.update(device.id, { device_name: clean });
+    this.identity = null;
+  }
+
   /** Esquece a identidade em cache (após restaurar um backup). */
   resetIdentity(): void {
     this.identity = null;

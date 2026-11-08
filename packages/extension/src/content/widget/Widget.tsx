@@ -265,7 +265,7 @@ export function Widget(props: WidgetProps) {
       )}
 
       <div className="flex items-center gap-2 border-t border-neutral-800 px-3 py-1.5 text-xs">
-        <span data-testid="cuepoint-decision" className="text-neutral-400">
+        <span data-testid="cuepoint-decision" aria-live="polite" className="text-neutral-400">
           {decisionLabel(decision)}
         </span>
         {decision === true && (
