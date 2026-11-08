@@ -2,7 +2,9 @@ import { createRoot, type Root } from 'react-dom/client';
 import type { ReactNode } from 'react';
 import css from './widget.css?inline';
 
-export const HOST_ID = 'cuepoint-widget-host';
+import { HOST_ID, KEY_EVENTS } from '../keyboard';
+
+export { HOST_ID };
 
 /**
  * Monta o conteúdo num Shadow DOM isolado, para que o CSS do SoundCloud e o do widget
@@ -35,6 +37,9 @@ export function mountInShadow(node: ReactNode, doc: Document = document): Root {
   shadow.appendChild(style);
   const container = doc.createElement('div');
   shadow.appendChild(container);
+  // Teclas digitadas no widget não chegam aos atalhos da página (fase de bolha).
+  // A fase de captura é tratada pelo keyguard (document_start).
+  for (const type of KEY_EVENTS) shadow.addEventListener(type, (e) => e.stopPropagation());
   const root = createRoot(container);
   root.render(node);
   return root;

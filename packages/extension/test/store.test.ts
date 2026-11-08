@@ -203,3 +203,46 @@ describe('BackgroundHandler', () => {
     expect(state.track.categoryIds).toEqual([state.categories[0]!.id]);
   });
 });
+
+describe('escritas sem efeito não geram operações', () => {
+  it('repetir decisão, categoria, nome ou exclusão não grava nada', async () => {
+    const { db, curation, store } = setup();
+    const r = await curation.createResearch('Latin Bass');
+    const t = await curation.ensureTrack(track());
+    const cat = await curation.createCategory('Vocal');
+    await curation.decide(t.id, r.id, true);
+    await curation.setTrackCategory(t.id, r.id, cat.id, true);
+    const before = await db.sync_events.count();
+
+    await curation.decide(t.id, r.id, true);
+    await curation.setTrackCategory(t.id, r.id, cat.id, true);
+    await curation.updateResearch(r.id, { name: 'Latin Bass' });
+    await curation.ensureTrack(track());
+    expect(await db.sync_events.count()).toBe(before);
+
+    await store.remove('category', cat.id);
+    const afterDelete = await db.sync_events.count();
+    await store.remove('category', cat.id);
+    expect(await db.sync_events.count()).toBe(afterDelete);
+
+    // Uma mudança real continua gerando operação
+    await curation.decide(t.id, r.id, false);
+    expect(await db.sync_events.count()).toBe(afterDelete + 1);
+  });
+
+  it('gravar num campo em conflito sempre gera operação (resolve)', async () => {
+    const { db, store, curation } = setup();
+    await store.init();
+    const research = await curation.createResearch('Techno');
+    const other = new Replica('bbbbbbbb-0000-4000-8000-00000000000b', store.userId);
+    other.receive(await store.opsSince({}));
+    other.put('research', research.id, { name: 'B' });
+    await curation.updateResearch(research.id, { name: 'A' });
+    await store.receive(other.opsSince(await store.versionVector()));
+    expect(await db.conflicts.count()).toBe(1);
+    // O valor exibido já é 'B' (maior HLC); escolher 'B' ainda precisa gerar a resolução
+    const current = await store.get('research', research.id);
+    await curation.updateResearch(research.id, { name: current!.name });
+    expect(await db.conflicts.count()).toBe(0);
+  });
+});

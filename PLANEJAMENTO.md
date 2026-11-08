@@ -312,11 +312,18 @@ atualizada; e **um commit** (`git add` dos caminhos da sprint + `git commit`). *
 - mDNS (anunciar e procurar) com fallback de endereço.
 - `/v1/sync/pull` e `/v1/sync/push` com vetores de versão, paginação e gzip.
 - Agendador de sync, aprovação para pares `ask` e `sync_runs`.
+- **Compactação de operações não enviadas:** antes de cada envio, as operações pendentes do mesmo
+  registro que nenhum outro aparelho recebeu viram uma só, com o estado final (ex.: incluir →
+  remover → incluir uma categoria vira 1 operação; criar e excluir algo novo vira 0). Exige
+  registrar quais operações já foram enviadas a cada par; as sequências são renumeradas sem
+  lacunas. Os passos intermediários não são preservados (PRD §6.3: sem histórico no MVP).
 - **Pronto quando:** a integração com três helpers passa nestes cenários:
   - edições offline e reconexão;
   - syncs repetidas sem duplicação;
   - sync interrompida no meio que é retomada de forma idempotente;
-  - retransmissão A→B→C.
+  - retransmissão A→B→C;
+  - compactação: ciclos incluir/remover antes da sync geram o mínimo de operações e as réplicas
+    continuam convergindo (teste de propriedade).
 - Commit: `feat: sincroniza dispositivos pareados pela rede local com descoberta mdns`
 
 ### Sprint 10 — Conflitos, exclusões e validação do P1
@@ -421,5 +428,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 5 | Concluída — playlists internas (manual, por pesquisa e/ou categoria; ordem por chave fracionária; exportação URLs/CSV/JSON), backup `cuepoint-backup` v1 com SHA-256, automático (alarme + a cada N alterações) em Downloads/CuePoint/backups, restauração validada e transacional com backup de segurança |
 | 6 | Concluída — configurações (nome do aparelho, estado do log), acessibilidade (foco visível, aria-live), mensagens de erro do widget, suíte e2e com os 12 critérios do PRD §18 (latência medida: ~40–90 ms até gravar no IndexedDB), README de instalação e uso. **MVP Chrome (P0) concluído.** |
 | 7–15 | Pendente |
+
+**Ajustes após a Sprint 6:** script `npm run dev` (recompilação automática); teclas digitadas no widget não acionam mais os atalhos do SoundCloud (`keyguard.js` em `document_start`); escritas sem efeito (repetir decisão, categoria, nome ou exclusão) não geram operações.
 
 **Checkpoint manual pendente (Sprint 6):** validar o widget em playlists reais do SoundCloud no Chrome (PRD §19, Fase 1). Apoio: `npm run e2e:soundcloud:live -w @cuepoint/extension`.

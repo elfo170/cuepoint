@@ -43,3 +43,25 @@ test('botões usam ícones vetoriais, sem texto SIM/NÃO', async ({ context }) =
     await expect(button).not.toContainText(/SIM|NÃO/i);
   }
 });
+
+test('digitar no widget não aciona os atalhos do SoundCloud', async ({ context }) => {
+  await routeSoundCloud(context);
+  const page = await openPlayer(context);
+  await page.getByTestId('cuepoint-research').selectOption('__new__');
+  const input = page.getByTestId('cuepoint-new-research');
+  await input.pressSequentially('Sessão s/ vocal');
+  await expect(input).toHaveValue('Sessão s/ vocal');
+  await expect(input).toBeFocused();
+  expect(
+    await page.evaluate(() => (window as unknown as { __shortcuts: string[] }).__shortcuts),
+  ).toEqual([]);
+  await input.press('Enter');
+  await expect(page.getByTestId('cuepoint-research').locator('option:checked')).toHaveText(
+    'Sessão s/ vocal',
+  );
+
+  // Fora do widget os atalhos do SoundCloud continuam funcionando
+  await page.locator('main h1').click();
+  await page.keyboard.press('s');
+  await expect(page.locator('.headerSearch__input')).toBeFocused();
+});

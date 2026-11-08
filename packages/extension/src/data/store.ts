@@ -1,6 +1,7 @@
 import {
   applyOp,
   buildLocalOp,
+  isNoopWrite,
   CausalityError,
   conflictId,
   HlcClock,
@@ -163,6 +164,10 @@ export class Store {
         operation?: OpKind,
       ) => {
         const current = await this.get(type, id);
+        // Escrita que não muda nada (ex.: aprovar o que já está aprovado) não gera operação.
+        const fields = { ...(changes as Record<string, JsonValue>) };
+        if (!('deleted_at' in fields)) fields.deleted_at = null;
+        if (operation !== 'resolve' && isNoopWrite(current, fields)) return current!;
         state.seq += 1;
         const op = buildLocalOp({
           type,

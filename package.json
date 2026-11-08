@@ -20,7 +20,8 @@
     "format": "prettier --write .",
     "e2e": "npm run e2e -w @cuepoint/extension",
     "android": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gradle.ps1",
-    "android:check": "npm run android -- test assembleDebug"
+    "android:check": "npm run android -- test assembleDebug",
+    "dev": "npm run dev -w @cuepoint/extension"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

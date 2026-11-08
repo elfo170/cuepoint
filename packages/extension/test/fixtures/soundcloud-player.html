@@ -27,6 +27,7 @@
   </head>
   <body>
     <div id="app">
+      <header><input class="headerSearch__input" placeholder="Search" /></header>
       <main><h1>Playlist de teste</h1></main>
       <!-- Estrutura reduzida da barra de reprodução do SoundCloud -->
       <section class="playControls g-z-index-control-bar m-visible">
@@ -87,6 +88,22 @@
     </div>
     <script>
       // Utilitário para os testes trocarem a faixa como o SoundCloud faz (mutando o DOM).
+      // Simula os atalhos de teclado do SoundCloud: teclas fora de campos de texto viram atalhos
+      // (s / "/" = busca, espaço = play/pause), registrados em bolha e em captura.
+      window.__shortcuts = [];
+      function scShortcut(e) {
+        var t = e.target;
+        var editable =
+          t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+        if (editable || e.type !== 'keydown') return;
+        if (e.key === 's' || e.key === '/' || e.key === ' ') {
+          e.preventDefault();
+          window.__shortcuts.push(e.key);
+          if (e.key !== ' ') document.querySelector('.headerSearch__input').focus();
+        }
+      }
+      document.addEventListener('keydown', scShortcut);
+      window.addEventListener('keydown', scShortcut, true);
       window.__setTrack = function (t) {
         var link = document.querySelector('.playbackSoundBadge__titleLink');
         link.setAttribute('href', t.href);

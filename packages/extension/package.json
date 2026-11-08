@@ -8,7 +8,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "e2e": "node scripts/build.mjs && playwright test",
-    "e2e:soundcloud:live": "node scripts/build.mjs && playwright test -c playwright.live.config.ts"
+    "e2e:soundcloud:live": "node scripts/build.mjs && playwright test -c playwright.live.config.ts",
+    "dev": "node scripts/build.mjs --watch"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",

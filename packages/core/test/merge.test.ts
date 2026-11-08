@@ -139,3 +139,20 @@ describe('idempotência e causalidade', () => {
     ).toThrow();
   });
 });
+
+describe('isNoopWrite', () => {
+  it('detecta escritas sem efeito, exceto em campos em conflito', async () => {
+    const { isNoopWrite } = await import('../src');
+    const r = find('mesmo-campo-conflito').world.A.get('research', IDS.research1)!;
+    expect(isNoopWrite(undefined, { name: 'x' })).toBe(false);
+    expect(isNoopWrite(r, { description: '', deleted_at: null })).toBe(true);
+    expect(isNoopWrite(r, { description: 'nova' })).toBe(false);
+    expect(isNoopWrite(r, { name: r.name })).toBe(false); // em conflito
+    expect(
+      isNoopWrite(
+        { ...r, deleted_at: '2026-01-01T00:00:00.000Z' },
+        { deleted_at: '2026-02-02T00:00:00.000Z' },
+      ),
+    ).toBe(true);
+  });
+});

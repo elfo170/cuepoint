@@ -116,6 +116,24 @@ export function applyOp<T extends EntityType>(
   return { record: rec as EntityRecord<T>, conflictChanges };
 }
 
+/**
+ * Indica se escrever `fields` não mudaria nada no registro: todos os valores já são
+ * equivalentes aos atuais e nenhum desses campos está em conflito (gravar num campo em
+ * conflito o resolve, então nunca é inócuo). Usado para não gerar operações vazias.
+ */
+export function isNoopWrite(
+  current: EntityRecord | undefined,
+  fields: Record<string, JsonValue>,
+): boolean {
+  if (!current) return false;
+  const rec = current as unknown as Record<string, JsonValue>;
+  const conflicted = new Set(conflictFields(current));
+  return Object.entries(fields).every(
+    ([field, value]) =>
+      field in rec && !conflicted.has(field) && valuesEquivalent(field, rec[field]!, value),
+  );
+}
+
 /** Fronteira atual de cada campo, usada como `base` de uma nova operação local. */
 export function baseFor(
   current: EntityRecord | undefined,

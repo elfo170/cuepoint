@@ -2,7 +2,7 @@
 import { build } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { cpSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, rmSync, watchFile, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
@@ -11,6 +11,17 @@ const outDir = resolve(root, 'dist');
 const watch = process.argv.includes('--watch') ? {} : null;
 
 rmSync(outDir, { recursive: true, force: true });
+mkdirSync(outDir, { recursive: true });
+
+// Manifesto e ícones (gravados antes dos builds; em --watch os builds não bloqueiam)
+const manifestPath = resolve(root, 'src/manifest.json');
+const writeManifest = () => {
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  writeFileSync(resolve(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+};
+writeManifest();
+cpSync(resolve(root, 'public/icons'), resolve(outDir, 'icons'), { recursive: true });
+if (watch) watchFile(manifestPath, { interval: 500 }, writeManifest);
 
 const common = {
   root,
@@ -41,6 +52,7 @@ await build({
 for (const [name, entry, format] of [
   ['background', 'src/background/index.ts', 'es'],
   ['content', 'src/content/index.tsx', 'iife'],
+  ['keyguard', 'src/content/keyguard.ts', 'iife'],
 ]) {
   await build({
     ...common,
@@ -60,8 +72,6 @@ for (const [name, entry, format] of [
   });
 }
 
-// Manifesto
-const manifest = JSON.parse(readFileSync(resolve(root, 'src/manifest.json'), 'utf8'));
-writeFileSync(resolve(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
-cpSync(resolve(root, 'public/icons'), resolve(outDir, 'icons'), { recursive: true });
-console.log(`extensão gerada em ${outDir}`);
+console.log(
+  watch ? `observando alterações; extensão em ${outDir}` : `extensão gerada em ${outDir}`,
+);
