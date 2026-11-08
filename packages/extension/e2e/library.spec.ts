@@ -1,5 +1,4 @@
-import type { BrowserContext, Page } from '@playwright/test';
-import { EXTENSION_ID, expect, test } from './fixtures';
+import { expect, openLibrary, test } from './fixtures';
 import { openPlayer, routeSoundCloud, setTrack } from './soundcloud-fixture';
 
 const URNS = {
@@ -7,12 +6,6 @@ const URNS = {
   '/other/next-one': '222',
   '/third/rejected-one': '333',
 };
-
-export async function openLibrary(context: BrowserContext, hash = ''): Promise<Page> {
-  const page = await context.newPage();
-  await page.goto(`chrome-extension://${EXTENSION_ID}/library.html#${hash}`);
-  return page;
-}
 
 test('pesquisa criada na biblioteca aparece no widget e as decisões aparecem na biblioteca', async ({
   context,

@@ -1,7 +1,10 @@
-import { FolderSearch, ListMusic, Music2, Tags } from 'lucide-react';
+import { DatabaseBackup, FolderSearch, ListMusic, ListOrdered, Music2, Tags } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes } from 'react-router';
+import { BackupPage } from './pages/Backup';
 import { CategoriesPage } from './pages/Categories';
+import { PlaylistDetailPage } from './pages/PlaylistDetail';
+import { PlaylistsPage } from './pages/Playlists';
 import { ResearchDetailPage } from './pages/ResearchDetail';
 import { ResearchesPage } from './pages/Researches';
 import { TracksPage } from './pages/Tracks';
@@ -17,6 +20,8 @@ export const NAV: NavItem[] = [
   { to: '/', label: 'Pesquisas', icon: <FolderSearch size={16} aria-hidden />, end: true },
   { to: '/tracks', label: 'Músicas', icon: <ListMusic size={16} aria-hidden /> },
   { to: '/categories', label: 'Categorias', icon: <Tags size={16} aria-hidden /> },
+  { to: '/playlists', label: 'Playlists', icon: <ListOrdered size={16} aria-hidden /> },
+  { to: '/backup', label: 'Backup', icon: <DatabaseBackup size={16} aria-hidden /> },
 ];
 
 export interface ExtraRoute {
@@ -68,6 +73,9 @@ export function App(props: { extraNav?: NavItem[]; extraRoutes?: ExtraRoute[] })
           <Route path="/researches/:id" element={<ResearchDetailPage />} />
           <Route path="/tracks" element={<TracksPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/playlists" element={<PlaylistsPage />} />
+          <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
+          <Route path="/backup" element={<BackupPage />} />
           {props.extraRoutes?.map((r) => (
             <Route key={r.path} path={r.path} element={r.element} />
           ))}

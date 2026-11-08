@@ -16,6 +16,7 @@ import {
   deterministicId,
   ENTITY_SCHEMAS,
   formatHlc,
+  keyBetween,
   opId,
   opSchema,
   playlistTrackId,
@@ -107,6 +108,17 @@ describe('vetores de ids e HLC', () => {
             expected: conflictId('research', IDS.research1, 'name'),
           },
         ],
+        fractional: (
+          [
+            [null, null],
+            ['V', null],
+            [null, 'V'],
+            ['V', 'k'],
+            ['V', 'W'],
+            ['Vz', 'W'],
+            ['a1', 'a2'],
+          ] as [string | null, string | null][]
+        ).map(([a, b]) => ({ a, b, expected: keyBetween(a, b) })),
         hlc: [
           {
             parts: { ms: 1767225600000, counter: 7, node: IDS.deviceA },

@@ -98,6 +98,11 @@ export class Store {
     return this.identity;
   }
 
+  /** Esquece a identidade em cache (após restaurar um backup). */
+  resetIdentity(): void {
+    this.identity = null;
+  }
+
   get deviceId(): string {
     if (!this.identity) throw new Error('Store.init() não foi chamado');
     return this.identity.device.id;

@@ -1,6 +1,7 @@
 import { Curation } from '../data/curation';
 import { Store } from '../data/store';
 import { CHANGED_MESSAGE, type Request, type Response } from '../shared/messages';
+import { BACKUP_ALARM, BackupService } from './backup-service';
 import { BackgroundHandler } from './handler';
 
 const store = new Store();
@@ -20,7 +21,8 @@ async function openLibrary(hash?: string) {
   }
 }
 
-const handler = new BackgroundHandler(curation, openLibrary);
+const backups = new BackupService(store);
+const handler = new BackgroundHandler(curation, openLibrary, backups);
 
 /** Avisa abas do SoundCloud e páginas da extensão que os dados mudaram. */
 async function broadcastChanged() {
@@ -32,13 +34,21 @@ async function broadcastChanged() {
   chrome.runtime.sendMessage({ type: CHANGED_MESSAGE }).catch(() => undefined);
 }
 
-store.onChange(() => void broadcastChanged());
+let backupCheck: ReturnType<typeof setTimeout> | undefined;
+store.onChange(() => {
+  void broadcastChanged();
+  clearTimeout(backupCheck);
+  backupCheck = setTimeout(() => void backups.onChanges().catch(console.error), 2000);
+});
 
 chrome.runtime.onMessage.addListener((request: Request, _sender, sendResponse) => {
   handler
     .handle(request)
     .then((data) => {
-      if (request.type === 'notifyChanged') void broadcastChanged();
+      if (request.type === 'notifyChanged') {
+        void broadcastChanged();
+        void backups.onChanges().catch(console.error);
+      }
       sendResponse({ ok: true, data } satisfies Response);
     })
     .catch((error: unknown) =>
@@ -51,5 +61,13 @@ chrome.runtime.onMessage.addListener((request: Request, _sender, sendResponse) =
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  void store.init();
+  void store.init().then(() => backups.schedule());
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  void backups.schedule();
+});
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === BACKUP_ALARM) void backups.run('auto').catch(console.error);
 });

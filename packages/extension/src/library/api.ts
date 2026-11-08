@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Curation } from '../data/curation';
 import { CuePointDB } from '../data/db';
 import { loadSnapshot, type Snapshot } from '../data/queries';
+import { Playlists } from '../data/playlists';
 import { Store } from '../data/store';
 import { send } from '../shared/messages';
 
@@ -25,3 +26,5 @@ export async function mutate<T>(fn: () => Promise<T>): Promise<T> {
 export function useSnapshot(): Snapshot | undefined {
   return useLiveQuery(() => loadSnapshot(db), []);
 }
+
+export const playlists = new Playlists(store);

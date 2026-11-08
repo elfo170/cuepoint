@@ -22,6 +22,9 @@ export type Request =
   | { type: 'widget:createResearch'; name: string }
   | { type: 'openLibrary'; hash?: string }
   | { type: 'notifyChanged' }
+  | { type: 'backup:run'; reason: 'manual' | 'pre-restore' }
+  | { type: 'backup:reschedule' }
+  | { type: 'store:reset' }
   | { type: 'ping' };
 
 export type Response<T = unknown> = { ok: true; data: T } | { ok: false; error: string };

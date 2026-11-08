@@ -6,3 +6,5 @@ export * from './model';
 export * from './ops';
 export * from './merge';
 export * from './replica';
+export * from './fractional';
+export * from './backup';

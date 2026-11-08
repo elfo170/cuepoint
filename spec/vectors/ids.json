@@ -59,6 +59,43 @@
       "expected": "3dd74506-16fd-50d1-b4da-a9fbb6bb6bd7"
     }
   ],
+  "fractional": [
+    {
+      "a": null,
+      "b": null,
+      "expected": "V"
+    },
+    {
+      "a": "V",
+      "b": null,
+      "expected": "l"
+    },
+    {
+      "a": null,
+      "b": "V",
+      "expected": "G"
+    },
+    {
+      "a": "V",
+      "b": "k",
+      "expected": "d"
+    },
+    {
+      "a": "V",
+      "b": "W",
+      "expected": "VV"
+    },
+    {
+      "a": "Vz",
+      "b": "W",
+      "expected": "VzV"
+    },
+    {
+      "a": "a1",
+      "b": "a2",
+      "expected": "a1V"
+    }
+  ],
   "hlc": [
     {
       "parts": {

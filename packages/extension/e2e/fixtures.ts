@@ -1,4 +1,10 @@
-import { test as base, chromium, type BrowserContext, type Worker } from '@playwright/test';
+import {
+  test as base,
+  chromium,
+  type BrowserContext,
+  type Page,
+  type Worker,
+} from '@playwright/test';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -36,3 +42,10 @@ export const test = base.extend<{ context: BrowserContext; extensionId: string }
 });
 
 export const expect = test.expect;
+
+/** Abre a biblioteca da extensão (rota em hash). */
+export async function openLibrary(context: BrowserContext, hash = ''): Promise<Page> {
+  const page = await context.newPage();
+  await page.goto(`chrome-extension://${EXTENSION_ID}/library.html#${hash}`);
+  return page;
+}

@@ -1,4 +1,5 @@
 import type { Curation, TrackInput } from '../data/curation';
+import type { BackupService } from './backup-service';
 import type { Option, Request, WidgetState } from '../shared/messages';
 
 const toOption = (r: { id: string; name: string }): Option => ({ id: r.id, name: r.name });
@@ -8,6 +9,7 @@ export class BackgroundHandler {
   constructor(
     private readonly curation: Curation,
     private readonly openLibrary: (hash?: string) => Promise<void> = async () => undefined,
+    private readonly backups?: BackupService,
   ) {}
 
   async state(track: TrackInput | null): Promise<WidgetState> {
@@ -72,6 +74,15 @@ export class BackgroundHandler {
         await this.openLibrary(req.hash);
         return null;
       case 'notifyChanged':
+        return null;
+      case 'backup:run':
+        if (!this.backups) throw new Error('Backup indisponível.');
+        return this.backups.run(req.reason, true);
+      case 'store:reset':
+        this.curation.store.resetIdentity();
+        return null;
+      case 'backup:reschedule':
+        await this.backups?.schedule();
         return null;
     }
   }
