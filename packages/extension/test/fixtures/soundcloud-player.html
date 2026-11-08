@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SoundCloud (fixture)</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f2f2f2;
+        min-height: 100vh;
+      }
+      .playControls {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 48px;
+        background: #fff;
+        border-top: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <main><h1>Playlist de teste</h1></main>
+      <!-- Estrutura reduzida da barra de reprodução do SoundCloud -->
+      <section class="playControls g-z-index-control-bar m-visible">
+        <div class="playControls__inner">
+          <div class="playControls__elements">
+            <button
+              type="button"
+              class="playControl sc-ir playControls__control playControls__play playing"
+              title="Pause current"
+            >
+              Pause current
+            </button>
+            <div class="playControls__soundBadge">
+              <div class="playbackSoundBadge">
+                <a
+                  href="/fixture-artist/sets/fixture-set"
+                  class="playbackSoundBadge__avatar sc-media-image"
+                >
+                  <div
+                    class="image m-sound image__lightOutline readOnly customImage sc-artwork sc-artwork-placeholder-1 image__rounded m-loaded"
+                  >
+                    <span
+                      style="
+                        background-image: url('https://i1.sndcdn.com/artworks-000123-abc-t50x50.jpg');
+                        width: 30px;
+                        height: 30px;
+                        opacity: 1;
+                      "
+                      class="sc-artwork sc-artwork-placeholder-1 image__full g-opacity-transition"
+                      aria-label="Deep Groove"
+                      role="img"
+                    ></span>
+                  </div>
+                </a>
+                <div class="playbackSoundBadge__titleContextContainer">
+                  <a
+                    href="/fixture-artist"
+                    class="playbackSoundBadge__lightLink sc-link-light sc-link-secondary sc-truncate sc-text-h5"
+                    title="Fixture Artist"
+                    >Fixture Artist</a
+                  >
+                  <div class="playbackSoundBadge__title">
+                    <a
+                      href="/fixture-artist/deep-groove?in=fixture-artist/sets/fixture-set"
+                      class="playbackSoundBadge__titleLink sc-truncate sc-text-h5 sc-link-primary"
+                      title="Deep Groove"
+                    >
+                      <span class="sc-visuallyhidden">Current track: Deep Groove</span>
+                      <span aria-hidden="true">Deep Groove</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      // Utilitário para os testes trocarem a faixa como o SoundCloud faz (mutando o DOM).
+      window.__setTrack = function (t) {
+        var link = document.querySelector('.playbackSoundBadge__titleLink');
+        link.setAttribute('href', t.href);
+        link.setAttribute('title', t.title);
+        link.querySelector('span[aria-hidden]').textContent = t.title;
+        link.querySelector('.sc-visuallyhidden').textContent = 'Current track: ' + t.title;
+        var artist = document.querySelector('.playbackSoundBadge__lightLink');
+        artist.setAttribute('title', t.artist);
+        artist.textContent = t.artist;
+      };
+    </script>
+  </body>
+</html>

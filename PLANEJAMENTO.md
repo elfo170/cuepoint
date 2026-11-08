@@ -414,4 +414,5 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | Sprint | Situação |
 |---|---|
 | 0 | Concluída — ambiente verificado (Node 22.16, Chrome, JBR 21, SDK 35, AVD Medium_Phone_API_36.0, Gradle 8.11.1) |
-| 1–15 | Pendente |
+| 1 | Concluída — adaptador SoundCloud (DOM + MediaSession + URN), widget em Shadow DOM, e2e com fixtures. Validação no site real: `npm run e2e:soundcloud:live -w @cuepoint/extension` (opcional) |
+| 2–15 | Pendente |
