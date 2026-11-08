@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 java {
@@ -14,5 +15,11 @@ kotlin {
 }
 
 dependencies {
+    api(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
+}
+
+tasks.test {
+    // Vetores compartilhados com o TypeScript (spec/ na raiz do repositório)
+    systemProperty("cuepoint.spec", rootProject.file("../spec").absolutePath)
 }

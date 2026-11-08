@@ -427,7 +427,10 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 4 | Concluída — biblioteca (library.html): pesquisas (criar/editar/arquivar/excluir), abas Aprovadas/Rejeitadas/Pendentes, filtro por categoria e busca, visão global de músicas por pesquisa, identificação de provisórias por URL, categorias; popup com pesquisa ativa |
 | 5 | Concluída — playlists internas (manual, por pesquisa e/ou categoria; ordem por chave fracionária; exportação URLs/CSV/JSON), backup `cuepoint-backup` v1 com SHA-256, automático (alarme + a cada N alterações) em Downloads/CuePoint/backups, restauração validada e transacional com backup de segurança |
 | 6 | Concluída — configurações (nome do aparelho, estado do log), acessibilidade (foco visível, aria-live), mensagens de erro do widget, suíte e2e com os 12 critérios do PRD §18 (latência medida: ~40–90 ms até gravar no IndexedDB), README de instalação e uso. **MVP Chrome (P0) concluído.** |
-| 7–15 | Pendente |
+| 11 | Concluída — `:core` Kotlin (ids, HLC, mesclagem, réplica, chaves fracionárias) com paridade comprovada pelos mesmos `spec/vectors` do TypeScript; Room (tabela genérica com o registro JSON idêntico ao do Chrome + log + conflitos); curadoria, playlists e telas Compose (Curar com faixa manual, Pesquisas, Músicas, Categorias, Playlists, Configurações) |
+| 7–10, 12–15 | Pendente |
+
+**Nova ordem (prioridade: app no celular):** 11 → 12 (Android funcionando sozinho) → 7 → 8 → 9 → 13 (sincronização com o Chrome) → 10 → 14 → 15.
 
 **Ajustes após a Sprint 6:** script `npm run dev` (recompilação automática); teclas digitadas no widget não acionam mais os atalhos do SoundCloud (`keyguard.js` em `document_start`); escritas sem efeito (repetir decisão, categoria, nome ou exclusão) não geram operações.
 
