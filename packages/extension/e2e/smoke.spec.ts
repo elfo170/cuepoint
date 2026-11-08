@@ -4,5 +4,5 @@ test('extensão carrega com ID estável e abre a biblioteca', async ({ context, 
   expect(extensionId).toBe(EXTENSION_ID);
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/library.html`);
-  await expect(page.getByRole('heading', { name: 'CuePoint' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pesquisas' })).toBeVisible();
 });

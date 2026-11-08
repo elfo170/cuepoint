@@ -417,4 +417,5 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 1 | Concluída — adaptador SoundCloud (DOM + MediaSession + URN), widget em Shadow DOM, e2e com fixtures. Validação no site real: `npm run e2e:soundcloud:live -w @cuepoint/extension` (opcional) |
 | 2 | Concluída — ids (UUIDv7/v5), HLC, motor de mesclagem por campo, réplica de referência, 13 cenários do PRD em `spec/vectors`, JSON Schemas em `spec/schema`, testes de propriedade (convergência, idempotência, sem perda) |
 | 3 | Concluída — Dexie (entidades + sync_events + conflicts + meta), repositório transacional com log de operações, identidade local, RPC service worker ⇄ widget, aprovação/rejeição/categorias persistidas, faixa provisória → definitiva |
-| 4–15 | Pendente |
+| 4 | Concluída — biblioteca (library.html): pesquisas (criar/editar/arquivar/excluir), abas Aprovadas/Rejeitadas/Pendentes, filtro por categoria e busca, visão global de músicas por pesquisa, identificação de provisórias por URL, categorias; popup com pesquisa ativa |
+| 5–15 | Pendente |

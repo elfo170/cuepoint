@@ -286,6 +286,12 @@ export class Curation {
     });
   }
 
+  /** Define a decisão; `null` volta para "não avaliada". */
+  async setDecision(trackId: string, researchId: string, value: boolean | null): Promise<void> {
+    if (value === null) await this.clearDecision(trackId, researchId);
+    else await this.decide(trackId, researchId, value);
+  }
+
   /** Volta a faixa para "não avaliada" na pesquisa. */
   async clearDecision(trackId: string, researchId: string): Promise<void> {
     const id = decisionId(trackId, researchId);

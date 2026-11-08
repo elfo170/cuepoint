@@ -1,8 +1,13 @@
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../styles.css';
+import { App } from './App';
+import { store } from './api';
+
+void store.init();
 
 createRoot(document.getElementById('root')!).render(
-  <main className="p-6 font-sans">
-    <h1 className="text-2xl font-semibold">CuePoint</h1>
-  </main>,
+  <StrictMode>
+    <App />
+  </StrictMode>,
 );

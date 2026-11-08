@@ -8,7 +8,9 @@ const curation = new Curation(store);
 
 async function openLibrary(hash?: string) {
   const url = chrome.runtime.getURL(`library.html${hash ? `#${hash}` : ''}`);
-  const [existing] = await chrome.tabs.query({ url: chrome.runtime.getURL('library.html') + '*' });
+  const [existing] = await chrome.tabs
+    .query({ url: chrome.runtime.getURL('library.html') + '*' })
+    .catch(() => [] as chrome.tabs.Tab[]);
   if (existing?.id !== undefined) {
     await chrome.tabs.update(existing.id, { active: true, url });
     if (existing.windowId !== undefined)
