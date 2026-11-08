@@ -416,4 +416,5 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 0 | Concluída — ambiente verificado (Node 22.16, Chrome, JBR 21, SDK 35, AVD Medium_Phone_API_36.0, Gradle 8.11.1) |
 | 1 | Concluída — adaptador SoundCloud (DOM + MediaSession + URN), widget em Shadow DOM, e2e com fixtures. Validação no site real: `npm run e2e:soundcloud:live -w @cuepoint/extension` (opcional) |
 | 2 | Concluída — ids (UUIDv7/v5), HLC, motor de mesclagem por campo, réplica de referência, 13 cenários do PRD em `spec/vectors`, JSON Schemas em `spec/schema`, testes de propriedade (convergência, idempotência, sem perda) |
-| 3–15 | Pendente |
+| 3 | Concluída — Dexie (entidades + sync_events + conflicts + meta), repositório transacional com log de operações, identidade local, RPC service worker ⇄ widget, aprovação/rejeição/categorias persistidas, faixa provisória → definitiva |
+| 4–15 | Pendente |

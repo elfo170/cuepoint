@@ -25,6 +25,7 @@
     "vite": "^8.3.6"
   },
   "dependencies": {
+    "@cuepoint/core": "^0.1.0",
     "dexie": "^4.4.7",
     "lucide-react": "^1.70.0",
     "react": "^19.3.1",

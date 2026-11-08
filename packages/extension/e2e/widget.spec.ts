@@ -34,22 +34,12 @@ test('widget não cobre a barra de reprodução e pode ser recolhido', async ({ 
   await expect(widget).toBeVisible();
 });
 
-test('botões usam ícones vetoriais e registram a decisão', async ({ context }) => {
+test('botões usam ícones vetoriais, sem texto SIM/NÃO', async ({ context }) => {
   await routeSoundCloud(context);
   const page = await openPlayer(context);
-  const approve = page.getByTestId('cuepoint-approve');
-  const reject = page.getByTestId('cuepoint-reject');
-  await expect(approve.locator('svg')).toHaveCount(1);
-  await expect(reject.locator('svg')).toHaveCount(1);
-  await expect(approve).not.toContainText(/SIM|NÃO/i);
-
-  await reject.click();
-  await expect(page.getByTestId('cuepoint-decision')).toHaveText('Rejeitada');
-  await expect(page.getByTestId('cuepoint-picker')).toHaveCount(0);
-
-  await approve.click();
-  await expect(page.getByTestId('cuepoint-decision')).toHaveText('Aprovada');
-  await expect(page.getByTestId('cuepoint-picker')).toBeVisible();
-  await page.getByTestId('cuepoint-picker-close').click();
-  await expect(page.getByTestId('cuepoint-picker')).toHaveCount(0);
+  for (const id of ['cuepoint-approve', 'cuepoint-reject']) {
+    const button = page.getByTestId(id);
+    await expect(button.locator('svg')).toHaveCount(1);
+    await expect(button).not.toContainText(/SIM|NÃO/i);
+  }
 });

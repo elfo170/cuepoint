@@ -12,6 +12,7 @@ export interface WidgetProps {
   researches: Option[];
   activeResearchId: string | null;
   onSelectResearch: (id: string) => void;
+  onCreateResearch: (name: string) => void;
   /** Decisão da faixa atual na pesquisa ativa: true, false ou null (não avaliada). */
   decision: boolean | null;
   onApprove: () => void;
@@ -30,6 +31,8 @@ export interface WidgetProps {
   position: { right: number; bottom: number };
   onPositionChange: (pos: { right: number; bottom: number }) => void;
 }
+
+const NEW_RESEARCH = '__new__';
 
 function decisionLabel(decision: boolean | null): string {
   if (decision === true) return 'Aprovada';
@@ -52,6 +55,8 @@ export function Widget(props: WidgetProps) {
   const drag = useRef<{ x: number; y: number; right: number; bottom: number } | null>(null);
   const [newCategory, setNewCategory] = useState('');
   const [brokenArtwork, setBrokenArtwork] = useState<string | null>(null);
+  const [creatingResearch, setCreatingResearch] = useState(false);
+  const [newResearch, setNewResearch] = useState('');
   const canDecide = !!track && !!activeResearchId;
 
   useEffect(() => {
@@ -165,7 +170,10 @@ export function Widget(props: WidgetProps) {
           <select
             data-testid="cuepoint-research"
             value={activeResearchId ?? ''}
-            onChange={(e) => props.onSelectResearch(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value === NEW_RESEARCH) setCreatingResearch(true);
+              else props.onSelectResearch(e.target.value);
+            }}
             className="w-full cursor-pointer appearance-none truncate rounded-md border border-neutral-700 bg-neutral-800 py-1.5 pr-7 pl-2 text-neutral-100"
           >
             {!activeResearchId && <option value="">Escolha uma pesquisa</option>}
@@ -174,6 +182,7 @@ export function Widget(props: WidgetProps) {
                 {r.name}
               </option>
             ))}
+            <option value={NEW_RESEARCH}>+ Nova pesquisa…</option>
           </select>
           <ChevronDown
             size={14}
@@ -214,6 +223,46 @@ export function Widget(props: WidgetProps) {
           <Check size={18} strokeWidth={3} aria-hidden />
         </button>
       </div>
+
+      {creatingResearch && (
+        <form
+          data-testid="cuepoint-research-form"
+          className="flex gap-1.5 px-3 pb-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const name = newResearch.trim();
+            if (name) props.onCreateResearch(name);
+            setNewResearch('');
+            setCreatingResearch(false);
+          }}
+        >
+          <input
+            data-testid="cuepoint-new-research"
+            autoFocus
+            value={newResearch}
+            onChange={(e) => setNewResearch(e.target.value)}
+            placeholder="Nome da pesquisa"
+            className="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-100 placeholder:text-neutral-500"
+          />
+          <button
+            type="submit"
+            aria-label="Criar pesquisa"
+            title="Criar pesquisa"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-neutral-700 text-white hover:bg-neutral-600"
+          >
+            <Check size={14} aria-hidden />
+          </button>
+          <button
+            type="button"
+            aria-label="Cancelar"
+            title="Cancelar"
+            onClick={() => setCreatingResearch(false)}
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-neutral-400 hover:bg-neutral-800"
+          >
+            <X size={14} aria-hidden />
+          </button>
+        </form>
+      )}
 
       <div className="flex items-center gap-2 border-t border-neutral-800 px-3 py-1.5 text-xs">
         <span data-testid="cuepoint-decision" className="text-neutral-400">
