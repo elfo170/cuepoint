@@ -1,0 +1,177 @@
+import { HlcClock } from './hlc';
+import { applyOp, baseFor, conflictFields } from './merge';
+import {
+  validateEntity,
+  type EntityDataMap,
+  type EntityRecord,
+  type EntityType,
+  type JsonValue,
+} from './model';
+import { compareOps, opId, opsMissingFrom, type Op, type OpKind, type VersionVector } from './ops';
+
+export class CausalityError extends Error {}
+
+/** Monta uma operação local a partir das alterações desejadas. */
+export function buildLocalOp<T extends EntityType>(params: {
+  type: T;
+  id: string;
+  current: EntityRecord<T> | undefined;
+  changes: Partial<EntityDataMap[T]>;
+  origin: string;
+  seq: number;
+  hlc: string;
+  userId: string;
+  operation?: OpKind;
+}): Op {
+  const { type, id, current, origin, seq, hlc, userId } = params;
+  const fields = { ...(params.changes as Record<string, JsonValue>) };
+  // Toda escrita afirma que o registro está vivo, exceto a própria exclusão. Assim,
+  // "editar × excluir" concorrentes viram conflito em vez de perda silenciosa.
+  if (!('deleted_at' in fields)) fields.deleted_at = null;
+  const merged = { ...(current ?? {}), ...fields };
+  const { _v, _c, id: _id, created_at, updated_at, ...data } = merged as Record<string, unknown>;
+  void _v;
+  void _c;
+  void _id;
+  void created_at;
+  void updated_at;
+  validateEntity(type, data);
+  const operation: OpKind =
+    params.operation ?? (!current ? 'create' : fields.deleted_at !== null ? 'delete' : 'update');
+  return {
+    op_id: opId(origin, seq),
+    origin,
+    seq,
+    hlc,
+    user_id: userId,
+    entity_type: type,
+    entity_id: id,
+    operation,
+    fields,
+    base: baseFor(current, Object.keys(fields)),
+  };
+}
+
+export interface ConflictInfo {
+  entity_type: EntityType;
+  entity_id: string;
+  field: string;
+}
+
+/**
+ * Réplica em memória: implementação de referência do armazenamento + log de operações.
+ * Usada nos testes, nos vetores compartilhados e como modelo para os repositórios reais.
+ */
+export class Replica {
+  readonly records = new Map<string, EntityRecord>();
+  readonly log: Op[] = [];
+  readonly vv: VersionVector = {};
+  readonly clock: HlcClock;
+  private seq = 0;
+
+  constructor(
+    readonly deviceId: string,
+    readonly userId: string,
+    now: () => number = Date.now,
+  ) {
+    this.clock = new HlcClock(deviceId, null, now);
+  }
+
+  static key(type: EntityType, id: string): string {
+    return `${type}:${id}`;
+  }
+
+  get<T extends EntityType>(type: T, id: string): EntityRecord<T> | undefined {
+    return this.records.get(Replica.key(type, id)) as EntityRecord<T> | undefined;
+  }
+
+  all<T extends EntityType>(type: T): EntityRecord<T>[] {
+    return [...this.records.entries()]
+      .filter(([k]) => k.startsWith(`${type}:`))
+      .map(([, r]) => r as unknown as EntityRecord<T>);
+  }
+
+  /** Cria ou altera um registro localmente. */
+  put<T extends EntityType>(
+    type: T,
+    id: string,
+    changes: Partial<EntityDataMap[T]>,
+    operation?: OpKind,
+  ): Op {
+    const op = buildLocalOp({
+      type,
+      id,
+      current: this.get(type, id),
+      changes,
+      origin: this.deviceId,
+      seq: this.seq + 1,
+      hlc: this.clock.tick(),
+      userId: this.userId,
+      operation,
+    });
+    this.seq += 1;
+    this.applyAndLog(op);
+    return op;
+  }
+
+  /** Exclusão explícita (tombstone, propagada aos demais aparelhos). */
+  delete(type: EntityType, id: string): Op {
+    return this.put(type, id, { deleted_at: new Date(this.clock.now()).toISOString() } as never);
+  }
+
+  /** Resolve um conflito escolhendo o valor final do campo. */
+  resolve(type: EntityType, id: string, field: string, value: JsonValue): Op {
+    return this.put(type, id, { [field]: value } as never, 'resolve');
+  }
+
+  /** Recebe operações remotas. Idempotente; exige entrega causal. Retorna quantas aplicou. */
+  receive(ops: Op[]): number {
+    let applied = 0;
+    for (const op of [...ops].sort(compareOps)) {
+      const have = this.vv[op.origin] ?? 0;
+      if (op.seq <= have) continue;
+      if (op.seq !== have + 1) {
+        throw new CausalityError(
+          `lacuna em ${op.origin}: esperado ${have + 1}, recebido ${op.seq}`,
+        );
+      }
+      this.clock.receive(op.hlc);
+      this.applyAndLog(op);
+      applied += 1;
+    }
+    return applied;
+  }
+
+  /** Operações que faltam para quem tem o vetor `vv`. */
+  opsSince(vv: VersionVector): Op[] {
+    return opsMissingFrom(this.log, vv);
+  }
+
+  conflicts(): ConflictInfo[] {
+    const out: ConflictInfo[] = [];
+    for (const [key, rec] of this.records) {
+      const [type] = key.split(':') as [EntityType];
+      for (const field of conflictFields(rec))
+        out.push({ entity_type: type, entity_id: rec.id, field });
+    }
+    return out.sort((a, b) =>
+      `${a.entity_type}${a.entity_id}${a.field}`.localeCompare(
+        `${b.entity_type}${b.entity_id}${b.field}`,
+      ),
+    );
+  }
+
+  private applyAndLog(op: Op): void {
+    const key = Replica.key(op.entity_type, op.entity_id);
+    const { record } = applyOp(op.entity_type, this.records.get(key), op);
+    this.records.set(key, record);
+    this.log.push(op);
+    this.vv[op.origin] = op.seq;
+  }
+}
+
+/** Sincronização completa nos dois sentidos entre duas réplicas (usada em testes). */
+export function syncPair(a: Replica, b: Replica): void {
+  b.receive(a.opsSince(b.vv));
+  a.receive(b.opsSince(a.vv));
+}

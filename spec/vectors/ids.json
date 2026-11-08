@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "namespace": "uuidv5 com CUEPOINT_NAMESPACE",
+  "cases": [
+    {
+      "fn": "deterministicId",
+      "args": [
+        "x"
+      ],
+      "expected": "a7a955f9-df81-5797-bd75-fa6074eb3614"
+    },
+    {
+      "fn": "trackIdFromUrn",
+      "args": [
+        "soundcloud:tracks:123456789"
+      ],
+      "expected": "8d037189-dd2e-5f85-9c90-d12f91309149"
+    },
+    {
+      "fn": "decisionId",
+      "args": [
+        "8d037189-dd2e-5f85-9c90-d12f91309149",
+        "20000000-0000-4000-8000-000000000001"
+      ],
+      "expected": "173fc502-0f1a-5c42-8b10-18e4d5ad21ef"
+    },
+    {
+      "fn": "trackCategoryId",
+      "args": [
+        "8d037189-dd2e-5f85-9c90-d12f91309149",
+        "20000000-0000-4000-8000-000000000001",
+        "30000000-0000-4000-8000-000000000001"
+      ],
+      "expected": "911ad835-aca5-5753-84a8-04383ef8245f"
+    },
+    {
+      "fn": "playlistTrackId",
+      "args": [
+        "20000000-0000-4000-8000-000000000002",
+        "8d037189-dd2e-5f85-9c90-d12f91309149"
+      ],
+      "expected": "eded02da-6abe-51ef-82fc-d00eface32c1"
+    },
+    {
+      "fn": "opId",
+      "args": [
+        "aaaaaaaa-0000-4000-8000-00000000000a",
+        42
+      ],
+      "expected": "8291cb36-88c4-5613-a177-11e9dc1ac67b"
+    },
+    {
+      "fn": "conflictId",
+      "args": [
+        "research",
+        "20000000-0000-4000-8000-000000000001",
+        "name"
+      ],
+      "expected": "3dd74506-16fd-50d1-b4da-a9fbb6bb6bd7"
+    }
+  ],
+  "hlc": [
+    {
+      "parts": {
+        "ms": 1767225600000,
+        "counter": 7,
+        "node": "aaaaaaaa-0000-4000-8000-00000000000a"
+      },
+      "text": "001767225600000:000007:aaaaaaaa-0000-4000-8000-00000000000a"
+    },
+    {
+      "parts": {
+        "ms": 0,
+        "counter": 0,
+        "node": "n"
+      },
+      "text": "000000000000000:000000:n"
+    }
+  ]
+}
