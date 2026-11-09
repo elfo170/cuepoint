@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:android": "vitest run test/android.e2e.test.ts"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"

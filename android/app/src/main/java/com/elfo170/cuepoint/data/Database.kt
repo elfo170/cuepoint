@@ -12,6 +12,8 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Upsert
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -80,6 +82,11 @@ data class DeviceRow(
     val sync_policy: String,
     val created_at: String,
     val last_sync_at: String?,
+    /** Fingerprint (SHA-256 SPKI) do certificado TLS do par, fixado no pareamento. */
+    val cert_fp: String? = null,
+    /** Endereços IP conhecidos do par (separados por vírgula). */
+    val addresses: String? = null,
+    val port: Int? = null,
 )
 
 @Dao
@@ -158,13 +165,40 @@ interface CuePointDao {
 
     @Query("SELECT * FROM devices WHERE id = :id")
     fun observeDevice(id: String): Flow<DeviceRow?>
+
+    @Query("SELECT * FROM devices WHERE pairing_status != 'self'")
+    suspend fun peers(): List<DeviceRow>
+
+    @Query("SELECT * FROM devices WHERE pairing_status != 'self'")
+    fun observePeers(): Flow<List<DeviceRow>>
+
+    @Query("SELECT * FROM sync_events WHERE origin = :origin AND status = 'local_pending' ORDER BY seq")
+    suspend fun pendingOwn(origin: String): List<SyncEventRow>
+
+    @Query("SELECT COUNT(*) FROM sync_events WHERE origin = :origin AND seq >= :fromSeq")
+    suspend fun countOwnFrom(origin: String, fromSeq: Long): Int
+
+    @Query("DELETE FROM sync_events WHERE op_id IN (:ids)")
+    suspend fun deleteEvents(ids: List<String>)
+
+    @Query("UPDATE sync_events SET status = 'local_sent' WHERE op_id IN (:ids)")
+    suspend fun markSent(ids: List<String>)
+
+    @Query("DELETE FROM entities")
+    suspend fun clearEntities()
+
+    @Query("DELETE FROM conflicts")
+    suspend fun clearConflicts()
+
+    @Query("SELECT COUNT(*) FROM entities")
+    suspend fun entityCount(): Int
 }
 
 data class OriginSeq(val origin: String, val seq: Long)
 
 @Database(
     entities = [EntityRow::class, SyncEventRow::class, ConflictRow::class, MetaRow::class, UserRow::class, DeviceRow::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class CuePointDatabase : RoomDatabase() {
@@ -174,6 +208,16 @@ abstract class CuePointDatabase : RoomDatabase() {
         fun create(context: Context, inMemory: Boolean = false): CuePointDatabase =
             (if (inMemory) Room.inMemoryDatabaseBuilder(context, CuePointDatabase::class.java)
             else Room.databaseBuilder(context, CuePointDatabase::class.java, "cuepoint.db"))
+                .addMigrations(MIGRATION_1_2)
                 .build()
+
+        /** v2: dados de rede e certificado dos aparelhos pareados. */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE devices ADD COLUMN cert_fp TEXT")
+                db.execSQL("ALTER TABLE devices ADD COLUMN addresses TEXT")
+                db.execSQL("ALTER TABLE devices ADD COLUMN port INTEGER")
+            }
+        }
     }
 }

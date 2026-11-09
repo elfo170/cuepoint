@@ -48,6 +48,9 @@ test.beforeEach(() => {
     '-NoAutostart',
     '-DataDir',
     dataDir,
+    // programa instalado numa pasta temporária: o teste não deixa nada em %LOCALAPPDATA%
+    '-AppDir',
+    join(dataDir, 'app'),
     '-Pipe',
     pipe,
     '-Port',

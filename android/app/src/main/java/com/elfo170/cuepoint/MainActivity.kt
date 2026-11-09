@@ -25,6 +25,8 @@ class MainActivity : ComponentActivity() {
 
     /** "Compartilhar → CuePoint" no app do SoundCloud define a faixa atual (PRD §12.4). */
     private fun handleShare(intent: Intent?) {
+        // Link de pareamento (cuepoint://pair?...) aberto pelo QR ou pela câmera
+        intent?.data?.takeIf { it.scheme == "cuepoint" }?.let { container.pendingPairUri.value = it.toString() }
         if (intent?.action != Intent.ACTION_SEND) return
         val track = MediaMetadataParser.parseShare(
             intent.getStringExtra(Intent.EXTRA_TEXT),

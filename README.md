@@ -9,9 +9,11 @@ aprova (✓) ou rejeita (✗) cada faixa dentro de uma **pesquisa**, classifica 
 
 ## Estado atual
 
-O **MVP Chrome (P0)** está completo, e a suíte e2e cobre os 12 critérios de aceite do PRD §18.
-A sincronização entre aparelhos (P1) e o app Android (P2) são as próximas fases. O modelo de
-dados e o log de operações já estão prontos para elas.
+- **MVP Chrome (P0):** completo — os 12 critérios de aceite do PRD §18 são cobertos por testes e2e.
+- **App Android (P2):** curadoria pela notificação persistente (inclusive na tela bloqueada),
+  biblioteca, playlists e identificação manual / por compartilhamento.
+- **Sincronização (P1):** PC ⇄ celular e PC ⇄ PC pela rede local, sem servidor externo, via o
+  serviço auxiliar do Windows. Falta a tela de conflitos (sprint 10).
 
 ## Instalação da extensão
 
@@ -47,6 +49,42 @@ as abas do SoundCloud.
      como lista de URLs, CSV ou JSON;
    - faz e restaura backups;
    - ajusta as configurações do aparelho.
+
+### Celular (Android)
+
+1. Gere e instale o APK de debug:
+
+   ```powershell
+   npm run android -- assembleDebug
+   adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+   ```
+
+2. Abra o CuePoint e libere o **acesso às notificações** (para ler a faixa do SoundCloud) e a
+   permissão de **notificações**.
+3. Dê play no app do SoundCloud: a notificação do CuePoint mostra a faixa com ✓ / ✗ (funciona com a
+   tela bloqueada) e “Categorias” após aprovar.
+4. Sem identificação automática: use **Compartilhar → CuePoint** no SoundCloud ou informe a faixa à mão.
+
+### Sincronizar celular e PC
+
+1. No PC, instale o serviço auxiliar (uma vez, sem administrador):
+
+   ```powershell
+   npm run helper:install
+   ```
+
+   Ele registra o serviço para o Chrome e o inicia no logon. Para criar a regra no Firewall do
+   Windows (pede administrador), use `npm run helper:install -- -Firewall`; sem ela, o Windows
+   pergunta na primeira conexão do celular — permita em **redes privadas**.
+2. Recarregue a extensão e abra **Biblioteca → Dispositivos** (deve mostrar “conectado”).
+3. Clique em **Adicionar dispositivo**: aparece um QR válido por 5 minutos.
+4. No celular: **Configurações → Dispositivos e sincronização → Parear com PC** e escaneie o QR.
+5. Confira se os dois mostram o mesmo código de 6 dígitos e clique em **Confirmar pareamento** no PC.
+6. Escolha a política: **automática** ou **pedir aprovação** (o PC mostra uma notificação “Permitir”).
+
+PC e celular precisam estar na mesma rede Wi-Fi. A sincronização acontece ao alterar algo, ao
+encontrar o outro aparelho na rede e periodicamente. Para remover o serviço:
+`npm run helper:uninstall` (os dados ficam em `%LOCALAPPDATA%\CuePoint`).
 
 ### Faixas provisórias
 
@@ -94,6 +132,7 @@ npm run lint           # ESLint + Prettier
 npm run typecheck      # TypeScript
 npm run e2e            # Playwright: widget, biblioteca, playlists, backup e aceite do PRD §18
 npm run android:check  # testes + assembleDebug do Android (usa o JBR)
+$env:CUEPOINT_ANDROID_E2E=1; npm run test:android -w @cuepoint/helper   # e2e PC ⇄ emulador
 npm run vectors -w @cuepoint/core   # regenera spec/ após mudança intencional no modelo
 ```
 

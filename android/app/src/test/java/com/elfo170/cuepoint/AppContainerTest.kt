@@ -18,7 +18,12 @@ import org.robolectric.annotation.Config
 class AppContainerTest {
     private val page = """<meta property="twitter:app:url:googleplay" content="soundcloud://sounds:555"><meta property="og:title" content="Título Real">"""
 
-    private fun container() = AppContainer(ApplicationProvider.getApplicationContext(), inMemory = true, resolver = UrnResolver { page })
+    private val opened = mutableListOf<AppContainer>()
+
+    @org.junit.After
+    fun tearDown() = opened.forEach { it.close() }
+
+    private fun container() = AppContainer(ApplicationProvider.getApplicationContext(), inMemory = true, resolver = UrnResolver { page }).also { opened += it }
 
     @Test
     fun notificationActionDecidesCurrentTrackInActiveResearch() = runBlocking {

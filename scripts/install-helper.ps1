@@ -7,11 +7,12 @@
 #
 # Uso:  npm run helper:install            (ou: powershell -File scripts/install-helper.ps1)
 #       -Browser Chrome|Chromium|Edge     (padrão: Chrome)
-#       -DataDir <pasta>  -Pipe <nome>  -Port <n>  -NoAutostart  -Firewall
+#       -DataDir <pasta>  -AppDir <pasta>  -Pipe <nome>  -Port <n>  -NoAutostart  -Firewall
 param(
     [ValidateSet('Chrome', 'Chromium', 'Edge')][string]$Browser = 'Chrome',
     [string]$ExtensionId = 'daaemjinbpmlbffnjbbonliiglbmjjmn',
     [string]$DataDir = '',
+    [string]$AppDir = '',
     [string]$Pipe = '',
     [int]$Port = 47800,
     [switch]$NoAutostart,
@@ -29,7 +30,7 @@ if (-not (Test-Path $bundle)) {
 }
 
 $base = Join-Path $env:LOCALAPPDATA 'CuePoint'
-$app = Join-Path $base 'app'
+$app = if ($AppDir) { $AppDir } else { Join-Path $base 'app' }
 New-Item -ItemType Directory -Force $app | Out-Null
 Copy-Item $bundle (Join-Path $app 'cuepoint-helper.mjs') -Force
 

@@ -153,3 +153,35 @@ describe('JSON Schema', () => {
     );
   });
 });
+
+describe('vetores de compactação', () => {
+  it('spec/vectors/compaction.json está atualizado', async () => {
+    const { compactOps } = await import('../src');
+    const now = (() => {
+      let t = 1_767_225_600_000;
+      return () => (t += 1000);
+    })();
+    const a = new Replica(IDS.deviceA, IDS.user, now);
+    const b = new Replica(IDS.deviceB, IDS.user, now);
+    a.put('category', IDS.categoryX, { user_id: IDS.user, name: 'Vocal', description: '' });
+    b.receive(a.opsSince(b.vv));
+    a.markSent(1);
+    b.put('category', IDS.categoryX, { description: 'de B' });
+    const tc = trackCategoryId(IDS.trackA, IDS.research1, IDS.categoryX);
+    const data = { track_id: IDS.trackA, research_id: IDS.research1, category_id: IDS.categoryX };
+    a.put('track_category', tc, data);
+    a.receive(b.opsSince(a.vv));
+    a.delete('track_category', tc);
+    a.put('category', IDS.categoryX, { name: 'Vocais' });
+    a.put('track_category', tc, data);
+    const pending = a.log.filter((o) => o.origin === IDS.deviceA && o.seq > 1);
+    await expect(
+      pretty({
+        version: 1,
+        description:
+          'compactOps(input, fromSeq): operações pendentes de um aparelho → operações compactadas.',
+        cases: [{ fromSeq: 2, input: pending, expected: compactOps(pending, 2) }],
+      }),
+    ).toMatchFileSnapshot(resolve(spec, 'vectors/compaction.json'));
+  });
+});

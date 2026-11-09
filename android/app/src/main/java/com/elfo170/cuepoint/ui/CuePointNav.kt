@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.elfo170.cuepoint.container
 import com.elfo170.cuepoint.ui.screens.CategoriesScreen
 import com.elfo170.cuepoint.ui.screens.CurateScreen
+import com.elfo170.cuepoint.ui.screens.DevicesScreen
 import com.elfo170.cuepoint.ui.screens.PlaylistDetailScreen
 import com.elfo170.cuepoint.ui.screens.PlaylistsScreen
 import com.elfo170.cuepoint.ui.screens.ResearchDetailScreen
@@ -71,6 +72,8 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
     val isTab = TABS.any { it.route == route }
+    val pendingPair by LocalContext.current.container.pendingPairUri.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingPair) { if (pendingPair != null && route != "devices") nav.navigate("devices") }
 
     Scaffold(
         topBar = {
@@ -118,13 +121,14 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
             composable("categories") { CategoriesScreen() }
             composable("playlists") { PlaylistsScreen(onOpen = { nav.navigate("playlist/$it") }) }
             composable("playlist/{id}") { PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }) }
-            composable("settings") { SettingsScreen() }
+            composable("settings") { SettingsScreen(onDevices = { nav.navigate("devices") }) }
+            composable("devices") { DevicesScreen() }
         }
     }
 }
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(onDevices: () -> Unit = {}) {
     val app = LocalContext.current.container
     val scope = rememberCoroutineScope()
     val ops by app.db.dao().observeEventCount().collectAsStateWithLifecycle(0)
@@ -139,6 +143,7 @@ fun SettingsScreen() {
     }
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Configurações", style = MaterialTheme.typography.headlineSmall)
+        Button(onClick = onDevices, modifier = Modifier.fillMaxWidth()) { Text("Dispositivos e sincronização") }
         OutlinedTextField(name, { name = it; saved = false }, label = { Text("Nome do aparelho") }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Button(onClick = { scope.launch { app.store.renameDevice(name); saved = true } }, enabled = name.isNotBlank()) { Text("Salvar") }
         if (saved) Text("Nome salvo.")

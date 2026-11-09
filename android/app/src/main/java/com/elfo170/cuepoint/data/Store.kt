@@ -3,6 +3,7 @@ package com.elfo170.cuepoint.data
 import android.os.Build
 import androidx.room.withTransaction
 import com.elfo170.cuepoint.core.CausalityException
+import com.elfo170.cuepoint.core.Compaction
 import com.elfo170.cuepoint.core.EntityType
 import com.elfo170.cuepoint.core.Hlc
 import com.elfo170.cuepoint.core.HlcClock
@@ -166,6 +167,68 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
             else dao.deleteConflict(cid)
         }
         return result.record
+    }
+
+    /** Marca operações próprias como enviadas (não podem mais ser compactadas). */
+    suspend fun markSent(ops: List<Op>) {
+        val id = init()
+        val own = ops.filter { it.origin == id.deviceId }.map { it.opId }
+        own.chunked(500).forEach { dao.markSent(it) }
+    }
+
+    /**
+     * Compacta as operações próprias ainda não enviadas (várias do mesmo registro viram uma)
+     * e recalcula os registros a partir do log. Retorna quantas operações deixaram de existir.
+     */
+    suspend fun compactPending(): Int {
+        val id = init()
+        val removed = mutex.withLock {
+            db.withTransaction {
+                val pending = dao.pendingOwn(id.deviceId)
+                if (pending.size < 2) return@withTransaction 0
+                val fromSeq = pending.first().seq
+                if (dao.countOwnFrom(id.deviceId, fromSeq) != pending.size) return@withTransaction 0
+                val ops = pending.map { Merge.json.decodeFromString<Op>(it.json) }
+                val compacted = Compaction.compactOps(ops, fromSeq)
+                if (compacted.size == ops.size) return@withTransaction 0
+                dao.deleteEvents(pending.map { it.op_id })
+                for (op in compacted) {
+                    dao.insertEvent(SyncEventRow(op.opId, op.origin, op.seq, op.hlc, op.entityType, op.entityId, op.operation, Hlc.toIso(op.hlc), "local_pending", Merge.json.encodeToString(op)))
+                }
+                val all = dao.events().map { Merge.json.decodeFromString<Op>(it.json) }
+                val records = Compaction.rebuild(all)
+                dao.clearEntities()
+                dao.clearConflicts()
+                for ((key, rec) in records) {
+                    val type = EntityType.of(key.substringBefore(':'))
+                    dao.upsertEntity(toRow(type, rec))
+                    for (field in Merge.conflictFields(rec)) {
+                        val eid = Merge.str(rec, "id")!!
+                        dao.upsertConflict(ConflictRow(Ids.conflictId(type.key, eid, field), type.key, eid, field, Hlc.isoOf(now())))
+                    }
+                }
+                val state = dao.meta("clock")?.let { Merge.json.decodeFromString<ClockState>(it) } ?: ClockState()
+                dao.putMeta(MetaRow("clock", Merge.json.encodeToString(state.copy(seq = fromSeq + compacted.size - 1))))
+                ops.size - compacted.size
+            }
+        }
+        if (removed > 0) _changes.tryEmit(EntityType.entries.toSet())
+        return removed
+    }
+
+    /**
+     * No primeiro pareamento, um aparelho ainda vazio adota o usuário do PC, para que os dois
+     * apareçam como a mesma pessoa (PRD §4: bibliotecas privadas por usuário).
+     */
+    suspend fun adoptUserIfEmpty(userId: String): Boolean {
+        val id = init()
+        if (id.userId == userId || dao.entityCount() > 0) return false
+        val at = Hlc.isoOf(now())
+        dao.putUser(UserRow(userId, at))
+        dao.device(id.deviceId)?.let { dao.putDevice(it.copy(user_id = userId)) }
+        dao.putMeta(MetaRow("identity", Merge.json.encodeToString(IdentityMeta(userId, id.deviceId))))
+        identity = null
+        return true
     }
 
     suspend fun getMeta(key: String): String? = dao.meta(key)

@@ -10,7 +10,11 @@ import com.elfo170.cuepoint.data.TrackInput
 import com.elfo170.cuepoint.data.TrackState
 import com.elfo170.cuepoint.media.CurationNotification
 import com.elfo170.cuepoint.media.UrnResolver
+import com.elfo170.cuepoint.sync.SyncEngine
+import com.elfo170.cuepoint.sync.SyncScheduler
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -30,10 +34,24 @@ class AppContainer(
     inMemory: Boolean = false,
     private val resolver: UrnResolver = UrnResolver(),
 ) {
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    /** Falhas em tarefas de fundo são registradas, sem derrubar o app. */
+    val scope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Default +
+            CoroutineExceptionHandler { _, e -> android.util.Log.w("CuePoint", "tarefa em segundo plano falhou", e) },
+    )
+
+    fun close() {
+        scope.cancel()
+        db.close()
+    }
     val db = CuePointDatabase.create(context, inMemory)
     val store = Store(db)
     val curation = Curation(store)
+    val syncEngine = SyncEngine(store)
+    val sync = SyncScheduler(context, syncEngine, scope)
+
+    /** Link/QR de pareamento recebido (cuepoint://pair?...) aguardando a tela de dispositivos. */
+    val pendingPairUri = MutableStateFlow<String?>(null)
 
     /** Biblioteca reativa: recalculada a cada escrita no banco. */
     val snapshot: StateFlow<Snapshot> = db.dao().observeAll()
@@ -75,6 +93,14 @@ class AppContainer(
                 refreshNotification()
             }
         }
+    }
+
+    /** Sincronização em segundo plano: após alterações, descoberta na rede e periódica. */
+    fun startBackgroundSync() {
+        scope.launch { store.changes.collect { sync.onLocalChange() } }
+        runCatching { sync.startDiscovery() }
+        sync.schedulePeriodic()
+        scope.launch { runCatching { sync.syncAll() } }
     }
 
     fun setNowPlaying(track: TrackInput?) {
@@ -137,6 +163,7 @@ class CuePointApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        container.startBackgroundSync()
     }
 }
 

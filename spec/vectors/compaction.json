@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "description": "compactOps(input, fromSeq): operações pendentes de um aparelho → operações compactadas.",
+  "cases": [
+    {
+      "fromSeq": 2,
+      "input": [
+        {
+          "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 2,
+          "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track_category",
+          "entity_id": "2e5810ad-aa27-50c7-b2fa-a76203625247",
+          "operation": "create",
+          "fields": {
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": "30000000-0000-4000-8000-000000000001",
+            "deleted_at": null
+          },
+          "base": {
+            "track_id": [],
+            "research_id": [],
+            "category_id": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "33519d91-fe73-5f3d-aee4-d5bd9ede8876",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 3,
+          "hlc": "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track_category",
+          "entity_id": "2e5810ad-aa27-50c7-b2fa-a76203625247",
+          "operation": "delete",
+          "fields": {
+            "deleted_at": "2026-01-01T00:00:06.000Z"
+          },
+          "base": {
+            "deleted_at": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "5396c7e9-7d41-52f8-afd5-24d752a361f4",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 4,
+          "hlc": "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "category",
+          "entity_id": "30000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "fields": {
+            "name": "Vocais",
+            "deleted_at": null
+          },
+          "base": {
+            "name": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225603000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+            ]
+          }
+        },
+        {
+          "op_id": "2fc1e933-8aba-578f-a0ce-ae70258633e9",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 5,
+          "hlc": "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track_category",
+          "entity_id": "2e5810ad-aa27-50c7-b2fa-a76203625247",
+          "operation": "update",
+          "fields": {
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": "30000000-0000-4000-8000-000000000001",
+            "deleted_at": null
+          },
+          "base": {
+            "track_id": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "research_id": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "category_id": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        }
+      ],
+      "expected": [
+        {
+          "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 2,
+          "hlc": "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "category",
+          "entity_id": "30000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "fields": {
+            "name": "Vocais",
+            "deleted_at": null
+          },
+          "base": {
+            "name": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225603000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+            ]
+          }
+        },
+        {
+          "op_id": "33519d91-fe73-5f3d-aee4-d5bd9ede8876",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 3,
+          "hlc": "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track_category",
+          "entity_id": "2e5810ad-aa27-50c7-b2fa-a76203625247",
+          "operation": "create",
+          "fields": {
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": "30000000-0000-4000-8000-000000000001",
+            "deleted_at": null
+          },
+          "base": {
+            "track_id": [],
+            "research_id": [],
+            "category_id": [],
+            "deleted_at": []
+          }
+        }
+      ]
+    }
+  ]
+}
