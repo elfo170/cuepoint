@@ -1,0 +1,1 @@
+- Validar liberação de notificações no APK e realizar testes
