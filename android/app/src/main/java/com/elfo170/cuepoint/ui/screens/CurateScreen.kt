@@ -19,7 +19,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elfo170.cuepoint.container
 import com.elfo170.cuepoint.data.TrackInput
-import com.elfo170.cuepoint.data.TrackState
 import com.elfo170.cuepoint.ui.CategoryChips
 import com.elfo170.cuepoint.ui.DecisionButtons
 import com.elfo170.cuepoint.ui.ProvisionalBadge
@@ -50,14 +48,11 @@ fun CurateScreen(extraTop: @Composable () -> Unit = {}) {
     val snapshot by app.snapshot.collectAsStateWithLifecycle()
     val activeId by app.activeResearchId.collectAsStateWithLifecycle(null)
     val nowPlaying by app.nowPlaying.collectAsStateWithLifecycle()
-    var state by remember { mutableStateOf<TrackState?>(null) }
+    val state by app.currentState.collectAsStateWithLifecycle()
     var error by remember { mutableStateOf<String?>(null) }
     var manual by remember { mutableStateOf(false) }
 
     val researches = snapshot.researches.filter { !it.archived }
-    LaunchedEffect(nowPlaying, activeId, snapshot) {
-        state = nowPlaying?.let { app.curation.getTrackState(it, activeId) }
-    }
 
     fun act(block: suspend () -> Unit) = scope.launch {
         error = runCatching { block() }.exceptionOrNull()?.message
@@ -100,14 +95,7 @@ fun CurateScreen(extraTop: @Composable () -> Unit = {}) {
                             value = state?.decision,
                             enabled = activeId != null,
                             size = 56,
-                            onChange = { value ->
-                                val rid = activeId ?: return@DecisionButtons
-                                act {
-                                    val t = app.curation.ensureTrack(track)
-                                    app.curation.setDecision(t.id, rid, value)
-                                    state = app.curation.getTrackState(track, rid)
-                                }
-                            },
+                            onChange = { value -> act { app.decideCurrent(value) } },
                         )
                     }
                     if (activeId == null) Text("Escolha uma pesquisa para classificar.", style = MaterialTheme.typography.bodySmall)
@@ -118,7 +106,6 @@ fun CurateScreen(extraTop: @Composable () -> Unit = {}) {
                             val tid = state?.trackId ?: return@CategoryChips
                             act {
                                 app.curation.setTrackCategory(tid, rid, cid, cid !in state?.categoryIds.orEmpty())
-                                state = app.curation.getTrackState(track, rid)
                             }
                         }
                         NewCategoryField { name ->
@@ -127,7 +114,6 @@ fun CurateScreen(extraTop: @Composable () -> Unit = {}) {
                             act {
                                 val c = app.curation.createCategory(name)
                                 app.curation.setTrackCategory(tid, rid, c.id, true)
-                                state = app.curation.getTrackState(track, rid)
                             }
                         }
                     }

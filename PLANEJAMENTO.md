@@ -428,7 +428,10 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 5 | Concluída — playlists internas (manual, por pesquisa e/ou categoria; ordem por chave fracionária; exportação URLs/CSV/JSON), backup `cuepoint-backup` v1 com SHA-256, automático (alarme + a cada N alterações) em Downloads/CuePoint/backups, restauração validada e transacional com backup de segurança |
 | 6 | Concluída — configurações (nome do aparelho, estado do log), acessibilidade (foco visível, aria-live), mensagens de erro do widget, suíte e2e com os 12 critérios do PRD §18 (latência medida: ~40–90 ms até gravar no IndexedDB), README de instalação e uso. **MVP Chrome (P0) concluído.** |
 | 11 | Concluída — `:core` Kotlin (ids, HLC, mesclagem, réplica, chaves fracionárias) com paridade comprovada pelos mesmos `spec/vectors` do TypeScript; Room (tabela genérica com o registro JSON idêntico ao do Chrome + log + conflitos); curadoria, playlists e telas Compose (Curar com faixa manual, Pesquisas, Músicas, Categorias, Playlists, Configurações) |
-| 7–10, 12–15 | Pendente |
+| 12 | Concluída — NotificationListenerService + MediaSession (filtra o app do SoundCloud; opção "ler outros players"), URN pela MediaSession ou pela página da faixa, compartilhar → CuePoint, faixa manual, notificação persistente com ✓/✗/Categorias. Validado no emulador (Android 16): ✓/✗ funcionam com a tela bloqueada; o seletor de categorias pede desbloqueio (regra do sistema). Player de teste só no build debug |
+| 7–10, 13–15 | Pendente |
+
+**Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
 
 **Nova ordem (prioridade: app no celular):** 11 → 12 (Android funcionando sozinho) → 7 → 8 → 9 → 13 (sincronização com o Chrome) → 10 → 14 → 15.
 

@@ -2,6 +2,7 @@ package com.elfo170.cuepoint.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -89,6 +92,11 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
                     NavigationBarItem(
                         selected = route == tab.route,
                         onClick = {
+                            // Destino inicial já está na pilha: basta voltar até ele.
+                            if (tab.route == "curate") {
+                                nav.popBackStack("curate", inclusive = false)
+                                return@NavigationBarItem
+                            }
                             nav.navigate(tab.route) {
                                 popUpTo(nav.graph.findStartDestination().id) { saveState = true }
                                 launchSingleTop = true
@@ -136,5 +144,14 @@ fun SettingsScreen() {
         if (saved) Text("Nome salvo.")
         Text("Id do aparelho: $deviceId", style = MaterialTheme.typography.bodySmall)
         Text("Operações registradas: $ops · ainda não sincronizadas: $pending", style = MaterialTheme.typography.bodySmall)
+        var anyPlayer by remember { mutableStateOf(app.acceptAnyPlayer) }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Ler outros players")
+                Text("Além do app do SoundCloud (ex.: variantes do app ou testes).", style = MaterialTheme.typography.bodySmall)
+            }
+            Switch(anyPlayer, { v -> anyPlayer = v; scope.launch { app.setAcceptAnyPlayer(v) } })
+        }
+        DebugTools.Section()
     }
 }
