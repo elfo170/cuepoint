@@ -11,8 +11,10 @@ import { fileURLToPath } from 'node:url';
 import { expect, openLibrary, test } from './fixtures';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)), '../../..');
-const dataDir = mkdtempSync(join(tmpdir(), 'cuepoint-e2e-helper-'));
-const pipe = `\\\\.\\pipe\\cuepoint-e2e-${process.pid}`;
+// Cada teste usa um perfil novo do navegador (= outro aparelho), então ganha seu próprio serviço.
+let dataDir = '';
+let pipe = '';
+let run = 0;
 const ps = (file: string, args: string[]) =>
   execFileSync(
     'powershell',
@@ -33,6 +35,13 @@ const helperCli = (args: string[]) =>
 test.skip(process.platform !== 'win32', 'Native Messaging testado só no Windows');
 
 test.beforeAll(() => {
+  // Garante que o serviço instalado é o código atual.
+  execFileSync(process.execPath, [join(root, 'packages/helper/scripts/build.mjs')]);
+});
+
+test.beforeEach(() => {
+  dataDir = mkdtempSync(join(tmpdir(), 'cuepoint-e2e-helper-'));
+  pipe = `\\\\.\\pipe\\cuepoint-e2e-${process.pid}-${run++}`;
   ps('install-helper.ps1', [
     '-Browser',
     'Chromium',
@@ -46,7 +55,7 @@ test.beforeAll(() => {
   ]);
 });
 
-test.afterAll(() => {
+test.afterEach(() => {
   ps('uninstall-helper.ps1', ['-Browser', 'Chromium']);
   // encerra o serviço iniciado pelo shim deste teste
   execFileSync('powershell', [
@@ -74,4 +83,67 @@ test('extensão conecta ao serviço via Native Messaging e replica o log', async
   const status = JSON.parse(helperCli(['status', '--pipe', pipe]));
   expect(status.linked).toBe(true);
   expect(status.dataDir).toBe(dataDir);
+});
+
+test('pareamento pela biblioteca: QR, código de verificação, confirmação e sync', async ({
+  context,
+}) => {
+  const { Helper } = await import('../../helper/src/helper');
+  const { Lan } = await import('../../helper/src/lan');
+  const other = new Helper({
+    dataDir: mkdtempSync(join(tmpdir(), 'cuepoint-e2e-peer-')),
+    port: 0,
+    pipe: 'unused',
+  });
+  await other.start();
+  const otherLan = new Lan(other, () => ['127.0.0.1']);
+  await otherLan.listen();
+  await other.handleLocal({
+    type: 'hello',
+    deviceId: 'dddddddd-0000-4000-8000-00000000000d',
+    userId: '00000000-0000-4000-8000-000000000001',
+    deviceName: 'Outro aparelho',
+  });
+  try {
+    const lib = await openLibrary(context, '/devices');
+    await expect(lib.getByTestId('helper-state')).toHaveText('conectado', { timeout: 20_000 });
+    await lib.getByRole('link', { name: 'Pesquisas' }).click();
+    await lib.getByLabel('Nome da pesquisa').fill('Do PC');
+    await lib.getByRole('button', { name: 'Criar pesquisa' }).click();
+    await lib.getByRole('link', { name: 'Dispositivos' }).click();
+    await lib.getByRole('button', { name: 'Adicionar dispositivo' }).click();
+    await expect(lib.getByAltText('QR Code de pareamento')).toBeVisible();
+    const uri = (await lib.getByTestId('pairing-uri').inputValue()).replace(
+      /a=[^&]+/,
+      'a=127.0.0.1',
+    );
+
+    const joined = (await other.handleLocal({ type: 'pairing:join', uri })) as { sas: string };
+    await expect(lib.getByTestId('peer-sas')).toHaveText(joined.sas, { timeout: 10_000 });
+    await lib.getByRole('button', { name: 'Confirmar pareamento' }).click();
+    await lib.getByLabel('Política de Outro aparelho').selectOption('auto');
+    await expect(lib.getByLabel('Política de Outro aparelho')).toHaveValue('auto');
+
+    // o outro aparelho sincroniza e recebe a biblioteca deste PC (após a réplica local receber)
+    await expect
+      .poll(async () => JSON.parse(helperCli(['status', '--pipe', pipe])).ops as number, {
+        timeout: 15_000,
+      })
+      .toBeGreaterThan(0);
+    await other.handleLocal({
+      type: 'peer:update',
+      peerId: JSON.parse(helperCli(['status', '--pipe', pipe])).identity.deviceId,
+      policy: 'auto',
+    });
+    const res = (await other.handleLocal({
+      type: 'peer:sync',
+      peerId: JSON.parse(helperCli(['status', '--pipe', pipe])).identity.deviceId,
+    })) as { status: string; received: number };
+    expect(res.status).toBe('ok');
+    expect(res.received).toBeGreaterThan(0);
+    await expect(lib.getByTestId('peer-row')).toContainText('Última sync:');
+  } finally {
+    await otherLan.close();
+    other.close();
+  }
 });

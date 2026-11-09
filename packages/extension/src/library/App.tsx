@@ -13,6 +13,7 @@ import { HashRouter, NavLink, Route, Routes } from 'react-router';
 import { BackupPage } from './pages/Backup';
 import { CategoriesPage } from './pages/Categories';
 import { DevicesPage } from './pages/Devices';
+import { PeersSection } from './pages/Pairing';
 import { PlaylistDetailPage } from './pages/PlaylistDetail';
 import { PlaylistsPage } from './pages/Playlists';
 import { ResearchDetailPage } from './pages/ResearchDetail';
@@ -89,7 +90,14 @@ export function App(props: { extraNav?: NavItem[]; extraRoutes?: ExtraRoute[] })
           <Route path="/playlists" element={<PlaylistsPage />} />
           <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
           <Route path="/backup" element={<BackupPage />} />
-          <Route path="/devices" element={<DevicesPage />} />
+          <Route
+            path="/devices"
+            element={
+              <DevicesPage>
+                <PeersSection />
+              </DevicesPage>
+            }
+          />
           <Route path="/settings" element={<SettingsPage />} />
           {props.extraRoutes?.map((r) => (
             <Route key={r.path} path={r.path} element={r.element} />

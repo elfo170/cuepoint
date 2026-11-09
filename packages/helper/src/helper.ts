@@ -32,6 +32,8 @@ export type LocalRequest =
 export interface HelperEvents {
   ops: [count: number];
   changed: [];
+  peers: [];
+  approval: [peer: { device_id: string; name: string }];
 }
 
 export const PULL_PAGE = 200;
@@ -44,6 +46,8 @@ export const PULL_PAGE = 200;
 export class Helper extends EventEmitter<HelperEvents> {
   readonly db: HelperDb;
   keys!: Keys;
+  /** Porta efetiva do servidor na LAN (definida quando ele sobe). */
+  portProvider?: () => number;
   private handlers = new Map<
     string,
     (req: Record<string, unknown>) => Promise<unknown> | unknown
@@ -114,7 +118,7 @@ export class Helper extends EventEmitter<HelperEvents> {
       identity: this.identity ?? null,
       ops: this.db.count(),
       vv: this.db.versionVector(),
-      port: this.opts.port,
+      port: this.portProvider?.() ?? this.opts.port,
       certFp: this.keys?.certFp ?? null,
       publicKey: this.keys?.publicKeyB64 ?? null,
       dataDir: this.opts.dataDir,
