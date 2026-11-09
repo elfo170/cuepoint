@@ -24,7 +24,13 @@ afterEach(async () => {
 });
 
 async function daemon(dataDir = tmp()) {
-  const d = await startDaemon({ command: 'daemon', dataDir, port: 0, pipe: pipeName() });
+  const d = await startDaemon({
+    command: 'daemon',
+    dataDir,
+    port: 0,
+    pipe: pipeName(),
+    mdns: false,
+  });
   running.push(d);
   return d;
 }

@@ -431,7 +431,8 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 12 | Concluída — NotificationListenerService + MediaSession (filtra o app do SoundCloud; opção "ler outros players"), URN pela MediaSession ou pela página da faixa, compartilhar → CuePoint, faixa manual, notificação persistente com ✓/✗/Categorias. Validado no emulador (Android 16): ✓/✗ funcionam com a tela bloqueada; o seletor de categorias pede desbloqueio (regra do sistema). Player de teste só no build debug |
 | 7 | Concluída — pacote `helper` (Node 22, `node:sqlite`): réplica do log, identidade (ECDSA P-256 + certificado TLS autoassinado), IPC por named pipe, host de Native Messaging (inicia o serviço via WMI, fora do job do Chrome), backups em %LOCALAPPDATA%; extensão: vínculo com o serviço, sincronização local com compactação das operações não enviadas, página Dispositivos; `npm run helper:install` / `helper:uninstall`; e2e com Native Messaging real no Chromium do Playwright |
 | 8 | Concluída — servidor HTTPS na LAN (certificado fixado), requisições assinadas (ECDSA P-256, janela de tempo, anti-replay), pareamento por QR/código de uso único (5 min) com código de verificação de 6 dígitos e confirmação no PC, política por aparelho (automática / pedir aprovação), revogação avisada ao par; biblioteca → Dispositivos (QR, confirmação, política, revogação, aprovação); e2e com Native Messaging real |
-| 9–10, 13–15 | Pendente |
+| 9 | Concluída — descoberta mDNS/DNS-SD (`_cuepoint._tcp`, id no TXT) com atualização de endereço dos pares, agendador (após alterações, a cada 5 min e ao descobrir um par), aprovação para pares `ask`, histórico em `sync_runs`, compactação das operações não enviadas antes do envio |
+| 10, 13–15 | Pendente |
 
 **Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
 
