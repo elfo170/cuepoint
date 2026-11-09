@@ -84,6 +84,8 @@ export class BackgroundHandler {
       case 'backup:reschedule':
         await this.backups?.schedule();
         return null;
+      default:
+        return null;
     }
   }
 }

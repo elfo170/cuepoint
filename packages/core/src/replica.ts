@@ -1,3 +1,4 @@
+import { compactOps, rebuildFromLog } from './compaction';
 import { HlcClock } from './hlc';
 import { applyOp, baseFor, conflictFields } from './merge';
 import {
@@ -64,7 +65,9 @@ export interface ConflictInfo {
  */
 export class Replica {
   readonly records = new Map<string, EntityRecord>();
-  readonly log: Op[] = [];
+  log: Op[] = [];
+  /** Maior seq próprio já enviado a algum aparelho (não pode mais ser compactado). */
+  sentSeq = 0;
   readonly vv: VersionVector = {};
   readonly clock: HlcClock;
   private seq = 0;
@@ -140,6 +143,26 @@ export class Replica {
       applied += 1;
     }
     return applied;
+  }
+
+  /** Registra que as operações próprias até `seq` foram enviadas. */
+  markSent(seq: number): void {
+    this.sentSeq = Math.max(this.sentSeq, seq);
+  }
+
+  /** Compacta as operações próprias ainda não enviadas. Retorna quantas operações sumiram. */
+  compactPending(): number {
+    const pending = this.log.filter((o) => o.origin === this.deviceId && o.seq > this.sentSeq);
+    if (pending.length < 2) return 0;
+    const compacted = compactOps(pending, this.sentSeq + 1);
+    const pendingIds = new Set(pending.map((o) => o.op_id));
+    this.log = [...this.log.filter((o) => !pendingIds.has(o.op_id)), ...compacted];
+    const { records } = rebuildFromLog(this.log);
+    this.records.clear();
+    for (const [k, v] of records) this.records.set(k, v);
+    this.seq = this.sentSeq + compacted.length;
+    this.vv[this.deviceId] = this.seq;
+    return pending.length - compacted.length;
   }
 
   /** Operações que faltam para quem tem o vetor `vv`. */

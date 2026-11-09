@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "canonical": {
+    "method": "POST",
+    "path": "/v1/sync/pull",
+    "timestamp": "1767225600000",
+    "nonce": "n0nce",
+    "body": "{\"vv\":{}}",
+    "message": "POST\n/v1/sync/pull\n1767225600000\nn0nce\n9434b7642afc012679a53bda4b86d3bf6fd9e90c7bfdef053ee79774f2b5b29a"
+  },
+  "pairingCode": {
+    "token": "tok123",
+    "keyA": "KEY-A",
+    "keyB": "KEY-B",
+    "code": "722207"
+  },
+  "pairingUri": "cuepoint://pair?v=1&d=aaaaaaaa-0000-4000-8000-00000000000a&n=PC+do+est%C3%BAdio&a=192.168.0.10&p=47800&f=abababababababababababababababababababababababababababababababab&k=MFkw&t=tok123",
+  "signature": {
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEoDwQuZQgD88R2Vy3C6HRhrNbgOPaeA/Npc1jQ0Pg3iB3y+D3zvk13kGKAX/qT5wq75agGN1jTmXt9aVtrm9CgQ==",
+    "signature": "MEUCIGUjz9PxgpnCfjYs0w6c35oHvoNmWay+3kjgm1U1EVG+AiEAtR1euHwIh5ocZFDbDiadNuhJlUXexV/DbxWUFF17hXs="
+  }
+}

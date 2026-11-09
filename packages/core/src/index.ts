@@ -8,3 +8,5 @@ export * from './merge';
 export * from './replica';
 export * from './fractional';
 export * from './backup';
+export * from './protocol';
+export * from './compaction';

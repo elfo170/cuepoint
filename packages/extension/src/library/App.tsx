@@ -1,6 +1,7 @@
 import {
   DatabaseBackup,
   FolderSearch,
+  MonitorSmartphone,
   ListMusic,
   ListOrdered,
   Music2,
@@ -11,6 +12,7 @@ import type { ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes } from 'react-router';
 import { BackupPage } from './pages/Backup';
 import { CategoriesPage } from './pages/Categories';
+import { DevicesPage } from './pages/Devices';
 import { PlaylistDetailPage } from './pages/PlaylistDetail';
 import { PlaylistsPage } from './pages/Playlists';
 import { ResearchDetailPage } from './pages/ResearchDetail';
@@ -31,6 +33,7 @@ export const NAV: NavItem[] = [
   { to: '/categories', label: 'Categorias', icon: <Tags size={16} aria-hidden /> },
   { to: '/playlists', label: 'Playlists', icon: <ListOrdered size={16} aria-hidden /> },
   { to: '/backup', label: 'Backup', icon: <DatabaseBackup size={16} aria-hidden /> },
+  { to: '/devices', label: 'Dispositivos', icon: <MonitorSmartphone size={16} aria-hidden /> },
   { to: '/settings', label: 'Configurações', icon: <Settings size={16} aria-hidden /> },
 ];
 
@@ -86,6 +89,7 @@ export function App(props: { extraNav?: NavItem[]; extraRoutes?: ExtraRoute[] })
           <Route path="/playlists" element={<PlaylistsPage />} />
           <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
           <Route path="/backup" element={<BackupPage />} />
+          <Route path="/devices" element={<DevicesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           {props.extraRoutes?.map((r) => (
             <Route key={r.path} path={r.path} element={r.element} />

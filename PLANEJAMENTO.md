@@ -429,7 +429,8 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 6 | Concluída — configurações (nome do aparelho, estado do log), acessibilidade (foco visível, aria-live), mensagens de erro do widget, suíte e2e com os 12 critérios do PRD §18 (latência medida: ~40–90 ms até gravar no IndexedDB), README de instalação e uso. **MVP Chrome (P0) concluído.** |
 | 11 | Concluída — `:core` Kotlin (ids, HLC, mesclagem, réplica, chaves fracionárias) com paridade comprovada pelos mesmos `spec/vectors` do TypeScript; Room (tabela genérica com o registro JSON idêntico ao do Chrome + log + conflitos); curadoria, playlists e telas Compose (Curar com faixa manual, Pesquisas, Músicas, Categorias, Playlists, Configurações) |
 | 12 | Concluída — NotificationListenerService + MediaSession (filtra o app do SoundCloud; opção "ler outros players"), URN pela MediaSession ou pela página da faixa, compartilhar → CuePoint, faixa manual, notificação persistente com ✓/✗/Categorias. Validado no emulador (Android 16): ✓/✗ funcionam com a tela bloqueada; o seletor de categorias pede desbloqueio (regra do sistema). Player de teste só no build debug |
-| 7–10, 13–15 | Pendente |
+| 7 | Concluída — pacote `helper` (Node 22, `node:sqlite`): réplica do log, identidade (ECDSA P-256 + certificado TLS autoassinado), IPC por named pipe, host de Native Messaging (inicia o serviço via WMI, fora do job do Chrome), backups em %LOCALAPPDATA%; extensão: vínculo com o serviço, sincronização local com compactação das operações não enviadas, página Dispositivos; `npm run helper:install` / `helper:uninstall`; e2e com Native Messaging real no Chromium do Playwright |
+| 8–10, 13–15 | Pendente |
 
 **Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
 

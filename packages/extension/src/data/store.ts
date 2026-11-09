@@ -3,6 +3,9 @@ import {
   buildLocalOp,
   isNoopWrite,
   CausalityError,
+  compactOps,
+  ENTITY_TYPES,
+  rebuildFromLog,
   conflictId,
   HlcClock,
   hlcToIso,
@@ -255,6 +258,75 @@ export class Store {
   async opsSince(vv: VersionVector): Promise<Op[]> {
     const rows = await this.db.sync_events.toArray();
     return opsMissingFrom(rows, vv).map((op) => toOp(op as SyncEventRow));
+  }
+
+  /** Marca operações próprias como enviadas (não podem mais ser compactadas). */
+  async markSent(ops: Op[]): Promise<void> {
+    await this.init();
+    const own = ops.filter((o) => o.origin === this.deviceId).map((o) => o.op_id);
+    if (!own.length) return;
+    await this.db.sync_events
+      .where('op_id')
+      .anyOf(own)
+      .modify({ synchronization_status: 'local_sent' });
+  }
+
+  /**
+   * Compacta as operações próprias ainda não enviadas (opção B): várias operações do mesmo
+   * registro viram uma, com o estado final. Recalcula os registros a partir do log.
+   * Retorna quantas operações deixaram de existir.
+   */
+  async compactPending(): Promise<number> {
+    const { device } = await this.init();
+    const removed = await this.db.transaction('rw', this.db.writeTables, async () => {
+      const pending = (
+        await this.db.sync_events.where('synchronization_status').equals('local_pending').toArray()
+      )
+        .filter((e) => e.origin === device.id)
+        .sort((a, b) => a.seq - b.seq);
+      if (pending.length < 2) return 0;
+      const fromSeq = pending[0]!.seq;
+      const later = await this.db.sync_events
+        .where('[origin+seq]')
+        .between([device.id, fromSeq], [device.id, Infinity])
+        .count();
+      if (later !== pending.length) return 0; // há operação enviada depois de uma pendente: não mexe
+      const compacted = compactOps(pending.map(toOp), fromSeq);
+      if (compacted.length === pending.length) return 0;
+      await this.db.sync_events.bulkDelete(pending.map((p) => p.op_id));
+      await this.db.sync_events.bulkAdd(
+        compacted.map((op) => ({
+          ...op,
+          device_id: op.origin,
+          timestamp: hlcToIso(op.hlc),
+          synchronization_status: 'local_pending' as const,
+        })),
+      );
+      const all = (await this.db.sync_events.toArray()).map(toOp);
+      const { records, conflicts } = rebuildFromLog(all);
+      for (const type of ENTITY_TYPES) await this.db.entityTable(type).clear();
+      for (const [key, rec] of records) {
+        await this.db.entityTable(key.split(':')[0] as EntityType).put(rec);
+      }
+      await this.db.conflicts.clear();
+      for (const c of conflicts) {
+        await this.db.conflicts.put({
+          id: conflictId(c.entity_type, c.entity_id, c.field),
+          entity_type: c.entity_type as EntityType,
+          entity_id: c.entity_id,
+          field: c.field,
+          created_at: new Date().toISOString(),
+        });
+      }
+      const clock = (await this.db.meta.get('clock'))?.value as ClockState;
+      await this.db.meta.put({
+        key: 'clock',
+        value: { ...clock, seq: fromSeq + compacted.length - 1 },
+      });
+      return pending.length - compacted.length;
+    });
+    if (removed) this.emit(new Set(ENTITY_TYPES));
+    return removed;
   }
 
   private async applyAndLog(op: Op, status: SyncEventRow['synchronization_status']) {

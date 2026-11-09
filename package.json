@@ -6,7 +6,8 @@
   "type": "module",
   "workspaces": [
     "packages/core",
-    "packages/extension"
+    "packages/extension",
+    "packages/helper"
   ],
   "engines": {
     "node": ">=22"
@@ -21,7 +22,9 @@
     "e2e": "npm run e2e -w @cuepoint/extension",
     "android": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gradle.ps1",
     "android:check": "npm run android -- test assembleDebug",
-    "dev": "npm run dev -w @cuepoint/extension"
+    "dev": "npm run dev -w @cuepoint/extension",
+    "helper:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-helper.ps1",
+    "helper:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-helper.ps1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

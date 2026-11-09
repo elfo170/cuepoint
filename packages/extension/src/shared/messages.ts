@@ -25,6 +25,9 @@ export type Request =
   | { type: 'backup:run'; reason: 'manual' | 'pre-restore' }
   | { type: 'backup:reschedule' }
   | { type: 'store:reset' }
+  | { type: 'helper:status' }
+  | { type: 'helper:sync' }
+  | { type: 'helper:request'; req: Record<string, unknown> }
   | { type: 'ping' };
 
 export type Response<T = unknown> = { ok: true; data: T } | { ok: false; error: string };

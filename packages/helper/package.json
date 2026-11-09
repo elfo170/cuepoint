@@ -1,0 +1,21 @@
+{
+  "name": "@cuepoint/helper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Serviço auxiliar do CuePoint no Windows: Native Messaging, réplica do log e sincronização na LAN",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "dependencies": {
+    "@cuepoint/core": "^0.1.0",
+    "@peculiar/x509": "^3.1.0",
+    "bonjour-service": "^1.4.4",
+    "reflect-metadata": "^0.2.2"
+  }
+}
