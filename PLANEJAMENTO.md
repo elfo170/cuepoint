@@ -434,6 +434,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 9 | Concluída — descoberta mDNS/DNS-SD (`_cuepoint._tcp`, id no TXT) com atualização de endereço dos pares, agendador (após alterações, a cada 5 min e ao descobrir um par), aprovação para pares `ask`, histórico em `sync_runs`, compactação das operações não enviadas antes do envio |
 | 13 | Concluída — Android como cliente do serviço do PC: chaves ECDSA, HTTPS com certificado fixado, requisições assinadas, pareamento por QR (zxing) / código colado / link `cuepoint://pair`, código de verificação, adoção do usuário do PC quando o celular está vazio, sync pull/push em lotes com compactação das operações não enviadas, descoberta NSD, WorkManager (15 min), política por aparelho com aprovação via notificação, revogação; e2e real PC ⇄ emulador (`CUEPOINT_ANDROID_E2E=1 npm run test:android -w @cuepoint/helper`). O celular não atua como servidor (decisão desta sprint: PC ⇄ celular e PC ⇄ PC cobrem o uso; celular ⇄ celular fica para depois) |
 | Ajustes Android (pós-13) | Concluídos, validados no emulador; **notificação na tela bloqueada do HyperOS ainda não resolvida** (ver abaixo e a seção "Feature: cartão espelho"). Saúde do serviço de leitura: `ListenerHealth` (`requestRebind`, religar o componente), reconexão ao abrir o app, cartão de configuração (leitura desconectada, economia de bateria, início automático Xiaomi, permissão de notificações). Notificação de curadoria reescrita como **cartão de mídia** com sessão própria (`CurationMediaSession`, sempre PAUSED, botões como ações personalizadas da sessão: ✗, ✓, etiqueta, ›) e canal `curation_v5`, mantida por serviço em primeiro plano (`specialUse`); ícones vetoriais (PRD §9.3); cursor de categorias nos dois sentidos (`AppContainer`) com teste; o app nunca lê a própria sessão. A notificação comum anterior (RemoteViews, chips) foi removida |
+| Feature F (pós-13) | Planejada; F1 aguardando execução — ver "Feature: notificação com serviço em primeiro plano e layout próprio" |
 | 10, 14, 15 | Pendente |
 
 **Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
@@ -454,7 +455,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 
 ## Feature: cartão espelho (Android, tela bloqueada)
 
-**Status: planejada, aguardando autorização para iniciar a Sprint E1.** Nada desta seção foi commitado.
+**Status: suspensa.** Nada desta seção foi implementado. Fica em espera até o resultado da F1 da feature "notificação com serviço em primeiro plano e layout próprio" (seção abaixo).
 
 ### Contexto
 
@@ -490,3 +491,60 @@ No Redmi Note 14 Pro 5G (HyperOS, Android 15) a notificação de curadoria comum
 | O usuário perde os controles do cartão do SoundCloud | Espelhados na E2 (progresso, play/pause, próxima, anterior) |
 
 Plano detalhado: `C:\Users\Leo\.claude\plans\analise-o-prd-na-lucky-reef.md` (arquivo interno do plano, fora do repositório).
+
+## Feature: notificação com serviço em primeiro plano e layout próprio
+
+**Status: planejada (F1 aguardando execução).** Nada desta seção foi implementado nem commitado. Enquanto não houver resultado da F1, o "cartão espelho" acima fica suspenso.
+
+### Contexto
+
+A notificação de curadoria some da tela bloqueada do HyperOS (Redmi Note 14 Pro 5G) quando chega outra notificação. Ajustes de canal, ordem, id e som não resolveram, e o cartão de mídia próprio sofre com o limite de um cartão por vez. Esta feature testa outra hipótese: um **serviço em primeiro plano dedicado** com **notificação de layout customizado** (`RemoteViews`) é tratado de forma diferente pelo filtro do sistema. Mesmo que o filtro não mude, há ganho de conteúdo (capa, estados visuais, mais botões).
+
+Referências (cópias locais, não versionadas; o `.gitignore` as exclui — alteração ainda não commitada):
+- `foreground-services.md` (Medium, Ali Khavari Khorasani): serviço em primeiro plano, canal, manifesto, `foregroundServiceType`.
+- `custom-notif-layout.md` (Medium, Adalberto Plaza): layout com `RemoteViews`, sem ConstraintLayout, estilos `Compat`, fallback com `BigPictureStyle`.
+
+Os artigos são de antes do Android 12. Por isso o plano usa `DecoratedCustomViewStyle` e as regras atuais de serviço em primeiro plano.
+
+### O que já existe no projeto
+
+- **Serviço em primeiro plano:** `CurationNotification.show` chama `startForeground(1001, …, SPECIAL_USE)` dentro do `MediaListenerService`. O manifesto já declara `FOREGROUND_SERVICE_SPECIAL_USE`. Não há serviço dedicado.
+- **Canal:** `curation_v5`, criado sob demanda em `ensureChannel`.
+- **Layout `RemoteViews`:** não existe (`res/layout` ausente).
+- **Reaproveitável:** `CurationMediaSession` (cartão de mídia) e `CurationActionReceiver` (ações ✗ ✓ e cursor de categorias).
+
+### Abordagem
+
+- `CurationForegroundService` é o dono da notificação 1001. O `MediaListenerService` o inicia e para com intents START/UPDATE/STOP.
+- `CurationRemoteViews` monta os layouts colapsado e expandido. Os botões usam `setOnClickPendingIntent` com o `PendingIntent` de `CurationNotification.action()`.
+- `ArtworkLoader` decodifica a capa fora da thread principal, reduz a ~256 px e mantém cache de uma entrada.
+- Layouts só com `LinearLayout`, `FrameLayout`, `ImageView` e `TextView` (sem ConstraintLayout), com `TextAppearance.Compat.Notification.*` e os ícones `ic_media_*` (sem texto nos botões). Colapsado ≤ 64 dp; expandido ≤ 256 dp.
+- Estilo: `DecoratedCustomViewStyle`. A variante sem estilo entra como A/B na F1.
+- Tipo do serviço: `mediaPlayback` ou `specialUse`, por constante e flag de debug.
+- Fallback: falha ao montar o layout ou opção desligada → notificação atual (`MediaStyle` + `CurationMediaSession`), que continua existindo.
+- Não alterar: `CurationActionReceiver`, cursor de categorias, sync.
+
+### Sprints (um commit por sprint, sem push)
+
+| Sprint | Escopo | Pronto quando | Commit |
+|---|---|---|---|
+| F1 | **Experimento go/no-go.** Serviço dedicado + layout colapsado mínimo (capa, título, artista, ✗ ✓ ‹ etiqueta ›). Variantes A/B por flag de debug. Canal criado no `CuePointApp`. | Celular: (1) notificação fica na tela bloqueada após chegar o WhatsApp, (2) sobrevive à troca de faixa, (3) volta ao ligar a tela, (4) botões funcionam bloqueado. Se (1)–(3) falharem em todas as variantes, **para**, registra o resultado aqui e aguarda decisão do usuário. | `feat: tenta manter a notificação de curadoria como serviço em primeiro plano com layout próprio` |
+| F2 | **Layout completo.** Colapsado e expandido; estados (✓/✗ ativos, categoria sob o cursor, "provisória", sem pesquisa); capa; claro/escuro; fallback automático. | Emulador mostra os dois tamanhos nos estados certos (claro e escuro); testes de montagem dos `RemoteViews`. | `feat: monta o layout customizado da notificação de curadoria com capa e estados` |
+| F3 | **Robustez e configuração.** Ciclo de vida (listener, `onTaskRemoved`, rebind); `ForegroundServiceStartNotAllowedException`; notificação dispensada no Android 14+ (republicar); trava de 1 publicação/s; republicar ao ligar a tela; opção "Estilo da notificação" (Layout próprio / Cartão de mídia) nas configurações. | Testes Robolectric de ciclo de vida e troca de estilo; usuário valida no celular. | `feat: estabiliza o serviço da notificação e adiciona a opção de estilo` |
+| F4 | **Fechamento.** README do Android, esta seção, checklist no celular (play, pausa, troca de faixa, WhatsApp, bloquear/desbloquear, ✗ ✓ etiqueta ›, remover pelos recentes). | `npm run android -- assembleDebug testDebugUnitTest` verde e checklist aprovado. | `docs: documenta a notificação com serviço em primeiro plano e fecha a feature` |
+
+### Riscos e contingência
+
+| Risco | Contingência |
+|---|---|
+| O filtro do HyperOS independe de serviço em primeiro plano e de layout | F1 detecta. No no-go: informar o usuário e aguardar decisão. Não retomar o cartão espelho nem o tile sem nova decisão. |
+| `RemoteViews` ruim em alguma ROM | Fallback para a notificação atual; opção nas configurações. |
+| Serviço não pode iniciar em segundo plano (Android 12+) | `try/catch` e caminho atual no listener. |
+| `mediaPlayback` sem player real | Só afeta a política da Play Store (APK é distribuição manual). Se o sistema reclamar, usar `specialUse`. |
+| Bitmap grande estoura o limite do `RemoteViews` | Redução para ~256 px e cache de uma entrada. |
+
+### Verificação
+
+- `npm run android -- assembleDebug testDebugUnitTest` (com `JAVA_HOME` apontando para o JBR).
+- Emulador (Android 16): conferir layouts e ações visualmente; `adb` somente do pacote do CuePoint, em modo leitura.
+- Celular real (HyperOS): só o usuário olha a tela; critérios da F1 e checklist da F4.

@@ -23,3 +23,6 @@ captures/
 # Segredos locais
 .env
 *.pem
+
+custom-notif-layout.md
+foreground-services.md
