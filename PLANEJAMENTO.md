@@ -434,7 +434,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 9 | Concluída — descoberta mDNS/DNS-SD (`_cuepoint._tcp`, id no TXT) com atualização de endereço dos pares, agendador (após alterações, a cada 5 min e ao descobrir um par), aprovação para pares `ask`, histórico em `sync_runs`, compactação das operações não enviadas antes do envio |
 | 13 | Concluída — Android como cliente do serviço do PC: chaves ECDSA, HTTPS com certificado fixado, requisições assinadas, pareamento por QR (zxing) / código colado / link `cuepoint://pair`, código de verificação, adoção do usuário do PC quando o celular está vazio, sync pull/push em lotes com compactação das operações não enviadas, descoberta NSD, WorkManager (15 min), política por aparelho com aprovação via notificação, revogação; e2e real PC ⇄ emulador (`CUEPOINT_ANDROID_E2E=1 npm run test:android -w @cuepoint/helper`). O celular não atua como servidor (decisão desta sprint: PC ⇄ celular e PC ⇄ PC cobrem o uso; celular ⇄ celular fica para depois) |
 | Ajustes Android (pós-13) | Concluídos, validados no emulador; **notificação na tela bloqueada do HyperOS ainda não resolvida** (ver abaixo e a seção "Feature: cartão espelho"). Saúde do serviço de leitura: `ListenerHealth` (`requestRebind`, religar o componente), reconexão ao abrir o app, cartão de configuração (leitura desconectada, economia de bateria, início automático Xiaomi, permissão de notificações). Notificação de curadoria reescrita como **cartão de mídia** com sessão própria (`CurationMediaSession`, sempre PAUSED, botões como ações personalizadas da sessão: ✗, ✓, etiqueta, ›) e canal `curation_v5`, mantida por serviço em primeiro plano (`specialUse`); ícones vetoriais (PRD §9.3); cursor de categorias nos dois sentidos (`AppContainer`) com teste; o app nunca lê a própria sessão. A notificação comum anterior (RemoteViews, chips) foi removida |
-| Feature F (pós-13) | Planejada; F1 aguardando execução — ver "Feature: notificação com serviço em primeiro plano e layout próprio" |
+| Feature F (pós-13) | **No-go na F1** (10/11/2026, celular real) — ver "Feature: notificação com serviço em primeiro plano e layout próprio". Próxima tentativa registrada: "Notificações em foco (HyperOS)" |
 | 10, 14, 15 | Pendente |
 
 **Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
@@ -455,7 +455,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 
 ## Feature: cartão espelho (Android, tela bloqueada)
 
-**Status: suspensa.** Nada desta seção foi implementado. Fica em espera até o resultado da F1 da feature "notificação com serviço em primeiro plano e layout próprio" (seção abaixo).
+**Status: suspensa.** Nada desta seção foi implementado. A F1 da feature "notificação com serviço em primeiro plano e layout próprio" deu no-go; a próxima tentativa registrada é "Notificações em foco (HyperOS)" (seções abaixo). Esta seção só volta por decisão do usuário.
 
 ### Contexto
 
@@ -494,7 +494,7 @@ Plano detalhado: `C:\Users\Leo\.claude\plans\analise-o-prd-na-lucky-reef.md` (ar
 
 ## Feature: notificação com serviço em primeiro plano e layout próprio
 
-**Status: planejada (F1 aguardando execução).** Nada desta seção foi implementado nem commitado. Enquanto não houver resultado da F1, o "cartão espelho" acima fica suspenso.
+**Status: no-go na F1 (10/11/2026).** F2–F4 canceladas. O código do experimento (serviço dedicado, layout, seletor de variante no build debug) foi **descartado sem commit**, por decisão do usuário. Resultado em "Resultado da F1", abaixo.
 
 ### Contexto
 
@@ -515,7 +515,7 @@ Os artigos são de antes do Android 12. Por isso o plano usa `DecoratedCustomVie
 
 ### Abordagem
 
-- `CurationForegroundService` é o dono da notificação 1001. O `MediaListenerService` o inicia e para com intents START/UPDATE/STOP.
+- `CurationForegroundService` é o dono da notificação de curadoria com layout próprio (id 1002, separado do 1001 do cartão padrão para que um não remova o outro). O app o inicia com `startForegroundService` e o para com `stopService`.
 - `CurationRemoteViews` monta os layouts colapsado e expandido. Os botões usam `setOnClickPendingIntent` com o `PendingIntent` de `CurationNotification.action()`.
 - `ArtworkLoader` decodifica a capa fora da thread principal, reduz a ~256 px e mantém cache de uma entrada.
 - Layouts só com `LinearLayout`, `FrameLayout`, `ImageView` e `TextView` (sem ConstraintLayout), com `TextAppearance.Compat.Notification.*` e os ícones `ic_media_*` (sem texto nos botões). Colapsado ≤ 64 dp; expandido ≤ 256 dp.
@@ -548,3 +548,50 @@ Os artigos são de antes do Android 12. Por isso o plano usa `DecoratedCustomVie
 - `npm run android -- assembleDebug testDebugUnitTest` (com `JAVA_HOME` apontando para o JBR).
 - Emulador (Android 16): conferir layouts e ações visualmente; `adb` somente do pacote do CuePoint, em modo leitura.
 - Celular real (HyperOS): só o usuário olha a tela; critérios da F1 e checklist da F4.
+
+### Resultado da F1 (10/11/2026) — no-go
+
+Aparelho: Redmi Note 14 Pro 5G (24090RA29G), HyperOS OS2.0.208.0.VOOMIXM, Android 15. Variante testada: **serviço `mediaPlayback` + `DecoratedCustomViewStyle`**.
+
+| Critério | Resultado |
+|---|---|
+| 1. Fica na tela bloqueada após chegar o WhatsApp | ✅ |
+| 2. Sobrevive à troca de faixa | ❌ |
+| 3. Volta ao ligar a tela | ❌ |
+| 4. Botões funcionam bloqueado | ❌ — nenhum botão aparece |
+
+**Evidências (adb, só leitura):**
+- O serviço ficou em primeiro plano (`foregroundId=1002`, `types=0x2` = `mediaPlayback`) e a notificação continuou publicada (`ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE`, `seen=true`) depois da troca de faixa e ao ligar a tela. Quem a esconde é a tela bloqueada, não o app.
+- A interface do sistema classifica a notificação como `DCustomView`, mas mostra só título e texto, mesmo expandida, e não registra erro: **o HyperOS descarta o layout próprio em silêncio**. Com isso, o ganho de conteúdo da feature (capa, botões) também não existe neste aparelho.
+- Descartado: o filtro "mostrar só notificações novas na tela bloqueada" está desligado (`lock_screen_show_only_unseen_notifications=0`).
+
+**Não testadas:** a variante `specialUse` usa o mesmo layout (o descarte seria o mesmo); a variante "sem estilo" é igual à decorada no Android 12+ com `targetSdk` 35 (o sistema decora layouts próprios de qualquer forma).
+
+**Estilo de notificações do HyperOS — falha (testado com autorização do usuário):** com `status_bar_notification_style` alterado de `1` para `0` pelo adb (exige "Depuração USB (Configurações de segurança)" ligada; sem ela o HyperOS recusa a escrita), o layout próprio passa a ser desenhado na cortina e na tela bloqueada — os ícones aparecem —, mas **não funcionam como botões**. O valor original (`1`) foi restaurado logo depois.
+
+**Aprendizado:** neste HyperOS, nem serviço em primeiro plano dedicado nem layout próprio mudam o critério da tela bloqueada. O que muda o tratamento são os mecanismos próprios do sistema (cartão de mídia, notificações em foco).
+
+## Próxima tentativa: notificações em foco (HyperOS)
+
+**Status: registrada, ainda não pesquisada nem planejada.** Começa só quando o usuário autorizar.
+
+### Contexto
+
+O HyperOS 2 tem as **notificações em foco** (Focus Notifications, ligadas à "Hyper Island"): um protocolo da Xiaomi para notificações contínuas exibidas de forma fixa na barra de status, na tela bloqueada e no AOD — exatamente o que a curadoria precisa e que as notificações comuns, com ou sem layout próprio, não conseguem neste aparelho.
+
+**Indícios no aparelho (adb, só leitura):**
+- `notification_focus_protocol=2` (configurações do sistema) e `updatable_focus_notifs=[]`.
+- A interface do sistema tem `FocusCoordinator`, `AodFocusControllerV2` e uma lista `mFocusNotificationDeletedBlackList` (apps do sistema).
+
+### Perguntas a responder na pesquisa
+
+- Onde está a documentação oficial do protocolo (plataforma de desenvolvedores da Xiaomi) e como a notificação é marcada como "em foco" (extras e parâmetros da versão 2 do protocolo).
+- Se apps de terceiros precisam de autorização ou de uma lista liberada pela Xiaomi, ou se basta seguir o protocolo.
+- Se o formato aceita botões de ação (✗ ✓ e categorias) e se eles funcionam com a tela bloqueada.
+- Como a notificação em foco convive com o cartão de mídia do SoundCloud e com as outras notificações.
+
+### Forma de trabalho
+
+- Pesquisa primeiro; depois um experimento go/no-go nos moldes da F1 (variante escolhida no build debug, critérios 1–4 conferidos pelo usuário no celular), reaproveitando o que já existe (`CurationActionReceiver`, cursor de categorias, fallback para o cartão padrão).
+- Em no-go: registrar aqui, informar o usuário e aguardar decisão.
+- **Regras:** `adb` só do pacote do CuePoint e em modo leitura (qualquer escrita fora disso exige autorização explícita); no celular, só o usuário olha a tela.
