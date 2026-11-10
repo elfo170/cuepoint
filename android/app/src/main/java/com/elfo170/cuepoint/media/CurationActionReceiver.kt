@@ -6,20 +6,19 @@ import android.content.Intent
 import com.elfo170.cuepoint.container
 import kotlinx.coroutines.launch
 
-/** Botões do cartão de curadoria: decisão e categorias, sem abrir o app (funciona bloqueado). */
+/** Ações ✓ / ✗ da notificação: registram a decisão sem abrir o app (funciona bloqueado). */
 class CurationActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val app = context.container
+        val value = when (intent.action) {
+            ACTION_APPROVE -> true
+            ACTION_REJECT -> false
+            else -> return
+        }
         val pending = goAsync()
+        val app = context.container
         app.scope.launch {
             try {
-                when (intent.action) {
-                    ACTION_APPROVE -> app.decideCurrent(true)
-                    ACTION_REJECT -> app.decideCurrent(false)
-                    ACTION_CATEGORY_NEXT -> app.moveCategoryCursor(+1)
-                    ACTION_CATEGORY_PREV -> app.moveCategoryCursor(-1)
-                    ACTION_CATEGORY_TOGGLE -> app.toggleCursorCategory()
-                }
+                app.decideCurrent(value)
             } finally {
                 pending.finish()
             }
@@ -29,8 +28,5 @@ class CurationActionReceiver : BroadcastReceiver() {
     companion object {
         const val ACTION_APPROVE = "com.elfo170.cuepoint.APPROVE"
         const val ACTION_REJECT = "com.elfo170.cuepoint.REJECT"
-        const val ACTION_CATEGORY_NEXT = "com.elfo170.cuepoint.CATEGORY_NEXT"
-        const val ACTION_CATEGORY_PREV = "com.elfo170.cuepoint.CATEGORY_PREV"
-        const val ACTION_CATEGORY_TOGGLE = "com.elfo170.cuepoint.CATEGORY_TOGGLE"
     }
 }

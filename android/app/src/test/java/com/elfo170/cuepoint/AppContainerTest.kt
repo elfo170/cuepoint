@@ -40,46 +40,6 @@ class AppContainerTest {
     }
 
     @Test
-    fun categoryCursorWrapsBothWaysAndToggleNeedsApproval() = runBlocking {
-        val app = container()
-        val research = app.curation.createResearch("Latin Bass")
-        app.curation.setActiveResearchId(research.id)
-        val a = app.curation.createCategory("Aaa")
-        val b = app.curation.createCategory("Bbb")
-        val c = app.curation.createCategory("Ccc")
-        withTimeout(5000) { app.snapshot.filter { it.categories.size == 3 }.first() }
-        app.setNowPlaying(TrackInput("Deep Groove", "Fixture Artist", urn = "soundcloud:tracks:1"))
-        val first = app.cursorCategory()!!.id
-        check(first in listOf(a, b, c).map { it.id })
-
-        // volta circular nos dois sentidos
-        app.moveCategoryCursor(-1)
-        val last = app.cursorCategory()!!.id
-        app.moveCategoryCursor(+1)
-        assertEquals(first, app.cursorCategory()!!.id)
-        repeat(3) { app.moveCategoryCursor(+1) }
-        assertEquals(first, app.cursorCategory()!!.id)
-        app.moveCategoryCursor(-1)
-        assertEquals(last, app.cursorCategory()!!.id)
-        app.moveCategoryCursor(+1)
-
-        // sem aprovar, alternar a categoria não faz nada
-        app.toggleCursorCategory()
-        assertEquals(emptyList<String>(), app.currentState.value?.categoryIds.orEmpty())
-
-        app.decideCurrent(true)
-        app.toggleCursorCategory()
-        assertEquals(listOf(first), app.currentState.value?.categoryIds)
-        app.toggleCursorCategory()
-        assertEquals(emptyList<String>(), app.currentState.value?.categoryIds)
-
-        // faixa nova volta o cursor ao início
-        app.moveCategoryCursor(+1)
-        app.setNowPlaying(TrackInput("Outra", "Fixture Artist", urn = "soundcloud:tracks:2"))
-        assertEquals(first, app.cursorCategory()!!.id)
-    }
-
-    @Test
     fun sharedUrlIsResolvedToUrnAndRealMetadata() = runBlocking {
         val app = container()
         app.setNowPlaying(TrackInput("slug", "dj", url = "https://soundcloud.com/dj/slug", source = "share"))

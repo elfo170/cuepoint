@@ -27,22 +27,6 @@ class MediaListenerService : NotificationListenerService() {
 
     private fun component() = ComponentName(this, MediaListenerService::class.java)
 
-    override fun onCreate() {
-        super.onCreate()
-        instance = this
-    }
-
-    override fun onDestroy() {
-        if (instance === this) instance = null
-        super.onDestroy()
-    }
-
-    companion object {
-        /** Serviço ativo (quando o sistema o conectou); usado para manter a notificação em primeiro plano. */
-        @Volatile var instance: MediaListenerService? = null
-            private set
-    }
-
     override fun onListenerConnected() {
         val manager = getSystemService(MediaSessionManager::class.java)
         sessions = manager
@@ -63,7 +47,7 @@ class MediaListenerService : NotificationListenerService() {
 
     private fun attach(list: List<MediaController>) {
         val acceptAny = container.acceptAnyPlayer
-        // nunca lê a sessão do próprio CuePoint (o cartão de curadoria)
+        // nunca lê uma sessão de mídia do próprio CuePoint
         val others = list.filter { it.packageName != packageName }
         val chosen = others.firstOrNull { it.packageName == MediaMetadataParser.SOUNDCLOUD_PACKAGE }
             ?: if (acceptAny) others.firstOrNull() else null

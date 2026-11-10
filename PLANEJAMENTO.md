@@ -433,8 +433,8 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 8 | Concluída — servidor HTTPS na LAN (certificado fixado), requisições assinadas (ECDSA P-256, janela de tempo, anti-replay), pareamento por QR/código de uso único (5 min) com código de verificação de 6 dígitos e confirmação no PC, política por aparelho (automática / pedir aprovação), revogação avisada ao par; biblioteca → Dispositivos (QR, confirmação, política, revogação, aprovação); e2e com Native Messaging real |
 | 9 | Concluída — descoberta mDNS/DNS-SD (`_cuepoint._tcp`, id no TXT) com atualização de endereço dos pares, agendador (após alterações, a cada 5 min e ao descobrir um par), aprovação para pares `ask`, histórico em `sync_runs`, compactação das operações não enviadas antes do envio |
 | 13 | Concluída — Android como cliente do serviço do PC: chaves ECDSA, HTTPS com certificado fixado, requisições assinadas, pareamento por QR (zxing) / código colado / link `cuepoint://pair`, código de verificação, adoção do usuário do PC quando o celular está vazio, sync pull/push em lotes com compactação das operações não enviadas, descoberta NSD, WorkManager (15 min), política por aparelho com aprovação via notificação, revogação; e2e real PC ⇄ emulador (`CUEPOINT_ANDROID_E2E=1 npm run test:android -w @cuepoint/helper`). O celular não atua como servidor (decisão desta sprint: PC ⇄ celular e PC ⇄ PC cobrem o uso; celular ⇄ celular fica para depois) |
-| Ajustes Android (pós-13) | Concluídos, validados no emulador; **notificação na tela bloqueada do HyperOS ainda não resolvida** (ver abaixo e a seção "Feature: cartão espelho"). Saúde do serviço de leitura: `ListenerHealth` (`requestRebind`, religar o componente), reconexão ao abrir o app, cartão de configuração (leitura desconectada, economia de bateria, início automático Xiaomi, permissão de notificações). Notificação de curadoria reescrita como **cartão de mídia** com sessão própria (`CurationMediaSession`, sempre PAUSED, botões como ações personalizadas da sessão: ✗, ✓, etiqueta, ›) e canal `curation_v5`, mantida por serviço em primeiro plano (`specialUse`); ícones vetoriais (PRD §9.3); cursor de categorias nos dois sentidos (`AppContainer`) com teste; o app nunca lê a própria sessão. A notificação comum anterior (RemoteViews, chips) foi removida |
-| Feature F (pós-13) | **No-go na F1** (10/11/2026, celular real) — ver "Feature: notificação com serviço em primeiro plano e layout próprio". Próxima tentativa registrada: "Notificações em foco (HyperOS)" |
+| Ajustes Android (pós-13) | Concluídos. Mantida a **saúde do serviço de leitura**: `ListenerHealth` (`requestRebind`, religar o componente), reconexão ao abrir o app e quando o serviço cai, cartão de configuração (leitura desconectada, economia de bateria, início automático Xiaomi, permissão de notificações); o app nunca lê uma sessão de mídia própria. A parte de notificação deste ajuste (cartão de mídia com sessão própria, serviço em primeiro plano `specialUse`, canal `curation_v5`, ícones `ic_media_*`, cursor de categorias) foi **desfeita** em 10/11/2026 junto com o aborto da feature de notificação (linha abaixo) |
+| Notificação na tela bloqueada (pós-13) | **Abortada** (10/11/2026). Tentativas: cartão de mídia próprio (toma o lugar do cartão do SoundCloud), feature F (no-go na F1) e estilo de notificações do HyperOS (falha); cartão espelho e notificações em foco não serão feitos. A notificação voltou à da Sprint 12/13 (✓, ✗ e Categorias, sem sessão de mídia própria): funciona na cortina; na tela bloqueada do HyperOS some quando chega outra notificação (limitação aceita). Prioridade agora: extensão e app 100% funcionais |
 | 10, 14, 15 | Pendente |
 
 **Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
@@ -446,6 +446,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 - Notificação comum (mesmo em primeiro plano, com ordem, som ou id ajustados) some da tela bloqueada quando chega outra: o filtro está na interface do sistema.
 - Cartão de mídia: o HyperOS mostra um cartão por vez e o último que atualiza fica com o espaço, então o do SoundCloud tomou o lugar do CuePoint. Daí a decisão pelo **cartão espelho** (seção abaixo).
 - O cartão padrão comporta 4 botões personalizados; o seletor de categorias completo exige desbloquear (regra do Android).
+- **Decisão (10/11/2026):** a feature de notificação na tela bloqueada foi abortada para priorizar a extensão e o app funcionando por completo. As seções abaixo ficam como registro histórico.
 
 **Nova ordem (prioridade: app no celular):** 11 → 12 (Android funcionando sozinho) → 7 → 8 → 9 → 13 (sincronização com o Chrome) → 10 → 14 → 15.
 
@@ -455,7 +456,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 
 ## Feature: cartão espelho (Android, tela bloqueada)
 
-**Status: suspensa.** Nada desta seção foi implementado. A F1 da feature "notificação com serviço em primeiro plano e layout próprio" deu no-go; a próxima tentativa registrada é "Notificações em foco (HyperOS)" (seções abaixo). Esta seção só volta por decisão do usuário.
+**Status: abortada (10/11/2026).** Nada desta seção foi implementado. Registro histórico.
 
 ### Contexto
 
@@ -494,7 +495,7 @@ Plano detalhado: `C:\Users\Leo\.claude\plans\analise-o-prd-na-lucky-reef.md` (ar
 
 ## Feature: notificação com serviço em primeiro plano e layout próprio
 
-**Status: no-go na F1 (10/11/2026).** F2–F4 canceladas. O código do experimento (serviço dedicado, layout, seletor de variante no build debug) foi **descartado sem commit**, por decisão do usuário. Resultado em "Resultado da F1", abaixo.
+**Status: abortada após no-go na F1 (10/11/2026).** F2–F4 canceladas. O código do experimento (serviço dedicado, layout, seletor de variante no build debug) foi **descartado sem commit**, por decisão do usuário. Resultado em "Resultado da F1", abaixo.
 
 ### Contexto
 
@@ -571,9 +572,9 @@ Aparelho: Redmi Note 14 Pro 5G (24090RA29G), HyperOS OS2.0.208.0.VOOMIXM, Androi
 
 **Aprendizado:** neste HyperOS, nem serviço em primeiro plano dedicado nem layout próprio mudam o critério da tela bloqueada. O que muda o tratamento são os mecanismos próprios do sistema (cartão de mídia, notificações em foco).
 
-## Próxima tentativa: notificações em foco (HyperOS)
+## Tentativa não realizada: notificações em foco (HyperOS)
 
-**Status: registrada, ainda não pesquisada nem planejada.** Começa só quando o usuário autorizar.
+**Status: abortada antes de começar (10/11/2026)**, junto com a feature de notificação. Fica registrada caso o tema volte.
 
 ### Contexto
 

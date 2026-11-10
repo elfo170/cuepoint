@@ -2,7 +2,6 @@ package com.elfo170.cuepoint
 
 import android.app.Application
 import android.content.Context
-import com.elfo170.cuepoint.data.Category
 import com.elfo170.cuepoint.data.CuePointDatabase
 import com.elfo170.cuepoint.data.Curation
 import com.elfo170.cuepoint.data.Snapshot
@@ -120,7 +119,6 @@ class AppContainer(
             track.artist == previous.artist && (track.url == null || track.url == previous.url)
         ) track.copy(urn = previous.urn, url = track.url ?: previous.url) else track
         if (merged == previous) return
-        if (merged?.title != previous?.title || merged?.artist != previous?.artist) _categoryCursor.value = 0
         _nowPlaying.value = merged
         val url = merged?.url
         if (merged != null && merged.urn == null && url != null) {
@@ -151,37 +149,6 @@ class AppContainer(
         refreshNotification()
     }
 
-    private val _categoryCursor = MutableStateFlow(0)
-
-    private fun activeCategories() = snapshot.value.categories.filter { !it.deleted }
-
-    /** Categoria sob o cursor do cartão de curadoria (null se ainda não há categorias). */
-    fun cursorCategory(): Category? {
-        val list = activeCategories()
-        return if (list.isEmpty()) null else list[_categoryCursor.value.mod(list.size)]
-    }
-
-    /** Move o cursor de categorias com volta circular (+1 próxima, -1 anterior). */
-    fun moveCategoryCursor(delta: Int) {
-        val n = activeCategories().size
-        if (n == 0) return
-        _categoryCursor.value = (_categoryCursor.value + delta).mod(n)
-        refreshNotification()
-    }
-
-    /** Liga/desliga a categoria sob o cursor na faixa atual (só depois de aprovada). */
-    suspend fun toggleCursorCategory() {
-        val category = cursorCategory() ?: return
-        val track = _nowPlaying.value ?: return
-        val researchId = curation.getActiveResearchId() ?: return
-        val t = curation.ensureTrack(track)
-        val state = curation.getTrackState(track, researchId)
-        if (state.decision != true) return
-        curation.setTrackCategory(t.id, researchId, category.id, category.id !in state.categoryIds)
-        _currentState.value = curation.getTrackState(track, researchId)
-        refreshNotification()
-    }
-
     fun refreshNotification() {
         scope.launch {
             notifyMutex.withLock {
@@ -192,7 +159,7 @@ class AppContainer(
                 }
                 val researchId = curation.getActiveResearchId()
                 val name = researchId?.let { id -> snapshot.value.researches.firstOrNull { it.id == id }?.name }
-                CurationNotification.show(context, track, name, _currentState.value, cursorCategory())
+                CurationNotification.show(context, track, name, _currentState.value)
             }
         }
     }
