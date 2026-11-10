@@ -18,7 +18,8 @@ import java.util.Base64
 object Protocol {
     const val VERSION = 1
     const val DEFAULT_PORT = 47800
-    const val SERVICE_TYPE = "_cuepoint._tcp."
+    /** Tipo DNS-SD para o NsdManager: sem o ponto final, que o Android 14+ pode recusar. */
+    const val SERVICE_TYPE = "_cuepoint._tcp"
     const val PULL_LIMIT = 500
     const val HEADER_DEVICE = "x-cuepoint-device"
     const val HEADER_TIMESTAMP = "x-cuepoint-timestamp"

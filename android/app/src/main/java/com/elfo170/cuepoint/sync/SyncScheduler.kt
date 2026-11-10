@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Constraints
@@ -108,26 +109,36 @@ class SyncScheduler(private val context: Context, private val engine: SyncEngine
         val nsd = context.getSystemService(NsdManager::class.java) ?: return
         discovering = true
         val listener = object : NsdManager.DiscoveryListener {
-            override fun onDiscoveryStarted(serviceType: String) = Unit
+            override fun onDiscoveryStarted(serviceType: String) { Log.i(TAG, "descoberta iniciada: $serviceType") }
             override fun onDiscoveryStopped(serviceType: String) { discovering = false }
-            override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) { discovering = false }
+            override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+                Log.w(TAG, "descoberta recusada pelo sistema: $serviceType (erro $errorCode)")
+                discovering = false
+            }
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
             override fun onServiceLost(service: NsdServiceInfo) = Unit
             override fun onServiceFound(service: NsdServiceInfo) {
+                Log.i(TAG, "serviço encontrado: ${service.serviceName}")
                 @Suppress("DEPRECATION")
                 nsd.resolveService(service, object : NsdManager.ResolveListener {
-                    override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) = Unit
+                    override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) {
+                        Log.w(TAG, "falha ao resolver ${info.serviceName} (erro $errorCode)")
+                    }
                     override fun onServiceResolved(info: NsdServiceInfo) {
                         val id = info.attributes["id"]?.toString(Charsets.UTF_8) ?: return
                         @Suppress("DEPRECATION")
                         val host = info.host?.hostAddress ?: return
+                        Log.i(TAG, "serviço resolvido: $host:${info.port}")
                         scope.launch { runCatching { if (engine.seen(id, host, info.port)) syncAll() } }
                     }
                 })
             }
         }
         runCatching { nsd.discoverServices(Protocol.SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, listener) }
-            .onFailure { discovering = false }
+            .onFailure {
+                Log.w(TAG, "não foi possível iniciar a descoberta", it)
+                discovering = false
+            }
     }
 
     /** Sincronização periódica em segundo plano (mínimo do Android: 15 min, com rede). */
@@ -142,6 +153,7 @@ class SyncScheduler(private val context: Context, private val engine: SyncEngine
 
     companion object {
         const val CHANNEL = "sync"
+        private const val TAG = "CuePointSync"
         const val APPROVAL_TTL_MS = 10 * 60 * 1000L
         @Suppress("unused") private val sdk = Build.VERSION.SDK_INT
     }
