@@ -437,7 +437,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | Notificação na tela bloqueada (pós-13) | **Abortada** (10/11/2026). Tentativas: cartão de mídia próprio (toma o lugar do cartão do SoundCloud), feature F (no-go na F1) e estilo de notificações do HyperOS (falha); cartão espelho e notificações em foco não serão feitos. A notificação voltou à da Sprint 12/13 (✓, ✗ e Categorias, sem sessão de mídia própria): funciona na cortina; na tela bloqueada do HyperOS some quando chega outra notificação (limitação aceita). Prioridade agora: extensão e app 100% funcionais |
 | 10, 14, 15 | Pendente |
 
-**Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
+**Checkpoint manual concluído (Sprint 12, 10/11/2026):** celular real (Redmi Note 14 Pro 5G, HyperOS 2) com o app do SoundCloud. A MediaSession traz título, artista e **id da faixa** (URN `soundcloud:tracks:…` em todas as faixas, sem faixas provisórias nem consulta à página). ✓ e Categorias pela notificação gravam a decisão e as categorias (inclusive criar categoria no seletor). A sessão **não** traz URL da página nem da capa: no celular as faixas ficam sem link e sem capa. Notificação na tela bloqueada: limitação aceita (feature abortada).
 
 **Checkpoint manual pendente (Sprint 13):** celular real na mesma Wi-Fi do PC — instalar o serviço (`npm run helper:install`), liberar o Node no firewall, parear pela câmera e conferir a descoberta mDNS.
 

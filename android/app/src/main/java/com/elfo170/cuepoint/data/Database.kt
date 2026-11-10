@@ -151,6 +151,9 @@ interface CuePointDao {
     @Upsert
     suspend fun putMeta(row: MetaRow)
 
+    @Query("DELETE FROM meta WHERE key = :key")
+    suspend fun deleteMeta(key: String)
+
     @Upsert
     suspend fun putUser(row: UserRow)
 

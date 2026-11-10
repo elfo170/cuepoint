@@ -233,6 +233,7 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
 
     suspend fun getMeta(key: String): String? = dao.meta(key)
     suspend fun setMeta(key: String, value: String) = dao.putMeta(MetaRow(key, value))
+    suspend fun deleteMeta(key: String) = dao.deleteMeta(key)
 
     suspend fun renameDevice(name: String) {
         val id = init()

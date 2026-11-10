@@ -95,6 +95,8 @@ class AppContainer(
 
     init {
         scope.launch { acceptAnyPlayer = store.getMeta("media.anyPlayer") == "1" }
+        // Chave local do experimento de notificação abandonado (variante escolhida no build debug).
+        scope.launch { store.deleteMeta("media.notifVariant") }
         // Recalcula o estado e a notificação quando a faixa, a pesquisa ou os dados mudam.
         scope.launch {
             combine(nowPlaying, activeResearchId, snapshot) { t, r, _ -> t to r }.collect { (track, researchId) ->
