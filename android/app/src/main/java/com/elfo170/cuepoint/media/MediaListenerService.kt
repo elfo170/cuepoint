@@ -27,12 +27,28 @@ class MediaListenerService : NotificationListenerService() {
 
     private fun component() = ComponentName(this, MediaListenerService::class.java)
 
+    override fun onCreate() {
+        super.onCreate()
+        instance = this
+    }
+
+    override fun onDestroy() {
+        if (instance === this) instance = null
+        super.onDestroy()
+    }
+
+    companion object {
+        /** Serviço ativo (quando o sistema o conectou); usado para manter a notificação em primeiro plano. */
+        @Volatile var instance: MediaListenerService? = null
+            private set
+    }
+
     override fun onListenerConnected() {
         val manager = getSystemService(MediaSessionManager::class.java)
         sessions = manager
         manager.addOnActiveSessionsChangedListener(sessionsListener, component())
         attach(manager.getActiveSessions(component()))
-        container.notificationsActive = true
+        container.setListenerConnected(true)
         container.refreshNotification()
     }
 
@@ -40,13 +56,17 @@ class MediaListenerService : NotificationListenerService() {
         sessions?.removeOnActiveSessionsChangedListener(sessionsListener)
         controller?.unregisterCallback(callback)
         controller = null
-        container.notificationsActive = false
+        container.setListenerConnected(false)
+        // Se o acesso continua liberado, pede ao sistema para reconectar (evita ficar "mudo").
+        ListenerHealth.requestReconnect(this)
     }
 
     private fun attach(list: List<MediaController>) {
         val acceptAny = container.acceptAnyPlayer
-        val chosen = list.firstOrNull { it.packageName == MediaMetadataParser.SOUNDCLOUD_PACKAGE }
-            ?: if (acceptAny) list.firstOrNull() else null
+        // nunca lê a sessão do próprio CuePoint (o cartão de curadoria)
+        val others = list.filter { it.packageName != packageName }
+        val chosen = others.firstOrNull { it.packageName == MediaMetadataParser.SOUNDCLOUD_PACKAGE }
+            ?: if (acceptAny) others.firstOrNull() else null
         if (chosen?.sessionToken == controller?.sessionToken) return
         controller?.unregisterCallback(callback)
         controller = chosen

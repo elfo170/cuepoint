@@ -433,14 +433,60 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 | 8 | Concluída — servidor HTTPS na LAN (certificado fixado), requisições assinadas (ECDSA P-256, janela de tempo, anti-replay), pareamento por QR/código de uso único (5 min) com código de verificação de 6 dígitos e confirmação no PC, política por aparelho (automática / pedir aprovação), revogação avisada ao par; biblioteca → Dispositivos (QR, confirmação, política, revogação, aprovação); e2e com Native Messaging real |
 | 9 | Concluída — descoberta mDNS/DNS-SD (`_cuepoint._tcp`, id no TXT) com atualização de endereço dos pares, agendador (após alterações, a cada 5 min e ao descobrir um par), aprovação para pares `ask`, histórico em `sync_runs`, compactação das operações não enviadas antes do envio |
 | 13 | Concluída — Android como cliente do serviço do PC: chaves ECDSA, HTTPS com certificado fixado, requisições assinadas, pareamento por QR (zxing) / código colado / link `cuepoint://pair`, código de verificação, adoção do usuário do PC quando o celular está vazio, sync pull/push em lotes com compactação das operações não enviadas, descoberta NSD, WorkManager (15 min), política por aparelho com aprovação via notificação, revogação; e2e real PC ⇄ emulador (`CUEPOINT_ANDROID_E2E=1 npm run test:android -w @cuepoint/helper`). O celular não atua como servidor (decisão desta sprint: PC ⇄ celular e PC ⇄ PC cobrem o uso; celular ⇄ celular fica para depois) |
+| Ajustes Android (pós-13) | Concluídos, validados no emulador; **notificação na tela bloqueada do HyperOS ainda não resolvida** (ver abaixo e a seção "Feature: cartão espelho"). Saúde do serviço de leitura: `ListenerHealth` (`requestRebind`, religar o componente), reconexão ao abrir o app, cartão de configuração (leitura desconectada, economia de bateria, início automático Xiaomi, permissão de notificações). Notificação de curadoria reescrita como **cartão de mídia** com sessão própria (`CurationMediaSession`, sempre PAUSED, botões como ações personalizadas da sessão: ✗, ✓, etiqueta, ›) e canal `curation_v5`, mantida por serviço em primeiro plano (`specialUse`); ícones vetoriais (PRD §9.3); cursor de categorias nos dois sentidos (`AppContainer`) com teste; o app nunca lê a própria sessão. A notificação comum anterior (RemoteViews, chips) foi removida |
 | 10, 14, 15 | Pendente |
 
 **Checkpoint manual pendente (Sprint 12):** celular real com o app do SoundCloud — conferir se a MediaSession traz título/artista (e se traz id da faixa) e o comportamento da notificação na tela bloqueada.
 
 **Checkpoint manual pendente (Sprint 13):** celular real na mesma Wi-Fi do PC — instalar o serviço (`npm run helper:install`), liberar o Node no firewall, parear pela câmera e conferir a descoberta mDNS.
 
+**Ajustes no Android após a Sprint 13 (celular real, Redmi Note 14 Pro 5G, HyperOS):**
+- O HyperOS encerra o app ao deslizá-lo nos recentes e não religa o serviço de leitura sozinho; o início automático (op 10008) e a economia de bateria precisam estar liberados. O app tenta reconectar ao ser aberto.
+- Notificação comum (mesmo em primeiro plano, com ordem, som ou id ajustados) some da tela bloqueada quando chega outra: o filtro está na interface do sistema.
+- Cartão de mídia: o HyperOS mostra um cartão por vez e o último que atualiza fica com o espaço, então o do SoundCloud tomou o lugar do CuePoint. Daí a decisão pelo **cartão espelho** (seção abaixo).
+- O cartão padrão comporta 4 botões personalizados; o seletor de categorias completo exige desbloquear (regra do Android).
+
 **Nova ordem (prioridade: app no celular):** 11 → 12 (Android funcionando sozinho) → 7 → 8 → 9 → 13 (sincronização com o Chrome) → 10 → 14 → 15.
 
 **Ajustes após a Sprint 6:** script `npm run dev` (recompilação automática); teclas digitadas no widget não acionam mais os atalhos do SoundCloud (`keyguard.js` em `document_start`); escritas sem efeito (repetir decisão, categoria, nome ou exclusão) não geram operações.
 
 **Checkpoint manual pendente (Sprint 6):** validar o widget em playlists reais do SoundCloud no Chrome (PRD §19, Fase 1). Apoio: `npm run e2e:soundcloud:live -w @cuepoint/extension`.
+
+## Feature: cartão espelho (Android, tela bloqueada)
+
+**Status: planejada, aguardando autorização para iniciar a Sprint E1.** Nada desta seção foi commitado.
+
+### Contexto
+
+No Redmi Note 14 Pro 5G (HyperOS, Android 15) a notificação de curadoria comum some da tela bloqueada quando chega outra notificação. Ajustes de canal, ordem, id, som e serviço em primeiro plano não resolveram, porque o filtro está na interface do sistema. Um cartão de mídia próprio (sessão `PAUSED`) aparece, mas o HyperOS mostra **um cartão de mídia por vez, e o último que atualiza fica com o espaço**: quando o SoundCloud toca, ele toma o lugar do CuePoint.
+
+**Decisão:** o CuePoint vira o cartão de mídia visível (**cartão espelho**). Ele copia a faixa do SoundCloud, repassa play/pause e demais comandos a ele, e traz ✗ ✓ e categorias em ícones (PRD §9.3). Todo comando recebido, inclusive os botões de fone, volume longo e Bluetooth, é encaminhado ao SoundCloud, então a mudança é transparente.
+
+**Aprendizados já validados:**
+- No Android 13+ os botões do cartão vêm das **ações personalizadas da sessão** (`PlaybackState`), e não das ações da notificação.
+- A sessão precisa ser configurada numa thread com Looper (`Handler(Looper.getMainLooper())`).
+- O cartão padrão comporta **4 botões** personalizados.
+
+**Regras:** `adb` só do pacote do CuePoint e em modo leitura; verificação visual no emulador; no celular, só o usuário olha a tela.
+
+### Sprints (um commit por sprint, sem push)
+
+| Sprint | Escopo | Pronto quando | Commit |
+|---|---|---|---|
+| E1 | **Experimento go/no-go.** Re-publica o cartão do CuePoint (atraso ≈400 ms) a cada evento do SoundCloud (metadados, estado, notificação). Sessão espelha PLAYING/PAUSED e repassa play/pause ao controller do SoundCloud | O usuário confirma no celular: (1) cartão do CuePoint fica visível após play no SoundCloud, (2) troca de faixa não devolve o espaço, (3) notificação do WhatsApp não o tira, (4) play/pause pelo cartão controla o SoundCloud. Se (1)–(3) falharem, **para** e volta à notificação comum + tile | `feat: tenta manter o cartão do CuePoint como player visível na tela bloqueada` |
+| E2 | **Espelho completo.** Título, artista, capa, duração; posição, velocidade e ações reais; comandos play, pause, próxima, anterior e seek repassados; botões de mídia encaminhados ao SoundCloud; encerra o cartão quando a sessão do SoundCloud some | Testes de mapeamento de estado e repasse (controller falso); emulador mostra capa e barra e os comandos chegam ao player de teste | `feat: espelha a reprodução do soundcloud no cartão de mídia do cuepoint` |
+| E3 | **Botões dentro do limite de 4.** Antes de aprovar: ✗ ✓ ⏯ ⏭. Depois de aprovar: ✗ ✓ etiqueta ›. Sem categorias, mantém o primeiro layout. A notificação mantém todas as ações (✗ ✓ ‹ etiqueta › + transporte) | Testes do receptor e do cursor; emulador mostra os botões certos em cada estado; usuário confere no celular | `feat: reorganiza os botões do cartão entre transporte e curadoria` |
+| E4 | **Robustez e configuração.** Atraso + trava (1 publicação/s) + filtro dos eventos que o próprio CuePoint provoca; re-publica ao ligar a tela e ao desbloquear; recuperação do listener; opção "Cartão espelho" ligado/desligado nas configurações (desligado volta à notificação comum); fallback automático se a publicação falhar | Testes de atraso/trava (relógio falso) e de troca de estilo; usuário valida (tela bloqueada, WhatsApp, troca de faixa, ligar a tela) | `feat: estabiliza o cartão espelho e adiciona a opção de estilo nas configurações` |
+| E5 | **Fechamento.** Testes Robolectric do que não depende do HyperOS, README (cartão espelho, opção de estilo, limitação de um cartão por vez), este documento, checklist manual no celular (play, pausa, troca, fone, volume longo, WhatsApp, bloquear/desbloquear, ✗ ✓ etiqueta ›) | `npm run android -- assembleDebug testDebugUnitTest` verde e checklist aprovado | `docs: documenta o cartão espelho e fecha a feature no android` |
+
+### Riscos e contingência
+
+| Risco | Contingência |
+|---|---|
+| O HyperOS escolhe o cartão por outro critério (por exemplo, quem começou a tocar) | A E1 detecta. Plano: notificação comum com ícones e categorias (já implementada) mais um tile no painel de controle |
+| Alternância entre o cartão do SoundCloud e o do CuePoint | Atraso, trava de frequência e re-publicação ao ligar a tela (E4) |
+| O SoundCloud não aceita comandos externos de transporte | O play/pause some do cartão e ficam ✗ ✓ e categorias |
+| Capturar botões de mídia | Tudo é encaminhado ao SoundCloud; se algo falhar, desliga-se `FLAG_HANDLES_MEDIA_BUTTONS` |
+| O usuário perde os controles do cartão do SoundCloud | Espelhados na E2 (progresso, play/pause, próxima, anterior) |
+
+Plano detalhado: `C:\Users\Leo\.claude\plans\analise-o-prd-na-lucky-reef.md` (arquivo interno do plano, fora do repositório).
