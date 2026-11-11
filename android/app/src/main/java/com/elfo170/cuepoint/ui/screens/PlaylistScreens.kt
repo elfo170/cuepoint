@@ -198,7 +198,7 @@ fun PlaylistDetailScreen(playlistId: String, onBack: () -> Unit) {
                 Column {
                     OutlinedTextField(query, { query = it }, label = { Text("Buscar") }, singleLine = true)
                     candidates.forEach { t ->
-                        TrackLine(t, Modifier.fillMaxWidth().clickable {
+                        TrackLine(t, openable = false, modifier = Modifier.fillMaxWidth().clickable {
                             adding = false
                             scope.launch { app.curation.addToPlaylist(playlistId, t.id) }
                         }.padding(vertical = 6.dp))

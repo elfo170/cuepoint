@@ -1,6 +1,10 @@
 package com.elfo170.cuepoint.media
 
 import android.content.ComponentName
+import android.graphics.Bitmap
+import android.util.Log
+import com.elfo170.cuepoint.core.Ids
+import kotlinx.coroutines.launch
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -70,5 +74,35 @@ class MediaListenerService : NotificationListenerService() {
             source = "mediasession",
         ) ?: return
         container.setNowPlaying(track)
+        saveSessionArtwork(m, track.urn)
+    }
+
+    private var loggedTrack: String? = null
+
+    /**
+     * A sessão do SoundCloud não traz endereço de capa, mas costuma trazer a imagem pronta
+     * (ART / ALBUM_ART / DISPLAY_ICON). Ela é reduzida e guardada no cache local, pelo id da faixa.
+     */
+    private fun saveSessionArtwork(m: MediaMetadata, urn: String?) {
+        val key = urn ?: m.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val art = ARTWORK_KEYS.firstNotNullOfOrNull { k -> m.getBitmap(k)?.let { k to it } }
+        if (key != loggedTrack) {
+            loggedTrack = key
+            Log.d(ArtworkCache.TAG, "metadados (${controller?.packageName}): chaves=${m.keySet().sorted()} capa=${art?.let { "${it.first} ${it.second.width}x${it.second.height}" } ?: "nenhuma"}")
+        }
+        if (urn == null || art == null) return
+        val trackId = Ids.trackIdFromUrn(urn)
+        if (container.artwork.hasSession(trackId)) return
+        // copia antes de sair da thread do callback: o bitmap pertence à sessão e pode ser reciclado
+        val copy = runCatching { art.second.copy(Bitmap.Config.ARGB_8888, false) }.getOrNull() ?: return
+        container.scope.launch { container.artwork.saveSession(trackId, copy) }
+    }
+
+    private companion object {
+        val ARTWORK_KEYS = listOf(
+            MediaMetadata.METADATA_KEY_ART,
+            MediaMetadata.METADATA_KEY_ALBUM_ART,
+            MediaMetadata.METADATA_KEY_DISPLAY_ICON,
+        )
     }
 }

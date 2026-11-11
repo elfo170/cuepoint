@@ -8,6 +8,7 @@ import com.elfo170.cuepoint.data.Snapshot
 import com.elfo170.cuepoint.data.Store
 import com.elfo170.cuepoint.data.TrackInput
 import com.elfo170.cuepoint.data.TrackState
+import com.elfo170.cuepoint.media.ArtworkCache
 import com.elfo170.cuepoint.media.CurationNotification
 import com.elfo170.cuepoint.media.UrnResolver
 import com.elfo170.cuepoint.sync.SyncEngine
@@ -50,6 +51,9 @@ class AppContainer(
     // Provisórias daqui cuja definitiva chegou do PC são associadas na própria sincronização.
     val syncEngine = SyncEngine(store, afterReceive = { curation.reconcileProvisional() })
     val sync = SyncScheduler(context, syncEngine, scope)
+
+    /** Capas das faixas: imagem da MediaSession (só neste aparelho) ou `artwork_url` vindo do Chrome. */
+    val artwork = ArtworkCache(java.io.File(context.filesDir, "artwork"))
 
     /** Link/QR de pareamento recebido (cuepoint://pair?...) aguardando a tela de dispositivos. */
     val pendingPairUri = MutableStateFlow<String?>(null)

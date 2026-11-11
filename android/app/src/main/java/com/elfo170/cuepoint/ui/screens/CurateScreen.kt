@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,8 +31,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elfo170.cuepoint.container
+import com.elfo170.cuepoint.core.Ids
 import com.elfo170.cuepoint.data.TrackInput
+import com.elfo170.cuepoint.media.SoundCloudLinks
 import com.elfo170.cuepoint.ui.CategoryChips
+import com.elfo170.cuepoint.ui.OpenInSoundCloudButton
+import com.elfo170.cuepoint.ui.TrackArtwork
 import com.elfo170.cuepoint.ui.DecisionButtons
 import com.elfo170.cuepoint.ui.ProvisionalBadge
 import com.elfo170.cuepoint.ui.ResearchPicker
@@ -77,13 +82,26 @@ fun CurateScreen(extraTop: @Composable () -> Unit = {}) {
                         style = MaterialTheme.typography.bodySmall,
                     )
                 } else {
-                    Text(track.title, style = MaterialTheme.typography.titleLarge)
+                    // Capa e link: os da faixa atual ou, como reserva, os já gravados (ex.: vindos do Chrome).
+                    val trackId = state?.trackId ?: track.urn?.let(Ids::trackIdFromUrn)
+                    val stored = trackId?.let { id -> snapshot.tracks.firstOrNull { it.id == id } }
+                    val url = track.url ?: stored?.url
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(track.artist.ifBlank { "—" }, style = MaterialTheme.typography.bodyMedium)
-                        if (state?.provisional != false && track.urn == null) {
-                            Spacer(Modifier.padding(4.dp))
-                            ProvisionalBadge()
+                        TrackArtwork(trackId, track.artworkUrl ?: stored?.artworkUrl, 72.dp)
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(track.title, style = MaterialTheme.typography.titleLarge)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(track.artist.ifBlank { "—" }, style = MaterialTheme.typography.bodyMedium)
+                                if (state?.provisional != false && track.urn == null) {
+                                    Spacer(Modifier.padding(4.dp))
+                                    ProvisionalBadge()
+                                }
+                            }
                         }
+                    }
+                    if (SoundCloudLinks.canOpen(track.urn, url)) {
+                        OpenInSoundCloudButton(track.urn, url, Modifier.fillMaxWidth())
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(

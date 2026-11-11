@@ -1,6 +1,21 @@
 package com.elfo170.cuepoint.ui
 
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elfo170.cuepoint.container
+import com.elfo170.cuepoint.media.SoundCloudLinks
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -104,12 +119,13 @@ fun CategoryChips(categories: List<Category>, selected: Collection<String>, onTo
     }
 }
 
+/**
+ * Linha de faixa: capa (ou ícone), título, artista e, se [openable], o botão "Abrir no SoundCloud".
+ */
 @Composable
-fun TrackLine(track: Track, modifier: Modifier = Modifier) {
+fun TrackLine(track: Track, modifier: Modifier = Modifier, openable: Boolean = true) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        Surface(shape = RoundedCornerShape(6.dp), color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.size(40.dp)) {
-            Box(contentAlignment = Alignment.Center) { Icon(Icons.Filled.MusicNote, contentDescription = null) }
-        }
+        TrackArtwork(track.id, track.artworkUrl, 40.dp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(track.title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
@@ -121,6 +137,54 @@ fun TrackLine(track: Track, modifier: Modifier = Modifier) {
                 }
             }
         }
+        if (openable && SoundCloudLinks.canOpen(track.urn, track.url)) {
+            OpenInSoundCloudIcon(track.urn, track.url)
+        }
+    }
+}
+
+/**
+ * Capa da faixa: a imagem guardada da MediaSession ou, como reserva, o `artwork_url` sincronizado.
+ * Sem capa, mostra o ícone de nota musical.
+ */
+@Composable
+fun TrackArtwork(trackId: String?, artworkUrl: String?, size: Dp) {
+    val cache = LocalContext.current.container.artwork
+    val version by cache.version.collectAsStateWithLifecycle()
+    val bitmap by produceState(cache.peek(trackId, artworkUrl), trackId, artworkUrl, version) {
+        value = cache.load(trackId, artworkUrl)
+    }
+    Surface(shape = RoundedCornerShape(6.dp), color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.size(size)) {
+        val image = bitmap
+        if (image != null) {
+            Image(image.asImageBitmap(), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+        } else {
+            Box(contentAlignment = Alignment.Center) { Icon(Icons.Filled.MusicNote, contentDescription = null) }
+        }
+    }
+}
+
+private fun openOrWarn(context: Context, urn: String?, url: String?) {
+    if (!SoundCloudLinks.open(context, urn, url)) {
+        Toast.makeText(context, "Instale o app do SoundCloud para abrir esta faixa.", Toast.LENGTH_SHORT).show()
+    }
+}
+
+@Composable
+fun OpenInSoundCloudIcon(urn: String?, url: String?) {
+    val context = LocalContext.current
+    IconButton(onClick = { openOrWarn(context, urn, url) }, modifier = Modifier.size(36.dp)) {
+        Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "Abrir no SoundCloud", modifier = Modifier.size(20.dp))
+    }
+}
+
+@Composable
+fun OpenInSoundCloudButton(urn: String?, url: String?, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    OutlinedButton(onClick = { openOrWarn(context, urn, url) }, modifier = modifier) {
+        Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
+        Text("Abrir no SoundCloud")
     }
 }
 
