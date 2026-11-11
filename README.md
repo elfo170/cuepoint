@@ -59,6 +59,8 @@ as abas do SoundCloud.
    adb install -r android/app/build/outputs/apk/debug/app-debug.apk
    ```
 
+   Para o APK de release assinado, veja [android/README.md](android/README.md).
+
 2. Abra o CuePoint e libere o **acesso às notificações** (para ler a faixa do SoundCloud) e a
    permissão de **notificações**.
 3. Dê play no app do SoundCloud: a notificação do CuePoint mostra a faixa com ✓ / ✗ (funciona com a
@@ -102,6 +104,8 @@ fazer isso manualmente em **Músicas → Identificar pela URL**.
   schema e as referências antes de qualquer alteração, faz um backup de segurança do estado
   atual e substitui tudo numa única transação.
 - Nenhum backup antigo é apagado automaticamente.
+- **Celular:** em **Configurações → Backup e restauração**. Mesmo formato, então um backup do PC restaura
+  no celular e vice-versa. Detalhes em [android/README.md](android/README.md).
 
 ## Estrutura
 

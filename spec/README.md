@@ -10,12 +10,17 @@ ao mesmo resultado.
 | `schema/op.schema.json`       | JSON Schema da operação do log (SyncEvents)                     |
 | `vectors/ids.json`            | Ids determinísticos (UUIDv5) e formato textual do HLC           |
 | `vectors/merge.json`          | Cenários de mesclagem: operações de entrada e estado esperado   |
+| `vectors/backup.json`         | Backup `cuepoint-backup` v1 válido e variantes inválidas        |
+| `vectors/backup-android.json` | Backup gerado pelo app Android (pela suíte Kotlin)              |
 
 Regenerar após uma mudança intencional no modelo ou no motor de mesclagem:
 
 ```powershell
 npm run vectors -w @cuepoint/core
 ```
+
+`backup-android.json` é gerado pelo teste `BackupTest` do Android quando o arquivo não existe:
+apague-o e rode `android\gradlew.bat -p android test` para regenerar.
 
 ## Regras do motor de mesclagem (resumo)
 

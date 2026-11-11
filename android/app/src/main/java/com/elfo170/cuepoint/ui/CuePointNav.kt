@@ -1,6 +1,8 @@
 package com.elfo170.cuepoint.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,6 +50,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.elfo170.cuepoint.container
+import com.elfo170.cuepoint.ui.screens.BackupScreen
 import com.elfo170.cuepoint.ui.screens.CategoriesScreen
 import com.elfo170.cuepoint.ui.screens.ConflictsScreen
 import com.elfo170.cuepoint.ui.screens.CurateScreen
@@ -137,8 +140,13 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
             composable("playlists") { PlaylistsScreen(onOpen = { nav.navigate("playlist/$it") }) }
             composable("playlist/{id}") { PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }) }
             composable("settings") {
-                SettingsScreen(onDevices = { nav.navigate("devices") }, onConflicts = { nav.navigate("conflicts") })
+                SettingsScreen(
+                    onDevices = { nav.navigate("devices") },
+                    onConflicts = { nav.navigate("conflicts") },
+                    onBackup = { nav.navigate("backup") },
+                )
             }
+            composable("backup") { BackupScreen() }
             composable("devices") { DevicesScreen() }
             composable("conflicts") { ConflictsScreen() }
         }
@@ -146,7 +154,7 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
 }
 
 @Composable
-fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}) {
+fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onBackup: () -> Unit = {}) {
     val app = LocalContext.current.container
     val scope = rememberCoroutineScope()
     val ops by app.db.dao().observeEventCount().collectAsStateWithLifecycle(0)
@@ -160,12 +168,13 @@ fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}) {
         deviceId = id.deviceId
         name = app.db.dao().observeDevice(id.deviceId).first()?.device_name ?: id.deviceName
     }
-    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Configurações", style = MaterialTheme.typography.headlineSmall)
         Button(onClick = onDevices, modifier = Modifier.fillMaxWidth()) { Text("Dispositivos e sincronização") }
         OutlinedButton(onClick = onConflicts, modifier = Modifier.fillMaxWidth()) {
             Text(if (conflicts == 0) "Conflitos: nenhum" else "Resolver conflitos ($conflicts)")
         }
+        OutlinedButton(onClick = onBackup, modifier = Modifier.fillMaxWidth()) { Text("Backup e restauração") }
         OutlinedTextField(name, { name = it; saved = false }, label = { Text("Nome do aparelho") }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Button(onClick = { scope.launch { app.store.renameDevice(name); saved = true } }, enabled = name.isNotBlank()) { Text("Salvar") }
         if (saved) Text("Nome salvo.")

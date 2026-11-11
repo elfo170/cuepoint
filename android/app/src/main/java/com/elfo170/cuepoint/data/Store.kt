@@ -2,6 +2,8 @@ package com.elfo170.cuepoint.data
 
 import android.os.Build
 import androidx.room.withTransaction
+import com.elfo170.cuepoint.core.BackupFile
+import com.elfo170.cuepoint.core.Backups
 import com.elfo170.cuepoint.core.CausalityException
 import com.elfo170.cuepoint.core.Compaction
 import com.elfo170.cuepoint.core.EntityType
@@ -20,6 +22,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 data class Identity(val userId: String, val deviceId: String, val deviceName: String)
 
@@ -160,7 +164,10 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
                     touched += op.type
                     count++
                 }
-                dao.putMeta(MetaRow("clock", Merge.json.encodeToString(ClockState(clock.last, state.seq))))
+                // Operações próprias devolvidas por um par (ex.: depois de restaurar um backup antigo):
+                // a sequência local continua depois delas, sem reutilizar números.
+                val ownSeq = maxOf(state.seq, vv[id.deviceId] ?: 0L)
+                dao.putMeta(MetaRow("clock", Merge.json.encodeToString(ClockState(clock.last, ownSeq))))
                 count
             }
         }
@@ -268,6 +275,81 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
         return true
     }
 
+    /** Monta o backup `cuepoint-backup` v1 com todo o conteúdo do banco (formato comum ao Chrome). */
+    suspend fun exportBackup(): JsonObject {
+        val id = init()
+        return mutex.withLock {
+            db.withTransaction {
+                val entities = EntityType.entries.associateWith { t ->
+                    dao.entities(t.key).map { Merge.parseObject(it.json) }.sortedBy { Merge.str(it, "id") }
+                }
+                Backups.create(
+                    entities = entities,
+                    ops = dao.events().map { Merge.json.decodeFromString<Op>(it.json) },
+                    users = dao.users().map { buildJsonObject { put("id", it.id); put("created_at", it.created_at) } },
+                    devices = dao.devices().map(::deviceJson),
+                    conflicts = dao.conflicts().map {
+                        buildJsonObject {
+                            put("id", it.id); put("entity_type", it.entity_type); put("entity_id", it.entity_id)
+                            put("field", it.field); put("created_at", it.created_at)
+                        }
+                    },
+                    settings = buildJsonObject { put("activeResearchId", dao.meta("activeResearchId")?.takeIf(String::isNotEmpty)) },
+                    deviceId = id.deviceId,
+                    userId = id.userId,
+                    nowMs = now(),
+                )
+            }
+        }
+    }
+
+    /**
+     * Restaura um backup já validado, substituindo a biblioteca numa única transação (tudo ou nada).
+     *
+     * Diferente do Chrome, o celular **mantém a própria identidade de aparelho** (id, chaves e
+     * pareamentos ficam como estão) e adota o usuário do backup: assim um backup do PC ou de um
+     * celular antigo não faz dois aparelhos compartilharem o mesmo id. Operações deste aparelho
+     * que vierem no backup continuam suas; as demais entram como recebidas.
+     */
+    suspend fun restore(backup: BackupFile) {
+        val id = init()
+        mutex.withLock {
+            db.withTransaction {
+                dao.clearEntities()
+                dao.clearConflicts()
+                dao.clearEvents()
+                dao.clearUsers()
+                for ((type, records) in backup.entities) records.forEach { dao.upsertEntity(toRow(type, it)) }
+                for (op in backup.ops.sortedBy { it.hlc }) {
+                    val status = if (op.origin == id.deviceId) "local_sent" else "received"
+                    dao.insertEvent(SyncEventRow(op.opId, op.origin, op.seq, op.hlc, op.entityType, op.entityId, op.operation, Hlc.toIso(op.hlc), status, Merge.json.encodeToString(op)))
+                }
+                for (c in backup.conflicts) {
+                    val s = { k: String -> Merge.str(c, k) }
+                    val cid = s("id") ?: continue
+                    dao.upsertConflict(ConflictRow(cid, s("entity_type") ?: continue, s("entity_id") ?: continue, s("field") ?: continue, s("created_at") ?: ""))
+                }
+                for (u in backup.users) {
+                    val uid = Merge.str(u, "id") ?: continue
+                    dao.putUser(UserRow(uid, Merge.str(u, "created_at") ?: Hlc.isoOf(now())))
+                }
+                if (dao.user(backup.userId) == null) dao.putUser(UserRow(backup.userId, Hlc.isoOf(now())))
+                dao.device(id.deviceId)?.let { dao.putDevice(it.copy(user_id = backup.userId)) }
+                dao.putMeta(MetaRow("identity", Merge.json.encodeToString(IdentityMeta(backup.userId, id.deviceId))))
+                val lastHlc = backup.ops.maxOfOrNull { it.hlc }
+                val previous = dao.meta("clock")?.let { Merge.json.decodeFromString<ClockState>(it) } ?: ClockState()
+                val last = listOfNotNull(previous.last, lastHlc).maxOrNull()
+                val ownSeq = backup.ops.filter { it.origin == id.deviceId }.maxOfOrNull { it.seq } ?: 0L
+                dao.putMeta(MetaRow("clock", Merge.json.encodeToString(ClockState(last, ownSeq))))
+                dao.putMeta(MetaRow("activeResearchId", Merge.str(backup.settings, "activeResearchId") ?: ""))
+                // o que cada par "já tem" é recalculado na próxima sincronização
+                dao.deleteMetaPrefix("sync.known.")
+            }
+            identity = null
+        }
+        _changes.tryEmit(EntityType.entries.toSet())
+    }
+
     suspend fun getMeta(key: String): String? = dao.meta(key)
     suspend fun setMeta(key: String, value: String) = dao.putMeta(MetaRow(key, value))
     suspend fun deleteMeta(key: String) = dao.deleteMeta(key)
@@ -281,6 +363,13 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
     }
 
     companion object {
+        fun deviceJson(d: DeviceRow): JsonObject = buildJsonObject {
+            put("id", d.id); put("user_id", d.user_id); put("device_name", d.device_name)
+            put("public_key", d.public_key); put("pairing_status", d.pairing_status); put("sync_policy", d.sync_policy)
+            put("created_at", d.created_at); put("last_sync_at", d.last_sync_at)
+            put("cert_fp", d.cert_fp); put("addresses", d.addresses); put("port", d.port)
+        }
+
         fun toRow(type: EntityType, record: JsonObject) = EntityRow(
             type = type.key,
             id = Merge.str(record, "id")!!,

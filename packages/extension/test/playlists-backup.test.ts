@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { ENTITY_TYPES, parseBackup } from '@cuepoint/core';
 import { describe, expect, it } from 'vitest';
 import { BackupService } from '../src/background/backup-service';
@@ -130,6 +132,24 @@ describe('backup', () => {
       'Faixa 1',
       'Faixa 2',
     ]);
+  });
+
+  it('restaura um backup feito pelo app Android (spec/vectors/backup-android.json)', async () => {
+    const text = readFileSync(
+      resolve(__dirname, '../../../spec/vectors/backup-android.json'),
+      'utf8',
+    );
+    const backup = await parseBackup(text);
+    const dst = setup();
+    await restoreBackup(dst.store, backup);
+    for (const type of ENTITY_TYPES) {
+      expect(await dst.db.entityTable(type).count(), type).toBe(backup.data.entities[type].length);
+    }
+    expect(await dst.db.sync_events.count()).toBe(backup.data.ops.length);
+    const researches = await dst.curation.listResearches();
+    expect(researches.map((r) => r.name)).toContain('Latin Bass');
+    // o backup refeito no Chrome continua válido
+    await parseBackup(JSON.stringify(await buildBackup(dst.store)));
   });
 
   it('BackupService grava arquivo, registra histórico e só repete quando há alterações', async () => {

@@ -13,9 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -43,7 +43,8 @@ fun ConflictsScreen() {
     val rows by app.db.dao().observeConflicts().collectAsStateWithLifecycle(emptyList())
     val peers by app.db.dao().observePeers().collectAsStateWithLifecycle(emptyList())
     // recalcula quando a tabela de conflitos muda (inclusive ao resolver)
-    val conflicts by produceState<List<ConflictView>?>(null, rows) { value = Conflicts.load(app.store) }
+    var conflicts by remember { mutableStateOf<List<ConflictView>?>(null) }
+    LaunchedEffect(rows) { conflicts = Conflicts.load(app.store) }
     val names = remember(peers) {
         peers.associate { it.id to if (it.pairing_status == "self") "${it.device_name} (este celular)" else it.device_name }
     }

@@ -1,0 +1,742 @@
+{
+    "format": "cuepoint-backup",
+    "version": 1,
+    "schema_version": 1,
+    "created_at": "2026-11-11T01:16:16.044Z",
+    "device_id": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+    "counts": {
+        "track": 3,
+        "research": 1,
+        "decision": 2,
+        "category": 2,
+        "track_category": 1,
+        "playlist": 1,
+        "playlist_track": 2,
+        "ops": 13
+    },
+    "data": {
+        "entities": {
+            "track": [
+                {
+                    "id": "280d921f-c3cd-595b-9ca6-b58c4ec174dd",
+                    "created_at": "2026-11-11T01:16:15.986Z",
+                    "updated_at": "2026-11-11T01:16:15.986Z",
+                    "_v": {
+                        "soundcloud_urn": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "soundcloud_url": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "title": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "artist": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "artwork_url": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "metadata_source": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "merged_into": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "soundcloud_urn": "soundcloud:tracks:2",
+                    "soundcloud_url": "https://soundcloud.com/a/faixa-2",
+                    "title": "Faixa 2",
+                    "artist": "Artista 2",
+                    "artwork_url": null,
+                    "metadata_source": "mediasession",
+                    "merged_into": null,
+                    "deleted_at": null
+                },
+                {
+                    "id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "created_at": "2026-11-11T01:16:15.981Z",
+                    "updated_at": "2026-11-11T01:16:15.981Z",
+                    "_v": {
+                        "soundcloud_urn": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "soundcloud_url": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "title": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "artist": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "artwork_url": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "metadata_source": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "merged_into": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "soundcloud_urn": "soundcloud:tracks:1",
+                    "soundcloud_url": "https://soundcloud.com/a/faixa-1",
+                    "title": "Faixa 1",
+                    "artist": "Artista 1",
+                    "artwork_url": null,
+                    "metadata_source": "mediasession",
+                    "merged_into": null,
+                    "deleted_at": null
+                },
+                {
+                    "id": "f3d33640-1740-5e16-95ff-49ccedc79897",
+                    "created_at": "2026-11-11T01:16:15.992Z",
+                    "updated_at": "2026-11-11T01:16:15.992Z",
+                    "_v": {
+                        "soundcloud_urn": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "soundcloud_url": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "title": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "artist": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "artwork_url": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "metadata_source": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "merged_into": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "soundcloud_urn": "soundcloud:tracks:3",
+                    "soundcloud_url": "https://soundcloud.com/a/faixa-3",
+                    "title": "Faixa 3",
+                    "artist": "Artista 3",
+                    "artwork_url": null,
+                    "metadata_source": "mediasession",
+                    "merged_into": null,
+                    "deleted_at": null
+                }
+            ],
+            "research": [
+                {
+                    "id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "created_at": "2026-11-11T01:16:15.970Z",
+                    "updated_at": "2026-11-11T01:16:15.970Z",
+                    "_v": {
+                        "user_id": [
+                            "001794359775970:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "name": [
+                            "001794359775970:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "description": [
+                            "001794359775970:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "archived": [
+                            "001794359775970:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359775970:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Latin Bass",
+                    "description": "graves",
+                    "archived": false,
+                    "deleted_at": null
+                }
+            ],
+            "decision": [
+                {
+                    "id": "582fd5bf-a924-56d9-a659-27791d542172",
+                    "created_at": "2026-11-11T01:16:16.001Z",
+                    "updated_at": "2026-11-11T01:16:16.001Z",
+                    "_v": {
+                        "user_id": [
+                            "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "track_id": [
+                            "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "research_id": [
+                            "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "decision": [
+                            "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "device_source": [
+                            "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "track_id": "280d921f-c3cd-595b-9ca6-b58c4ec174dd",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "decision": false,
+                    "device_source": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                    "deleted_at": null
+                },
+                {
+                    "id": "b08e0675-9d3d-574e-a02a-b938b87fff5b",
+                    "created_at": "2026-11-11T01:16:15.997Z",
+                    "updated_at": "2026-11-11T01:16:15.997Z",
+                    "_v": {
+                        "user_id": [
+                            "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "track_id": [
+                            "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "research_id": [
+                            "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "decision": [
+                            "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "device_source": [
+                            "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "track_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "decision": true,
+                    "device_source": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                    "deleted_at": null
+                }
+            ],
+            "category": [
+                {
+                    "id": "01a1c82d-52e6-7639-854b-db7c06900dad",
+                    "created_at": "2026-11-11T01:16:15.976Z",
+                    "updated_at": "2026-11-11T01:16:15.976Z",
+                    "_v": {
+                        "user_id": [
+                            "001794359775976:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "name": [
+                            "001794359775976:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "description": [
+                            "001794359775976:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359775976:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Vocal ✓",
+                    "description": "",
+                    "deleted_at": null
+                },
+                {
+                    "id": "01a1c82d-5318-7d36-ac39-a3bc2fb98458",
+                    "created_at": "2026-11-11T01:16:16.025Z",
+                    "updated_at": "2026-11-11T01:16:16.030Z",
+                    "_v": {
+                        "user_id": [
+                            "001794359776025:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "name": [
+                            "001794359776025:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "description": [
+                            "001794359776025:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359776030:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Apagar",
+                    "description": "",
+                    "deleted_at": "2026-11-11T01:16:16.030Z"
+                }
+            ],
+            "track_category": [
+                {
+                    "id": "e6d556b7-2b3f-5c59-a635-908d15d3370d",
+                    "created_at": "2026-11-11T01:16:16.005Z",
+                    "updated_at": "2026-11-11T01:16:16.005Z",
+                    "_v": {
+                        "track_id": [
+                            "001794359776005:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "research_id": [
+                            "001794359776005:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "category_id": [
+                            "001794359776005:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359776005:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "track_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "category_id": "01a1c82d-52e6-7639-854b-db7c06900dad",
+                    "deleted_at": null
+                }
+            ],
+            "playlist": [
+                {
+                    "id": "01a1c82d-5308-7b31-899b-7c42aae87444",
+                    "created_at": "2026-11-11T01:16:16.012Z",
+                    "updated_at": "2026-11-11T01:16:16.012Z",
+                    "_v": {
+                        "user_id": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "name": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "description": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "research_id": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "category_id": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "external_playlist_id": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Set \"sábado\"",
+                    "description": "",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "category_id": null,
+                    "external_playlist_id": null,
+                    "deleted_at": null
+                }
+            ],
+            "playlist_track": [
+                {
+                    "id": "54e4f526-2f4a-5124-841c-634ebebcfe08",
+                    "created_at": "2026-11-11T01:16:16.014Z",
+                    "updated_at": "2026-11-11T01:16:16.014Z",
+                    "_v": {
+                        "playlist_id": [
+                            "001794359776014:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "track_id": [
+                            "001794359776014:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "position": [
+                            "001794359776014:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359776014:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "playlist_id": "01a1c82d-5308-7b31-899b-7c42aae87444",
+                    "track_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "position": "V",
+                    "deleted_at": null
+                },
+                {
+                    "id": "9df9fc60-4ec5-559a-a601-354e85399edb",
+                    "created_at": "2026-11-11T01:16:16.021Z",
+                    "updated_at": "2026-11-11T01:16:16.021Z",
+                    "_v": {
+                        "playlist_id": [
+                            "001794359776021:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "track_id": [
+                            "001794359776021:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "position": [
+                            "001794359776021:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ],
+                        "deleted_at": [
+                            "001794359776021:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                        ]
+                    },
+                    "playlist_id": "01a1c82d-5308-7b31-899b-7c42aae87444",
+                    "track_id": "f3d33640-1740-5e16-95ff-49ccedc79897",
+                    "position": "l",
+                    "deleted_at": null
+                }
+            ]
+        },
+        "ops": [
+            {
+                "op_id": "cea9e4b6-8144-56dd-92ab-191b3404db0f",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 1,
+                "hlc": "001794359775970:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "research",
+                "entity_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                "operation": "create",
+                "fields": {
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Latin Bass",
+                    "description": "graves",
+                    "archived": false,
+                    "deleted_at": null
+                },
+                "base": {
+                    "user_id": [],
+                    "name": [],
+                    "description": [],
+                    "archived": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "3a29adba-a802-5e40-85cf-639c19f009ca",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 2,
+                "hlc": "001794359775976:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "category",
+                "entity_id": "01a1c82d-52e6-7639-854b-db7c06900dad",
+                "operation": "create",
+                "fields": {
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Vocal ✓",
+                    "description": "",
+                    "deleted_at": null
+                },
+                "base": {
+                    "user_id": [],
+                    "name": [],
+                    "description": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "d5bbfbf4-ccb5-572a-a89e-27c1683c222d",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 3,
+                "hlc": "001794359775981:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "track",
+                "entity_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                "operation": "create",
+                "fields": {
+                    "soundcloud_urn": "soundcloud:tracks:1",
+                    "soundcloud_url": "https://soundcloud.com/a/faixa-1",
+                    "title": "Faixa 1",
+                    "artist": "Artista 1",
+                    "artwork_url": null,
+                    "metadata_source": "mediasession",
+                    "merged_into": null,
+                    "deleted_at": null
+                },
+                "base": {
+                    "soundcloud_urn": [],
+                    "soundcloud_url": [],
+                    "title": [],
+                    "artist": [],
+                    "artwork_url": [],
+                    "metadata_source": [],
+                    "merged_into": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "70110494-2909-52ae-9134-6aebf806b8e2",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 4,
+                "hlc": "001794359775986:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "track",
+                "entity_id": "280d921f-c3cd-595b-9ca6-b58c4ec174dd",
+                "operation": "create",
+                "fields": {
+                    "soundcloud_urn": "soundcloud:tracks:2",
+                    "soundcloud_url": "https://soundcloud.com/a/faixa-2",
+                    "title": "Faixa 2",
+                    "artist": "Artista 2",
+                    "artwork_url": null,
+                    "metadata_source": "mediasession",
+                    "merged_into": null,
+                    "deleted_at": null
+                },
+                "base": {
+                    "soundcloud_urn": [],
+                    "soundcloud_url": [],
+                    "title": [],
+                    "artist": [],
+                    "artwork_url": [],
+                    "metadata_source": [],
+                    "merged_into": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "cceeb414-fcd1-5984-8512-acde42d169b3",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 5,
+                "hlc": "001794359775992:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "track",
+                "entity_id": "f3d33640-1740-5e16-95ff-49ccedc79897",
+                "operation": "create",
+                "fields": {
+                    "soundcloud_urn": "soundcloud:tracks:3",
+                    "soundcloud_url": "https://soundcloud.com/a/faixa-3",
+                    "title": "Faixa 3",
+                    "artist": "Artista 3",
+                    "artwork_url": null,
+                    "metadata_source": "mediasession",
+                    "merged_into": null,
+                    "deleted_at": null
+                },
+                "base": {
+                    "soundcloud_urn": [],
+                    "soundcloud_url": [],
+                    "title": [],
+                    "artist": [],
+                    "artwork_url": [],
+                    "metadata_source": [],
+                    "merged_into": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "9eab6c00-e806-54d0-afc2-5715bf6cfe12",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 6,
+                "hlc": "001794359775997:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "decision",
+                "entity_id": "b08e0675-9d3d-574e-a02a-b938b87fff5b",
+                "operation": "create",
+                "fields": {
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "track_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "decision": true,
+                    "device_source": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                    "deleted_at": null
+                },
+                "base": {
+                    "user_id": [],
+                    "track_id": [],
+                    "research_id": [],
+                    "decision": [],
+                    "device_source": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "aab792eb-1209-5ca9-875b-3994a8c7d034",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 7,
+                "hlc": "001794359776001:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "decision",
+                "entity_id": "582fd5bf-a924-56d9-a659-27791d542172",
+                "operation": "create",
+                "fields": {
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "track_id": "280d921f-c3cd-595b-9ca6-b58c4ec174dd",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "decision": false,
+                    "device_source": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                    "deleted_at": null
+                },
+                "base": {
+                    "user_id": [],
+                    "track_id": [],
+                    "research_id": [],
+                    "decision": [],
+                    "device_source": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "168aa6f5-c7f1-5004-8fc7-29348c120748",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 8,
+                "hlc": "001794359776005:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "track_category",
+                "entity_id": "e6d556b7-2b3f-5c59-a635-908d15d3370d",
+                "operation": "create",
+                "fields": {
+                    "track_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "category_id": "01a1c82d-52e6-7639-854b-db7c06900dad",
+                    "deleted_at": null
+                },
+                "base": {
+                    "track_id": [],
+                    "research_id": [],
+                    "category_id": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "cd14dce7-89e1-5414-9bee-f2375c19830f",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 9,
+                "hlc": "001794359776012:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "playlist",
+                "entity_id": "01a1c82d-5308-7b31-899b-7c42aae87444",
+                "operation": "create",
+                "fields": {
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Set \"sábado\"",
+                    "description": "",
+                    "research_id": "01a1c82d-52e1-792f-8575-c26730f55811",
+                    "category_id": null,
+                    "external_playlist_id": null,
+                    "deleted_at": null
+                },
+                "base": {
+                    "user_id": [],
+                    "name": [],
+                    "description": [],
+                    "research_id": [],
+                    "category_id": [],
+                    "external_playlist_id": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "f636a14a-a66e-52a7-9c46-d6c472131fee",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 10,
+                "hlc": "001794359776014:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "playlist_track",
+                "entity_id": "54e4f526-2f4a-5124-841c-634ebebcfe08",
+                "operation": "create",
+                "fields": {
+                    "playlist_id": "01a1c82d-5308-7b31-899b-7c42aae87444",
+                    "track_id": "2c30c444-936d-5a48-b96b-a358f9b5c813",
+                    "position": "V",
+                    "deleted_at": null
+                },
+                "base": {
+                    "playlist_id": [],
+                    "track_id": [],
+                    "position": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "e9f29ecb-799b-50e1-973b-c9cc91d64a34",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 11,
+                "hlc": "001794359776021:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "playlist_track",
+                "entity_id": "9df9fc60-4ec5-559a-a601-354e85399edb",
+                "operation": "create",
+                "fields": {
+                    "playlist_id": "01a1c82d-5308-7b31-899b-7c42aae87444",
+                    "track_id": "f3d33640-1740-5e16-95ff-49ccedc79897",
+                    "position": "l",
+                    "deleted_at": null
+                },
+                "base": {
+                    "playlist_id": [],
+                    "track_id": [],
+                    "position": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "0b52c072-d9e7-53fb-b235-815a5d4b8eec",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 12,
+                "hlc": "001794359776025:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "category",
+                "entity_id": "01a1c82d-5318-7d36-ac39-a3bc2fb98458",
+                "operation": "create",
+                "fields": {
+                    "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                    "name": "Apagar",
+                    "description": "",
+                    "deleted_at": null
+                },
+                "base": {
+                    "user_id": [],
+                    "name": [],
+                    "description": [],
+                    "deleted_at": []
+                }
+            },
+            {
+                "op_id": "e4627e9c-06ab-56cc-ae98-1680023202f3",
+                "origin": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "seq": 13,
+                "hlc": "001794359776030:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "entity_type": "category",
+                "entity_id": "01a1c82d-5318-7d36-ac39-a3bc2fb98458",
+                "operation": "delete",
+                "fields": {
+                    "deleted_at": "2026-11-11T01:16:16.030Z"
+                },
+                "base": {
+                    "deleted_at": [
+                        "001794359776025:000000:01a1c82d-52df-70ca-b11e-5d041412d7ab"
+                    ]
+                }
+            }
+        ],
+        "users": [
+            {
+                "id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "created_at": "2026-11-11T01:16:15.967Z"
+            }
+        ],
+        "devices": [
+            {
+                "id": "01a1c82d-52df-70ca-b11e-5d041412d7ab",
+                "user_id": "01a1c82d-52df-7f9d-962d-a9c804abfc4a",
+                "device_name": "Android – robolectric",
+                "public_key": null,
+                "pairing_status": "self",
+                "sync_policy": "ask",
+                "created_at": "2026-11-11T01:16:15.967Z",
+                "last_sync_at": null,
+                "cert_fp": null,
+                "addresses": null,
+                "port": null
+            }
+        ],
+        "conflicts": [],
+        "settings": {
+            "activeResearchId": "01a1c82d-52e1-792f-8575-c26730f55811"
+        }
+    },
+    "sha256": "152baa0d26b761f88fe5e6c29c65365b3c34c64215084ff76bf7c24f8e315e1d"
+}

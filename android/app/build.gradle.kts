@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,9 +20,25 @@ android {
         versionName = "0.1.0"
     }
 
+    // Chave local de release: android/keystore.properties + .keystore (fora do git). Sem o arquivo,
+    // o assembleRelease gera um APK não assinado.
+    val keystoreFile = rootProject.file("keystore.properties")
+    val releaseSigning = if (keystoreFile.isFile) {
+        val props = Properties().apply { keystoreFile.inputStream().use { load(it) } }
+        signingConfigs.create("release") {
+            storeFile = rootProject.file(props.getProperty("storeFile"))
+            storePassword = props.getProperty("storePassword")
+            keyAlias = props.getProperty("keyAlias")
+            keyPassword = props.getProperty("keyPassword")
+        }
+    } else {
+        null
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = releaseSigning
         }
     }
     compileOptions {
@@ -35,6 +53,8 @@ android {
     }
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        // vetores compartilhados com o TypeScript (spec/ na raiz do repositório)
+        unitTests.all { it.systemProperty("cuepoint.spec", rootProject.file("../spec").absolutePath) }
     }
 }
 

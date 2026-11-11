@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -151,9 +151,8 @@ fun TrackLine(track: Track, modifier: Modifier = Modifier, openable: Boolean = t
 fun TrackArtwork(trackId: String?, artworkUrl: String?, size: Dp) {
     val cache = LocalContext.current.container.artwork
     val version by cache.version.collectAsStateWithLifecycle()
-    val bitmap by produceState(cache.peek(trackId, artworkUrl), trackId, artworkUrl, version) {
-        value = cache.load(trackId, artworkUrl)
-    }
+    var bitmap by remember(trackId, artworkUrl) { mutableStateOf(cache.peek(trackId, artworkUrl)) }
+    LaunchedEffect(trackId, artworkUrl, version) { bitmap = cache.load(trackId, artworkUrl) }
     Surface(shape = RoundedCornerShape(6.dp), color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.size(size)) {
         val image = bitmap
         if (image != null) {

@@ -11,7 +11,7 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "vectors": "vitest run -u test/vectors.test.ts"
+    "vectors": "vitest run -u test/vectors.test.ts test/backup-vectors.test.ts"
   },
   "dependencies": {
     "uuid": "^14.0.3",

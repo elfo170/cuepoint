@@ -195,6 +195,28 @@ interface CuePointDao {
 
     @Query("SELECT COUNT(*) FROM entities")
     suspend fun entityCount(): Int
+
+    // ---- backup / restauração
+    @Query("SELECT * FROM users")
+    suspend fun users(): List<UserRow>
+
+    @Query("SELECT * FROM devices")
+    suspend fun devices(): List<DeviceRow>
+
+    @Query("SELECT * FROM conflicts")
+    suspend fun conflicts(): List<ConflictRow>
+
+    @Query("SELECT COUNT(*) FROM sync_events")
+    suspend fun eventCount(): Int
+
+    @Query("DELETE FROM sync_events")
+    suspend fun clearEvents()
+
+    @Query("DELETE FROM users")
+    suspend fun clearUsers()
+
+    @Query("DELETE FROM meta WHERE key LIKE :prefix || '%'")
+    suspend fun deleteMetaPrefix(prefix: String)
 }
 
 data class OriginSeq(val origin: String, val seq: Long)

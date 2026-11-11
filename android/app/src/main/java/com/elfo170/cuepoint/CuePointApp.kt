@@ -2,6 +2,8 @@ package com.elfo170.cuepoint
 
 import android.app.Application
 import android.content.Context
+import com.elfo170.cuepoint.backup.BackupManager
+import com.elfo170.cuepoint.backup.BackupScheduler
 import com.elfo170.cuepoint.data.CuePointDatabase
 import com.elfo170.cuepoint.data.Curation
 import com.elfo170.cuepoint.data.Snapshot
@@ -54,6 +56,10 @@ class AppContainer(
 
     /** Capas das faixas: imagem da MediaSession (só neste aparelho) ou `artwork_url` vindo do Chrome. */
     val artwork = ArtworkCache(java.io.File(context.filesDir, "artwork"))
+
+    /** Backup no formato comum ao Chrome (pasta escolhida via SAF ou armazenamento do app). */
+    val backups = BackupManager(context, store)
+    val backupScheduler = BackupScheduler(context, backups, store, scope)
 
     /** Link/QR de pareamento recebido (cuepoint://pair?...) aguardando a tela de dispositivos. */
     val pendingPairUri = MutableStateFlow<String?>(null)
@@ -180,6 +186,7 @@ class CuePointApp : Application() {
         super.onCreate()
         container = AppContainer(this)
         container.startBackgroundSync()
+        container.backupScheduler.start()
     }
 }
 

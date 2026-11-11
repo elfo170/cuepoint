@@ -1,0 +1,814 @@
+{
+  "version": 1,
+  "description": "`valid` precisa ser aceito (mesmo sha256 recalculado do JSON canônico); cada item de `invalid` precisa ser recusado com `error`.",
+  "valid": {
+    "format": "cuepoint-backup",
+    "version": 1,
+    "schema_version": 1,
+    "created_at": "2026-01-01T01:00:00.000Z",
+    "device_id": "aaaaaaaa-0000-4000-8000-00000000000a",
+    "user_id": "00000000-0000-4000-8000-000000000001",
+    "counts": {
+      "track": 2,
+      "research": 2,
+      "decision": 2,
+      "category": 2,
+      "track_category": 1,
+      "playlist": 1,
+      "playlist_track": 1,
+      "ops": 15
+    },
+    "data": {
+      "entities": {
+        "track": [
+          {
+            "id": "10000000-0000-4000-8000-000000000001",
+            "created_at": "2026-01-01T00:00:01.000Z",
+            "updated_at": "2026-01-01T00:00:01.000Z",
+            "_v": {
+              "soundcloud_urn": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "soundcloud_url": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "title": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "artist": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "artwork_url": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "metadata_source": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "merged_into": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "soundcloud_urn": "soundcloud:tracks:1",
+            "soundcloud_url": "https://soundcloud.com/artist/track",
+            "title": "Track",
+            "artist": "Artist",
+            "artwork_url": null,
+            "metadata_source": "dom",
+            "merged_into": null,
+            "deleted_at": null
+          },
+          {
+            "id": "10000000-0000-4000-8000-000000000002",
+            "created_at": "2026-01-01T00:00:02.000Z",
+            "updated_at": "2026-01-01T00:00:28.000Z",
+            "_v": {
+              "soundcloud_urn": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "soundcloud_url": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "title": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "artist": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "artwork_url": [
+                "001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "metadata_source": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "merged_into": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ]
+            },
+            "soundcloud_urn": "soundcloud:tracks:2",
+            "soundcloud_url": "https://soundcloud.com/artist/track",
+            "title": "Track",
+            "artist": "Artist",
+            "artwork_url": "https://i1.sndcdn.com/artworks-x-t500x500.jpg",
+            "metadata_source": "dom",
+            "merged_into": null,
+            "deleted_at": null
+          }
+        ],
+        "research": [
+          {
+            "id": "20000000-0000-4000-8000-000000000001",
+            "created_at": "2026-01-01T00:00:03.000Z",
+            "updated_at": "2026-01-01T00:00:03.000Z",
+            "_v": {
+              "user_id": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "description": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "archived": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Pesquisa \"Latin\" à noite",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          {
+            "id": "20000000-0000-4000-8000-000000000002",
+            "created_at": "2026-01-01T00:00:04.000Z",
+            "updated_at": "2026-01-01T00:00:27.000Z",
+            "_v": {
+              "user_id": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "description": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "archived": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Techno (celular)",
+            "description": "",
+            "archived": false,
+            "deleted_at": null,
+            "_c": {
+              "name": [
+                {
+                  "hlc": "001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "Techno (PC)"
+                },
+                {
+                  "hlc": "001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "Techno (celular)"
+                }
+              ],
+              "deleted_at": [
+                {
+                  "hlc": "001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": null
+                },
+                {
+                  "hlc": "001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": null
+                }
+              ]
+            }
+          }
+        ],
+        "decision": [
+          {
+            "id": "f09cb8e4-27fe-5519-8e11-06d0d9c91986",
+            "created_at": "2026-01-01T00:00:08.000Z",
+            "updated_at": "2026-01-01T00:00:08.000Z",
+            "_v": {
+              "user_id": [
+                "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "track_id": [
+                "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "research_id": [
+                "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "decision": [
+                "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "device_source": [
+                "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000002",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "decision": false,
+            "device_source": "aaaaaaaa-0000-4000-8000-00000000000a",
+            "deleted_at": null
+          },
+          {
+            "id": "f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e",
+            "created_at": "2026-01-01T00:00:07.000Z",
+            "updated_at": "2026-01-01T00:00:07.000Z",
+            "_v": {
+              "user_id": [
+                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "track_id": [
+                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "research_id": [
+                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "decision": [
+                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "device_source": [
+                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "decision": true,
+            "device_source": "aaaaaaaa-0000-4000-8000-00000000000a",
+            "deleted_at": null
+          }
+        ],
+        "category": [
+          {
+            "id": "30000000-0000-4000-8000-000000000001",
+            "created_at": "2026-01-01T00:00:05.000Z",
+            "updated_at": "2026-01-01T00:00:05.000Z",
+            "_v": {
+              "user_id": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "description": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Vocal ✓",
+            "description": "",
+            "deleted_at": null
+          },
+          {
+            "id": "30000000-0000-4000-8000-000000000002",
+            "created_at": "2026-01-01T00:00:06.000Z",
+            "updated_at": "2026-01-01T00:00:13.000Z",
+            "_v": {
+              "user_id": [
+                "001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "description": [
+                "001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Apagar",
+            "description": "",
+            "deleted_at": "2026-01-01T00:00:12.000Z"
+          }
+        ],
+        "track_category": [
+          {
+            "id": "2e5810ad-aa27-50c7-b2fa-a76203625247",
+            "created_at": "2026-01-01T00:00:09.000Z",
+            "updated_at": "2026-01-01T00:00:09.000Z",
+            "_v": {
+              "track_id": [
+                "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "research_id": [
+                "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "category_id": [
+                "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": "30000000-0000-4000-8000-000000000001",
+            "deleted_at": null
+          }
+        ],
+        "playlist": [
+          {
+            "id": "40000000-0000-4000-8000-000000000001",
+            "created_at": "2026-01-01T00:00:10.000Z",
+            "updated_at": "2026-01-01T00:00:10.000Z",
+            "_v": {
+              "user_id": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "description": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "research_id": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "category_id": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "external_playlist_id": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Set de sábado",
+            "description": "linha 1\nlinha 2\ttab",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": null,
+            "external_playlist_id": null,
+            "deleted_at": null
+          }
+        ],
+        "playlist_track": [
+          {
+            "id": "679598f9-bc95-53f8-99c4-b8f0441a740f",
+            "created_at": "2026-01-01T00:00:11.000Z",
+            "updated_at": "2026-01-01T00:00:11.000Z",
+            "_v": {
+              "playlist_id": [
+                "001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "track_id": [
+                "001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "position": [
+                "001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "playlist_id": "40000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "position": "a0",
+            "deleted_at": null
+          }
+        ]
+      },
+      "ops": [
+        {
+          "op_id": "76a841aa-2a7e-5f76-af63-d7de7b1b63be",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 1,
+          "hlc": "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track",
+          "entity_id": "10000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "soundcloud_urn": "soundcloud:tracks:1",
+            "soundcloud_url": "https://soundcloud.com/artist/track",
+            "title": "Track",
+            "artist": "Artist",
+            "artwork_url": null,
+            "metadata_source": "dom",
+            "merged_into": null,
+            "deleted_at": null
+          },
+          "base": {
+            "soundcloud_urn": [],
+            "soundcloud_url": [],
+            "title": [],
+            "artist": [],
+            "artwork_url": [],
+            "metadata_source": [],
+            "merged_into": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 2,
+          "hlc": "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track",
+          "entity_id": "10000000-0000-4000-8000-000000000002",
+          "operation": "create",
+          "fields": {
+            "soundcloud_urn": "soundcloud:tracks:2",
+            "soundcloud_url": "https://soundcloud.com/artist/track",
+            "title": "Track",
+            "artist": "Artist",
+            "artwork_url": null,
+            "metadata_source": "dom",
+            "merged_into": null,
+            "deleted_at": null
+          },
+          "base": {
+            "soundcloud_urn": [],
+            "soundcloud_url": [],
+            "title": [],
+            "artist": [],
+            "artwork_url": [],
+            "metadata_source": [],
+            "merged_into": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "33519d91-fe73-5f3d-aee4-d5bd9ede8876",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 3,
+          "hlc": "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Pesquisa \"Latin\" à noite",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "archived": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "5396c7e9-7d41-52f8-afd5-24d752a361f4",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 4,
+          "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000002",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Techno\\Industrial",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "archived": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "2fc1e933-8aba-578f-a0ce-ae70258633e9",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 5,
+          "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "category",
+          "entity_id": "30000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Vocal ✓",
+            "description": "",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "c3961d9e-e461-50a9-9410-4497bc13d8af",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 6,
+          "hlc": "001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "category",
+          "entity_id": "30000000-0000-4000-8000-000000000002",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Apagar",
+            "description": "",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "1536c60b-c3d7-5534-b61e-b3f597ec9b06",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 7,
+          "hlc": "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "decision",
+          "entity_id": "f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "decision": true,
+            "device_source": "aaaaaaaa-0000-4000-8000-00000000000a",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "track_id": [],
+            "research_id": [],
+            "decision": [],
+            "device_source": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "b71c213d-6801-5cf1-b1e6-e1e8aab60368",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 8,
+          "hlc": "001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "decision",
+          "entity_id": "f09cb8e4-27fe-5519-8e11-06d0d9c91986",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000002",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "decision": false,
+            "device_source": "aaaaaaaa-0000-4000-8000-00000000000a",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "track_id": [],
+            "research_id": [],
+            "decision": [],
+            "device_source": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "5684c6ea-8b82-5b9b-89f6-e6920c0b1303",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 9,
+          "hlc": "001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track_category",
+          "entity_id": "2e5810ad-aa27-50c7-b2fa-a76203625247",
+          "operation": "create",
+          "fields": {
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": "30000000-0000-4000-8000-000000000001",
+            "deleted_at": null
+          },
+          "base": {
+            "track_id": [],
+            "research_id": [],
+            "category_id": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "71e77187-ce39-573f-a7e0-cd648c115707",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 10,
+          "hlc": "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "playlist",
+          "entity_id": "40000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Set de sábado",
+            "description": "linha 1\nlinha 2\ttab",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "category_id": null,
+            "external_playlist_id": null,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "research_id": [],
+            "category_id": [],
+            "external_playlist_id": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "aea1db60-b2a4-5969-89ee-1d5edb1188f6",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 11,
+          "hlc": "001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "playlist_track",
+          "entity_id": "679598f9-bc95-53f8-99c4-b8f0441a740f",
+          "operation": "create",
+          "fields": {
+            "playlist_id": "40000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "position": "a0",
+            "deleted_at": null
+          },
+          "base": {
+            "playlist_id": [],
+            "track_id": [],
+            "position": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "e8a541fd-f017-5c89-8e96-852bb4e9f3d8",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 12,
+          "hlc": "001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "category",
+          "entity_id": "30000000-0000-4000-8000-000000000002",
+          "operation": "delete",
+          "fields": {
+            "deleted_at": "2026-01-01T00:00:12.000Z"
+          },
+          "base": {
+            "deleted_at": [
+              "001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "59f06110-5b44-5a62-9140-68d2b350504d",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 13,
+          "hlc": "001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000002",
+          "operation": "update",
+          "fields": {
+            "name": "Techno (PC)",
+            "deleted_at": null
+          },
+          "base": {
+            "name": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "ae46d9c7-9348-5959-b012-9f5006bc247b",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 1,
+          "hlc": "001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000002",
+          "operation": "update",
+          "fields": {
+            "name": "Techno (celular)",
+            "deleted_at": null
+          },
+          "base": {
+            "name": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "9c5a69b1-5106-5dab-b656-6a0a7c831acd",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 2,
+          "hlc": "001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track",
+          "entity_id": "10000000-0000-4000-8000-000000000002",
+          "operation": "update",
+          "fields": {
+            "artwork_url": "https://i1.sndcdn.com/artworks-x-t500x500.jpg",
+            "deleted_at": null
+          },
+          "base": {
+            "artwork_url": [
+              "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        }
+      ],
+      "users": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "created_at": "2026-01-01T00:00:00.000Z"
+        }
+      ],
+      "devices": [
+        {
+          "id": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "device_name": "Chrome – “fixture”",
+          "public_key": null,
+          "pairing_status": "self",
+          "sync_policy": "ask",
+          "created_at": "2026-01-01T00:00:00.000Z",
+          "last_sync_at": null
+        }
+      ],
+      "conflicts": [
+        {
+          "id": "be56dff5-379b-53e6-8e03-3b7849e8a28e",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000002",
+          "field": "name",
+          "created_at": "2026-01-01T00:00:27.000Z"
+        }
+      ],
+      "settings": {
+        "activeResearchId": "20000000-0000-4000-8000-000000000001"
+      }
+    },
+    "sha256": "d623fb00b8a44b8c74b82efe3c946223b207bdf05f7da1fe4b25a18c7ddc16cf"
+  },
+  "invalid": [
+    {
+      "name": "json truncado",
+      "text": "{\"format\":\"cuepoint-backup\",\"version\":1,\"schema_version\":1,\"created_at\":\"2026-01-01T01:00:00.000Z\",\"device_id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"counts\":{\"track\":2,\"research\":2,\"decision\":2,\"category\":2,\"track_category\":1,\"playlist\":1,\"playlist_track\":1,\"ops\":15},\"data\":{\"entities\":{\"track\":[{\"id\":\"10000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:01.000Z\",\"updated_at\":\"2026-01-01T00:00:01.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"metadata_source\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},{\"id\":\"10000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:02.000Z\",\"updated_at\":\"2026-01-01T00:00:28.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"metadata_source\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null}],\"research\":[{\"id\":\"20000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:03.000Z\",\"updated_at\":\"2026-01-01T00:00:03.000Z\",\"_v\":{\"user_id\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},{\"id\":\"20000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:04.000Z\",\"updated_at\":\"2026-01-01T00:00:27.000Z\",\"_v\":{\"user_id\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"description\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno (celular)\",\"description\":\"\",\"archived\":false,\"deleted_at\":null,\"_c\":{\"name\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":\"Techno (PC)\"},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":\"Techno (celular)\"}],\"deleted_at\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":null},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":null}]}}],\"decision\":[{\"id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"created_at\":\"2026-01-01T00:00:08.000Z\",\"updated_at\":\"2026-01-01T00:00:08.000Z\",\"_v\":{\"user_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},{\"id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"created_at\":\"2026-01-01T00:00:07.000Z\",\"updated_at\":\"2026-01-01T00:00:07.000Z\",\"_v\":{\"user_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null}],\"category\":[{\"id\":\"30000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:05.000Z\",\"updated_at\":\"2026-01-01T00:00:05.000Z\",\"_v\":{\"user_id\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},{\"id\":\"30000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:06.000Z\",\"updated_at\":\"2026-01-01T00:00:13.000Z\",\"_v\":{\"user_id\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":\"2026-01-01T00:00:12.000Z\"}],\"track_category\":[{\"id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"created_at\":\"2026-01-01T00:00:09.000Z\",\"updated_at\":\"2026-01-01T00:00:09.000Z\",\"_v\":{\"track_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null}],\"playlist\":[{\"id\":\"40000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:10.000Z\",\"updated_at\":\"2026-01-01T00:00:10.000Z\",\"_v\":{\"user_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"external_playlist_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null}],\"playlist_track\":[{\"id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"created_at\":\"2026-01-01T00:00:11.000Z\",\"updated_at\":\"2026-01-01T00:00:11.000Z\",\"_v\":{\"playlist_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"position\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null}]},\"ops\":[{\"op_id\":\"76a841aa-2a7e-5f76-af63-d7de7b1b63be\",\"origin\":\"aaaaa",
+      "error": "O arquivo não é um JSON válido (pode estar truncado)."
+    },
+    {
+      "name": "outro formato",
+      "text": "{\"format\":\"outro-app\",\"version\":1,\"schema_version\":1,\"created_at\":\"2026-01-01T01:00:00.000Z\",\"device_id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"counts\":{\"track\":2,\"research\":2,\"decision\":2,\"category\":2,\"track_category\":1,\"playlist\":1,\"playlist_track\":1,\"ops\":15},\"data\":{\"entities\":{\"track\":[{\"id\":\"10000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:01.000Z\",\"updated_at\":\"2026-01-01T00:00:01.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"metadata_source\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},{\"id\":\"10000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:02.000Z\",\"updated_at\":\"2026-01-01T00:00:28.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"metadata_source\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null}],\"research\":[{\"id\":\"20000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:03.000Z\",\"updated_at\":\"2026-01-01T00:00:03.000Z\",\"_v\":{\"user_id\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},{\"id\":\"20000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:04.000Z\",\"updated_at\":\"2026-01-01T00:00:27.000Z\",\"_v\":{\"user_id\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"description\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno (celular)\",\"description\":\"\",\"archived\":false,\"deleted_at\":null,\"_c\":{\"name\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":\"Techno (PC)\"},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":\"Techno (celular)\"}],\"deleted_at\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":null},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":null}]}}],\"decision\":[{\"id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"created_at\":\"2026-01-01T00:00:08.000Z\",\"updated_at\":\"2026-01-01T00:00:08.000Z\",\"_v\":{\"user_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},{\"id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"created_at\":\"2026-01-01T00:00:07.000Z\",\"updated_at\":\"2026-01-01T00:00:07.000Z\",\"_v\":{\"user_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null}],\"category\":[{\"id\":\"30000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:05.000Z\",\"updated_at\":\"2026-01-01T00:00:05.000Z\",\"_v\":{\"user_id\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},{\"id\":\"30000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:06.000Z\",\"updated_at\":\"2026-01-01T00:00:13.000Z\",\"_v\":{\"user_id\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":\"2026-01-01T00:00:12.000Z\"}],\"track_category\":[{\"id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"created_at\":\"2026-01-01T00:00:09.000Z\",\"updated_at\":\"2026-01-01T00:00:09.000Z\",\"_v\":{\"track_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null}],\"playlist\":[{\"id\":\"40000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:10.000Z\",\"updated_at\":\"2026-01-01T00:00:10.000Z\",\"_v\":{\"user_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"external_playlist_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null}],\"playlist_track\":[{\"id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"created_at\":\"2026-01-01T00:00:11.000Z\",\"updated_at\":\"2026-01-01T00:00:11.000Z\",\"_v\":{\"playlist_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"position\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null}]},\"ops\":[{\"op_id\":\"76a841aa-2a7e-5f76-af63-d7de7b1b63be\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":1,\"hlc\":\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"4f05db80-6c89-562d-b89d-62925827196b\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":2,\"hlc\":\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"33519d91-fe73-5f3d-aee4-d5bd9ede8876\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":3,\"hlc\":\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"5396c7e9-7d41-52f8-afd5-24d752a361f4\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":4,\"hlc\":\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno\\\\Industrial\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"2fc1e933-8aba-578f-a0ce-ae70258633e9\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":5,\"hlc\":\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"c3961d9e-e461-50a9-9410-4497bc13d8af\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":6,\"hlc\":\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"1536c60b-c3d7-5534-b61e-b3f597ec9b06\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":7,\"hlc\":\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"b71c213d-6801-5cf1-b1e6-e1e8aab60368\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":8,\"hlc\":\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"5684c6ea-8b82-5b9b-89f6-e6920c0b1303\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":9,\"hlc\":\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track_category\",\"entity_id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"operation\":\"create\",\"fields\":{\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null},\"base\":{\"track_id\":[],\"research_id\":[],\"category_id\":[],\"deleted_at\":[]}},{\"op_id\":\"71e77187-ce39-573f-a7e0-cd648c115707\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":10,\"hlc\":\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist\",\"entity_id\":\"40000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"research_id\":[],\"category_id\":[],\"external_playlist_id\":[],\"deleted_at\":[]}},{\"op_id\":\"aea1db60-b2a4-5969-89ee-1d5edb1188f6\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":11,\"hlc\":\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist_track\",\"entity_id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"operation\":\"create\",\"fields\":{\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null},\"base\":{\"playlist_id\":[],\"track_id\":[],\"position\":[],\"deleted_at\":[]}},{\"op_id\":\"e8a541fd-f017-5c89-8e96-852bb4e9f3d8\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":12,\"hlc\":\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"delete\",\"fields\":{\"deleted_at\":\"2026-01-01T00:00:12.000Z\"},\"base\":{\"deleted_at\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"59f06110-5b44-5a62-9140-68d2b350504d\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":13,\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (PC)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"ae46d9c7-9348-5959-b012-9f5006bc247b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":1,\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (celular)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"9c5a69b1-5106-5dab-b656-6a0a7c831acd\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":2,\"hlc\":\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"deleted_at\":null},\"base\":{\"artwork_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}}],\"users\":[{\"id\":\"00000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}],\"devices\":[{\"id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"device_name\":\"Chrome – “fixture”\",\"public_key\":null,\"pairing_status\":\"self\",\"sync_policy\":\"ask\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"last_sync_at\":null}],\"conflicts\":[{\"id\":\"be56dff5-379b-53e6-8e03-3b7849e8a28e\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"field\":\"name\",\"created_at\":\"2026-01-01T00:00:27.000Z\"}],\"settings\":{\"activeResearchId\":\"20000000-0000-4000-8000-000000000001\"}},\"sha256\":\"d623fb00b8a44b8c74b82efe3c946223b207bdf05f7da1fe4b25a18c7ddc16cf\"}",
+      "error": "Não é um backup do CuePoint."
+    },
+    {
+      "name": "checksum (registro alterado)",
+      "text": "{\"format\":\"cuepoint-backup\",\"version\":1,\"schema_version\":1,\"created_at\":\"2026-01-01T01:00:00.000Z\",\"device_id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"counts\":{\"track\":2,\"research\":2,\"decision\":2,\"category\":2,\"track_category\":1,\"playlist\":1,\"playlist_track\":1,\"ops\":15},\"data\":{\"entities\":{\"track\":[{\"id\":\"10000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:01.000Z\",\"updated_at\":\"2026-01-01T00:00:01.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"metadata_source\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Alterado\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},{\"id\":\"10000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:02.000Z\",\"updated_at\":\"2026-01-01T00:00:28.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"metadata_source\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null}],\"research\":[{\"id\":\"20000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:03.000Z\",\"updated_at\":\"2026-01-01T00:00:03.000Z\",\"_v\":{\"user_id\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},{\"id\":\"20000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:04.000Z\",\"updated_at\":\"2026-01-01T00:00:27.000Z\",\"_v\":{\"user_id\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"description\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno (celular)\",\"description\":\"\",\"archived\":false,\"deleted_at\":null,\"_c\":{\"name\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":\"Techno (PC)\"},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":\"Techno (celular)\"}],\"deleted_at\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":null},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":null}]}}],\"decision\":[{\"id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"created_at\":\"2026-01-01T00:00:08.000Z\",\"updated_at\":\"2026-01-01T00:00:08.000Z\",\"_v\":{\"user_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},{\"id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"created_at\":\"2026-01-01T00:00:07.000Z\",\"updated_at\":\"2026-01-01T00:00:07.000Z\",\"_v\":{\"user_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null}],\"category\":[{\"id\":\"30000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:05.000Z\",\"updated_at\":\"2026-01-01T00:00:05.000Z\",\"_v\":{\"user_id\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},{\"id\":\"30000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:06.000Z\",\"updated_at\":\"2026-01-01T00:00:13.000Z\",\"_v\":{\"user_id\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":\"2026-01-01T00:00:12.000Z\"}],\"track_category\":[{\"id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"created_at\":\"2026-01-01T00:00:09.000Z\",\"updated_at\":\"2026-01-01T00:00:09.000Z\",\"_v\":{\"track_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null}],\"playlist\":[{\"id\":\"40000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:10.000Z\",\"updated_at\":\"2026-01-01T00:00:10.000Z\",\"_v\":{\"user_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"external_playlist_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null}],\"playlist_track\":[{\"id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"created_at\":\"2026-01-01T00:00:11.000Z\",\"updated_at\":\"2026-01-01T00:00:11.000Z\",\"_v\":{\"playlist_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"position\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null}]},\"ops\":[{\"op_id\":\"76a841aa-2a7e-5f76-af63-d7de7b1b63be\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":1,\"hlc\":\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"4f05db80-6c89-562d-b89d-62925827196b\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":2,\"hlc\":\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"33519d91-fe73-5f3d-aee4-d5bd9ede8876\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":3,\"hlc\":\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"5396c7e9-7d41-52f8-afd5-24d752a361f4\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":4,\"hlc\":\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno\\\\Industrial\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"2fc1e933-8aba-578f-a0ce-ae70258633e9\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":5,\"hlc\":\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"c3961d9e-e461-50a9-9410-4497bc13d8af\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":6,\"hlc\":\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"1536c60b-c3d7-5534-b61e-b3f597ec9b06\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":7,\"hlc\":\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"b71c213d-6801-5cf1-b1e6-e1e8aab60368\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":8,\"hlc\":\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"5684c6ea-8b82-5b9b-89f6-e6920c0b1303\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":9,\"hlc\":\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track_category\",\"entity_id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"operation\":\"create\",\"fields\":{\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null},\"base\":{\"track_id\":[],\"research_id\":[],\"category_id\":[],\"deleted_at\":[]}},{\"op_id\":\"71e77187-ce39-573f-a7e0-cd648c115707\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":10,\"hlc\":\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist\",\"entity_id\":\"40000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"research_id\":[],\"category_id\":[],\"external_playlist_id\":[],\"deleted_at\":[]}},{\"op_id\":\"aea1db60-b2a4-5969-89ee-1d5edb1188f6\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":11,\"hlc\":\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist_track\",\"entity_id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"operation\":\"create\",\"fields\":{\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null},\"base\":{\"playlist_id\":[],\"track_id\":[],\"position\":[],\"deleted_at\":[]}},{\"op_id\":\"e8a541fd-f017-5c89-8e96-852bb4e9f3d8\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":12,\"hlc\":\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"delete\",\"fields\":{\"deleted_at\":\"2026-01-01T00:00:12.000Z\"},\"base\":{\"deleted_at\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"59f06110-5b44-5a62-9140-68d2b350504d\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":13,\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (PC)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"ae46d9c7-9348-5959-b012-9f5006bc247b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":1,\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (celular)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"9c5a69b1-5106-5dab-b656-6a0a7c831acd\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":2,\"hlc\":\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"deleted_at\":null},\"base\":{\"artwork_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}}],\"users\":[{\"id\":\"00000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}],\"devices\":[{\"id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"device_name\":\"Chrome – “fixture”\",\"public_key\":null,\"pairing_status\":\"self\",\"sync_policy\":\"ask\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"last_sync_at\":null}],\"conflicts\":[{\"id\":\"be56dff5-379b-53e6-8e03-3b7849e8a28e\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"field\":\"name\",\"created_at\":\"2026-01-01T00:00:27.000Z\"}],\"settings\":{\"activeResearchId\":\"20000000-0000-4000-8000-000000000001\"}},\"sha256\":\"d623fb00b8a44b8c74b82efe3c946223b207bdf05f7da1fe4b25a18c7ddc16cf\"}",
+      "error": "Checksum não confere: o arquivo está corrompido ou foi alterado."
+    },
+    {
+      "name": "referência quebrada",
+      "text": "{\"format\":\"cuepoint-backup\",\"version\":1,\"schema_version\":1,\"created_at\":\"2026-01-01T01:00:00.000Z\",\"device_id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"counts\":{\"track\":1,\"research\":2,\"decision\":2,\"category\":2,\"track_category\":1,\"playlist\":1,\"playlist_track\":1,\"ops\":15},\"data\":{\"entities\":{\"track\":[{\"id\":\"10000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:01.000Z\",\"updated_at\":\"2026-01-01T00:00:01.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"metadata_source\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null}],\"research\":[{\"id\":\"20000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:03.000Z\",\"updated_at\":\"2026-01-01T00:00:03.000Z\",\"_v\":{\"user_id\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},{\"id\":\"20000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:04.000Z\",\"updated_at\":\"2026-01-01T00:00:27.000Z\",\"_v\":{\"user_id\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"description\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno (celular)\",\"description\":\"\",\"archived\":false,\"deleted_at\":null,\"_c\":{\"name\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":\"Techno (PC)\"},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":\"Techno (celular)\"}],\"deleted_at\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":null},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":null}]}}],\"decision\":[{\"id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"created_at\":\"2026-01-01T00:00:08.000Z\",\"updated_at\":\"2026-01-01T00:00:08.000Z\",\"_v\":{\"user_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},{\"id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"created_at\":\"2026-01-01T00:00:07.000Z\",\"updated_at\":\"2026-01-01T00:00:07.000Z\",\"_v\":{\"user_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null}],\"category\":[{\"id\":\"30000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:05.000Z\",\"updated_at\":\"2026-01-01T00:00:05.000Z\",\"_v\":{\"user_id\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},{\"id\":\"30000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:06.000Z\",\"updated_at\":\"2026-01-01T00:00:13.000Z\",\"_v\":{\"user_id\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":\"2026-01-01T00:00:12.000Z\"}],\"track_category\":[{\"id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"created_at\":\"2026-01-01T00:00:09.000Z\",\"updated_at\":\"2026-01-01T00:00:09.000Z\",\"_v\":{\"track_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null}],\"playlist\":[{\"id\":\"40000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:10.000Z\",\"updated_at\":\"2026-01-01T00:00:10.000Z\",\"_v\":{\"user_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"external_playlist_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null}],\"playlist_track\":[{\"id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"created_at\":\"2026-01-01T00:00:11.000Z\",\"updated_at\":\"2026-01-01T00:00:11.000Z\",\"_v\":{\"playlist_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"position\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null}]},\"ops\":[{\"op_id\":\"76a841aa-2a7e-5f76-af63-d7de7b1b63be\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":1,\"hlc\":\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"4f05db80-6c89-562d-b89d-62925827196b\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":2,\"hlc\":\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"33519d91-fe73-5f3d-aee4-d5bd9ede8876\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":3,\"hlc\":\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"5396c7e9-7d41-52f8-afd5-24d752a361f4\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":4,\"hlc\":\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno\\\\Industrial\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"2fc1e933-8aba-578f-a0ce-ae70258633e9\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":5,\"hlc\":\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"c3961d9e-e461-50a9-9410-4497bc13d8af\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":6,\"hlc\":\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"1536c60b-c3d7-5534-b61e-b3f597ec9b06\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":7,\"hlc\":\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"b71c213d-6801-5cf1-b1e6-e1e8aab60368\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":8,\"hlc\":\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"5684c6ea-8b82-5b9b-89f6-e6920c0b1303\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":9,\"hlc\":\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track_category\",\"entity_id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"operation\":\"create\",\"fields\":{\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null},\"base\":{\"track_id\":[],\"research_id\":[],\"category_id\":[],\"deleted_at\":[]}},{\"op_id\":\"71e77187-ce39-573f-a7e0-cd648c115707\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":10,\"hlc\":\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist\",\"entity_id\":\"40000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"research_id\":[],\"category_id\":[],\"external_playlist_id\":[],\"deleted_at\":[]}},{\"op_id\":\"aea1db60-b2a4-5969-89ee-1d5edb1188f6\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":11,\"hlc\":\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist_track\",\"entity_id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"operation\":\"create\",\"fields\":{\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null},\"base\":{\"playlist_id\":[],\"track_id\":[],\"position\":[],\"deleted_at\":[]}},{\"op_id\":\"e8a541fd-f017-5c89-8e96-852bb4e9f3d8\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":12,\"hlc\":\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"delete\",\"fields\":{\"deleted_at\":\"2026-01-01T00:00:12.000Z\"},\"base\":{\"deleted_at\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"59f06110-5b44-5a62-9140-68d2b350504d\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":13,\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (PC)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"ae46d9c7-9348-5959-b012-9f5006bc247b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":1,\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (celular)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"9c5a69b1-5106-5dab-b656-6a0a7c831acd\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":2,\"hlc\":\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"deleted_at\":null},\"base\":{\"artwork_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}}],\"users\":[{\"id\":\"00000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}],\"devices\":[{\"id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"device_name\":\"Chrome – “fixture”\",\"public_key\":null,\"pairing_status\":\"self\",\"sync_policy\":\"ask\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"last_sync_at\":null}],\"conflicts\":[{\"id\":\"be56dff5-379b-53e6-8e03-3b7849e8a28e\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"field\":\"name\",\"created_at\":\"2026-01-01T00:00:27.000Z\"}],\"settings\":{\"activeResearchId\":\"20000000-0000-4000-8000-000000000001\"}},\"sha256\":\"9743d266be965672d13ccc6d1b897c6516d871ac3a5a00b629d22ff4c214737f\"}",
+      "error": "Referência quebrada: decision.track_id → track 10000000-0000-4000-8000-000000000002."
+    },
+    {
+      "name": "registro inválido",
+      "text": "{\"format\":\"cuepoint-backup\",\"version\":1,\"schema_version\":1,\"created_at\":\"2026-01-01T01:00:00.000Z\",\"device_id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"counts\":{\"track\":2,\"research\":2,\"decision\":2,\"category\":2,\"track_category\":1,\"playlist\":1,\"playlist_track\":1,\"ops\":15},\"data\":{\"entities\":{\"track\":[{\"id\":\"10000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:01.000Z\",\"updated_at\":\"2026-01-01T00:00:01.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"metadata_source\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},{\"id\":\"10000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:02.000Z\",\"updated_at\":\"2026-01-01T00:00:28.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"metadata_source\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null}],\"research\":[{\"id\":\"20000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:03.000Z\",\"updated_at\":\"2026-01-01T00:00:03.000Z\",\"_v\":{\"user_id\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"   \",\"description\":\"\",\"archived\":false,\"deleted_at\":null},{\"id\":\"20000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:04.000Z\",\"updated_at\":\"2026-01-01T00:00:27.000Z\",\"_v\":{\"user_id\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"description\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno (celular)\",\"description\":\"\",\"archived\":false,\"deleted_at\":null,\"_c\":{\"name\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":\"Techno (PC)\"},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":\"Techno (celular)\"}],\"deleted_at\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":null},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":null}]}}],\"decision\":[{\"id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"created_at\":\"2026-01-01T00:00:08.000Z\",\"updated_at\":\"2026-01-01T00:00:08.000Z\",\"_v\":{\"user_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},{\"id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"created_at\":\"2026-01-01T00:00:07.000Z\",\"updated_at\":\"2026-01-01T00:00:07.000Z\",\"_v\":{\"user_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null}],\"category\":[{\"id\":\"30000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:05.000Z\",\"updated_at\":\"2026-01-01T00:00:05.000Z\",\"_v\":{\"user_id\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},{\"id\":\"30000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:06.000Z\",\"updated_at\":\"2026-01-01T00:00:13.000Z\",\"_v\":{\"user_id\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":\"2026-01-01T00:00:12.000Z\"}],\"track_category\":[{\"id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"created_at\":\"2026-01-01T00:00:09.000Z\",\"updated_at\":\"2026-01-01T00:00:09.000Z\",\"_v\":{\"track_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null}],\"playlist\":[{\"id\":\"40000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:10.000Z\",\"updated_at\":\"2026-01-01T00:00:10.000Z\",\"_v\":{\"user_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"external_playlist_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null}],\"playlist_track\":[{\"id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"created_at\":\"2026-01-01T00:00:11.000Z\",\"updated_at\":\"2026-01-01T00:00:11.000Z\",\"_v\":{\"playlist_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"position\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null}]},\"ops\":[{\"op_id\":\"76a841aa-2a7e-5f76-af63-d7de7b1b63be\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":1,\"hlc\":\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"4f05db80-6c89-562d-b89d-62925827196b\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":2,\"hlc\":\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"33519d91-fe73-5f3d-aee4-d5bd9ede8876\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":3,\"hlc\":\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"5396c7e9-7d41-52f8-afd5-24d752a361f4\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":4,\"hlc\":\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno\\\\Industrial\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"2fc1e933-8aba-578f-a0ce-ae70258633e9\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":5,\"hlc\":\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"c3961d9e-e461-50a9-9410-4497bc13d8af\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":6,\"hlc\":\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"1536c60b-c3d7-5534-b61e-b3f597ec9b06\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":7,\"hlc\":\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"b71c213d-6801-5cf1-b1e6-e1e8aab60368\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":8,\"hlc\":\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"5684c6ea-8b82-5b9b-89f6-e6920c0b1303\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":9,\"hlc\":\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track_category\",\"entity_id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"operation\":\"create\",\"fields\":{\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null},\"base\":{\"track_id\":[],\"research_id\":[],\"category_id\":[],\"deleted_at\":[]}},{\"op_id\":\"71e77187-ce39-573f-a7e0-cd648c115707\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":10,\"hlc\":\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist\",\"entity_id\":\"40000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"research_id\":[],\"category_id\":[],\"external_playlist_id\":[],\"deleted_at\":[]}},{\"op_id\":\"aea1db60-b2a4-5969-89ee-1d5edb1188f6\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":11,\"hlc\":\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist_track\",\"entity_id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"operation\":\"create\",\"fields\":{\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null},\"base\":{\"playlist_id\":[],\"track_id\":[],\"position\":[],\"deleted_at\":[]}},{\"op_id\":\"e8a541fd-f017-5c89-8e96-852bb4e9f3d8\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":12,\"hlc\":\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"delete\",\"fields\":{\"deleted_at\":\"2026-01-01T00:00:12.000Z\"},\"base\":{\"deleted_at\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"59f06110-5b44-5a62-9140-68d2b350504d\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":13,\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (PC)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"ae46d9c7-9348-5959-b012-9f5006bc247b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":1,\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (celular)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"9c5a69b1-5106-5dab-b656-6a0a7c831acd\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":2,\"hlc\":\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"deleted_at\":null},\"base\":{\"artwork_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}}],\"users\":[{\"id\":\"00000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}],\"devices\":[{\"id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"device_name\":\"Chrome – “fixture”\",\"public_key\":null,\"pairing_status\":\"self\",\"sync_policy\":\"ask\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"last_sync_at\":null}],\"conflicts\":[{\"id\":\"be56dff5-379b-53e6-8e03-3b7849e8a28e\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"field\":\"name\",\"created_at\":\"2026-01-01T00:00:27.000Z\"}],\"settings\":{\"activeResearchId\":\"20000000-0000-4000-8000-000000000001\"}},\"sha256\":\"0763e80b0cb7aa31a653677566cafec94710c5ad7b066bc5ab182cf59fe35105\"}",
+      "error": "Dados inválidos em research 20000000-0000-4000-8000-000000000001."
+    },
+    {
+      "name": "log de operações inválido",
+      "text": "{\"format\":\"cuepoint-backup\",\"version\":1,\"schema_version\":1,\"created_at\":\"2026-01-01T01:00:00.000Z\",\"device_id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"counts\":{\"track\":2,\"research\":2,\"decision\":2,\"category\":2,\"track_category\":1,\"playlist\":1,\"playlist_track\":1,\"ops\":15},\"data\":{\"entities\":{\"track\":[{\"id\":\"10000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:01.000Z\",\"updated_at\":\"2026-01-01T00:00:01.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"metadata_source\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},{\"id\":\"10000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:02.000Z\",\"updated_at\":\"2026-01-01T00:00:28.000Z\",\"_v\":{\"soundcloud_urn\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"soundcloud_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"title\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artist\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"artwork_url\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"metadata_source\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"merged_into\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null}],\"research\":[{\"id\":\"20000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:03.000Z\",\"updated_at\":\"2026-01-01T00:00:03.000Z\",\"_v\":{\"user_id\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},{\"id\":\"20000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:04.000Z\",\"updated_at\":\"2026-01-01T00:00:27.000Z\",\"_v\":{\"user_id\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"],\"description\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"archived\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno (celular)\",\"description\":\"\",\"archived\":false,\"deleted_at\":null,\"_c\":{\"name\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":\"Techno (PC)\"},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":\"Techno (celular)\"}],\"deleted_at\":[{\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"value\":null},{\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"value\":null}]}}],\"decision\":[{\"id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"created_at\":\"2026-01-01T00:00:08.000Z\",\"updated_at\":\"2026-01-01T00:00:08.000Z\",\"_v\":{\"user_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},{\"id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"created_at\":\"2026-01-01T00:00:07.000Z\",\"updated_at\":\"2026-01-01T00:00:07.000Z\",\"_v\":{\"user_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"decision\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"device_source\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null}],\"category\":[{\"id\":\"30000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:05.000Z\",\"updated_at\":\"2026-01-01T00:00:05.000Z\",\"_v\":{\"user_id\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},{\"id\":\"30000000-0000-4000-8000-000000000002\",\"created_at\":\"2026-01-01T00:00:06.000Z\",\"updated_at\":\"2026-01-01T00:00:13.000Z\",\"_v\":{\"user_id\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":\"2026-01-01T00:00:12.000Z\"}],\"track_category\":[{\"id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"created_at\":\"2026-01-01T00:00:09.000Z\",\"updated_at\":\"2026-01-01T00:00:09.000Z\",\"_v\":{\"track_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null}],\"playlist\":[{\"id\":\"40000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:10.000Z\",\"updated_at\":\"2026-01-01T00:00:10.000Z\",\"_v\":{\"user_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"name\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"description\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"research_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"category_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"external_playlist_id\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null}],\"playlist_track\":[{\"id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"created_at\":\"2026-01-01T00:00:11.000Z\",\"updated_at\":\"2026-01-01T00:00:11.000Z\",\"_v\":{\"playlist_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"track_id\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"position\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]},\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null}]},\"ops\":[{\"op_id\":\"10000000-0000-4000-8000-000000000001\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":1,\"hlc\":\"001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:1\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"4f05db80-6c89-562d-b89d-62925827196b\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":2,\"hlc\":\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"soundcloud_urn\":\"soundcloud:tracks:2\",\"soundcloud_url\":\"https://soundcloud.com/artist/track\",\"title\":\"Track\",\"artist\":\"Artist\",\"artwork_url\":null,\"metadata_source\":\"dom\",\"merged_into\":null,\"deleted_at\":null},\"base\":{\"soundcloud_urn\":[],\"soundcloud_url\":[],\"title\":[],\"artist\":[],\"artwork_url\":[],\"metadata_source\":[],\"merged_into\":[],\"deleted_at\":[]}},{\"op_id\":\"33519d91-fe73-5f3d-aee4-d5bd9ede8876\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":3,\"hlc\":\"001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Pesquisa \\\"Latin\\\" à noite\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"5396c7e9-7d41-52f8-afd5-24d752a361f4\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":4,\"hlc\":\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Techno\\\\Industrial\",\"description\":\"\",\"archived\":false,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"archived\":[],\"deleted_at\":[]}},{\"op_id\":\"2fc1e933-8aba-578f-a0ce-ae70258633e9\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":5,\"hlc\":\"001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Vocal ✓\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"c3961d9e-e461-50a9-9410-4497bc13d8af\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":6,\"hlc\":\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Apagar\",\"description\":\"\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"deleted_at\":[]}},{\"op_id\":\"1536c60b-c3d7-5534-b61e-b3f597ec9b06\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":7,\"hlc\":\"001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":true,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"b71c213d-6801-5cf1-b1e6-e1e8aab60368\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":8,\"hlc\":\"001767225608000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"decision\",\"entity_id\":\"f09cb8e4-27fe-5519-8e11-06d0d9c91986\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000002\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"decision\":false,\"device_source\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"deleted_at\":null},\"base\":{\"user_id\":[],\"track_id\":[],\"research_id\":[],\"decision\":[],\"device_source\":[],\"deleted_at\":[]}},{\"op_id\":\"5684c6ea-8b82-5b9b-89f6-e6920c0b1303\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":9,\"hlc\":\"001767225609000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track_category\",\"entity_id\":\"2e5810ad-aa27-50c7-b2fa-a76203625247\",\"operation\":\"create\",\"fields\":{\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":\"30000000-0000-4000-8000-000000000001\",\"deleted_at\":null},\"base\":{\"track_id\":[],\"research_id\":[],\"category_id\":[],\"deleted_at\":[]}},{\"op_id\":\"71e77187-ce39-573f-a7e0-cd648c115707\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":10,\"hlc\":\"001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist\",\"entity_id\":\"40000000-0000-4000-8000-000000000001\",\"operation\":\"create\",\"fields\":{\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"name\":\"Set de sábado\",\"description\":\"linha 1\\nlinha 2\\ttab\",\"research_id\":\"20000000-0000-4000-8000-000000000001\",\"category_id\":null,\"external_playlist_id\":null,\"deleted_at\":null},\"base\":{\"user_id\":[],\"name\":[],\"description\":[],\"research_id\":[],\"category_id\":[],\"external_playlist_id\":[],\"deleted_at\":[]}},{\"op_id\":\"aea1db60-b2a4-5969-89ee-1d5edb1188f6\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":11,\"hlc\":\"001767225611000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"playlist_track\",\"entity_id\":\"679598f9-bc95-53f8-99c4-b8f0441a740f\",\"operation\":\"create\",\"fields\":{\"playlist_id\":\"40000000-0000-4000-8000-000000000001\",\"track_id\":\"10000000-0000-4000-8000-000000000001\",\"position\":\"a0\",\"deleted_at\":null},\"base\":{\"playlist_id\":[],\"track_id\":[],\"position\":[],\"deleted_at\":[]}},{\"op_id\":\"e8a541fd-f017-5c89-8e96-852bb4e9f3d8\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":12,\"hlc\":\"001767225613000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"category\",\"entity_id\":\"30000000-0000-4000-8000-000000000002\",\"operation\":\"delete\",\"fields\":{\"deleted_at\":\"2026-01-01T00:00:12.000Z\"},\"base\":{\"deleted_at\":[\"001767225606000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"59f06110-5b44-5a62-9140-68d2b350504d\",\"origin\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"seq\":13,\"hlc\":\"001767225626000:000000:aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (PC)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"ae46d9c7-9348-5959-b012-9f5006bc247b\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":1,\"hlc\":\"001767225627000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"name\":\"Techno (celular)\",\"deleted_at\":null},\"base\":{\"name\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}},{\"op_id\":\"9c5a69b1-5106-5dab-b656-6a0a7c831acd\",\"origin\":\"bbbbbbbb-0000-4000-8000-00000000000b\",\"seq\":2,\"hlc\":\"001767225628000:000000:bbbbbbbb-0000-4000-8000-00000000000b\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"entity_type\":\"track\",\"entity_id\":\"10000000-0000-4000-8000-000000000002\",\"operation\":\"update\",\"fields\":{\"artwork_url\":\"https://i1.sndcdn.com/artworks-x-t500x500.jpg\",\"deleted_at\":null},\"base\":{\"artwork_url\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"],\"deleted_at\":[\"001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a\"]}}],\"users\":[{\"id\":\"00000000-0000-4000-8000-000000000001\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}],\"devices\":[{\"id\":\"aaaaaaaa-0000-4000-8000-00000000000a\",\"user_id\":\"00000000-0000-4000-8000-000000000001\",\"device_name\":\"Chrome – “fixture”\",\"public_key\":null,\"pairing_status\":\"self\",\"sync_policy\":\"ask\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"last_sync_at\":null}],\"conflicts\":[{\"id\":\"be56dff5-379b-53e6-8e03-3b7849e8a28e\",\"entity_type\":\"research\",\"entity_id\":\"20000000-0000-4000-8000-000000000002\",\"field\":\"name\",\"created_at\":\"2026-01-01T00:00:27.000Z\"}],\"settings\":{\"activeResearchId\":\"20000000-0000-4000-8000-000000000001\"}},\"sha256\":\"c18a8892b591ac771d98db481c77319ca99e7f5910b80d0f9f239f3868a0d661\"}",
+      "error": "Log de operações inválido."
+    }
+  ]
+}
