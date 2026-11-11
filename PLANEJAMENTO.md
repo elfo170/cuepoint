@@ -454,6 +454,8 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 
 **Ajustes após a Sprint 6:** script `npm run dev` (recompilação automática); teclas digitadas no widget não acionam mais os atalhos do SoundCloud (`keyguard.js` em `document_start`); escritas sem efeito (repetir decisão, categoria, nome ou exclusão) não geram operações.
 
+**Validação real da Sprint 10 (10/11/2026):** PC (Chrome + serviço) ⇄ celular, política "pedir aprovação" nos dois lados. A mesma categoria renomeada no Chrome e no celular antes de sincronizar virou conflito visível nos dois (contador na navegação/barra, valores lado a lado com aparelho e horário); "alterações a enviar" apareceram antes da sync e "Tudo em dia" depois; "Manter este" de um lado + nova sync fechou o conflito nos dois.
+
 **Checkpoint manual concluído (Sprint 6, 10/11/2026):** widget validado pelo usuário no uso real em playlists do SoundCloud no Chrome (PRD §19, Fase 1), sem erros percebidos.
 
 ## Feature: cartão espelho (Android, tela bloqueada)
