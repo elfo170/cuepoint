@@ -24,5 +24,6 @@ captures/
 .env
 *.pem
 
+roadmap.md
 custom-notif-layout.md
 foreground-services.md
