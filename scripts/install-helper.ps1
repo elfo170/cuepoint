@@ -5,7 +5,7 @@
 #  - inicia o serviço no logon (chave HKCU\...\Run) e agora
 #  - opcional: -Firewall cria a regra de entrada no Firewall do Windows (pede administrador)
 #
-# Uso:  npm run helper:install            (ou: powershell -File scripts/install-helper.ps1)
+# Uso:  Instalar.cmd (pacote da release)  ou  npm run helper:install (repositório)
 #       -Browser Chrome|Chromium|Edge     (padrão: Chrome)
 #       -DataDir <pasta>  -AppDir <pasta>  -Pipe <nome>  -Port <n>  -NoAutostart  -Firewall
 param(
@@ -22,11 +22,25 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $hostName = 'com.cuepoint.helper'
 
-$node = (Get-Command node -ErrorAction Stop).Source
-$bundle = Join-Path $root 'packages\helper\dist\cuepoint-helper.mjs'
+# Node.js 22.13+ (o serviço usa node:sqlite, sem dependências nativas)
+$nodeCmd = Get-Command node -ErrorAction SilentlyContinue
+if (-not $nodeCmd) {
+    throw 'Node.js não encontrado. Instale a versão LTS em https://nodejs.org (22.13 ou mais nova) e rode o instalador de novo.'
+}
+$node = $nodeCmd.Source
+$nodeVersion = [version]((& $node --version).TrimStart('v'))
+if ($nodeVersion -lt [version]'22.13.0') {
+    throw "Node.js $nodeVersion é antigo demais. Instale a versão LTS em https://nodejs.org (22.13 ou mais nova)."
+}
+
+# Pacote da release: o serviço vem pronto ao lado deste script. No repositório: packages/helper/dist.
+$bundle = Join-Path $PSScriptRoot 'cuepoint-helper.mjs'
 if (-not (Test-Path $bundle)) {
-    Write-Host 'Gerando o serviço (npm run build -w @cuepoint/helper)...'
-    Push-Location $root; npm run build -w '@cuepoint/helper' | Out-Null; Pop-Location
+    $bundle = Join-Path $root 'packages\helper\dist\cuepoint-helper.mjs'
+    if (-not (Test-Path $bundle)) {
+        Write-Host 'Gerando o serviço (npm run build -w @cuepoint/helper)...'
+        Push-Location $root; npm run build -w '@cuepoint/helper' | Out-Null; Pop-Location
+    }
 }
 
 $base = Join-Path $env:LOCALAPPDATA 'CuePoint'

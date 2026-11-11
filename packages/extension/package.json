@@ -1,6 +1,6 @@
 {
   "name": "@cuepoint/extension",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -27,7 +27,7 @@
     "vite": "^8.3.6"
   },
   "dependencies": {
-    "@cuepoint/core": "^0.1.0",
+    "@cuepoint/core": "^1.0.0",
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",
     "lucide-react": "^1.70.0",

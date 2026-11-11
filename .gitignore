@@ -20,6 +20,9 @@ android/keystore.properties
 *.keystore
 captures/
 
+# Arquivos gerados para as releases (publicados na página de releases, não no git)
+release/
+
 # Segredos locais
 .env
 *.pem
