@@ -450,6 +450,7 @@ Escopo original (seção *Sprints*), com o que já se sabe:
 ### Sprint 15 — P3: API do SoundCloud e preparação multiusuário
 
 Escopo original (seção *Sprints*):
+
 - `docs/SOUNDCLOUD_API.md` com a validação das permissões da API oficial. Com credenciais OAuth de app do SoundCloud: exportar playlist interna (`chrome.identity.launchWebAuthFlow` + PKCE, token protegido). **Sem credenciais: nenhuma operação via API** (PRD §11.2) — ficam só os exports locais.
 - Isolamento por `user_id` nos repositórios e na sincronização (operações de outro usuário recusadas), com testes; `docs/MULTIUSUARIO.md` com o desenho do compartilhamento por convite.
 - **Pergunta ao usuário no início:** se existem credenciais de app OAuth do SoundCloud.
