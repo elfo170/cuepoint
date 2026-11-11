@@ -207,7 +207,8 @@ celular antigo.
 - **Integração com o SoundCloud para criar e atualizar playlists**: enviar as playlists do
   CuePoint direto para a sua conta e mantê-las atualizadas.
 - Sincronização direta entre dois celulares.
-- Compartilhamento de bibliotecas por convite (vários usuários).
+- Compartilhamento de bibliotecas por convite.
+- Múltiplos dispositivos.
 
 ## 10. Para desenvolvedores
 
