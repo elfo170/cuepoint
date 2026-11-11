@@ -163,4 +163,70 @@ export const SCENARIOS: Scenario[] = [
       sync(B, C);
     },
   },
+  {
+    name: 'resolucao-de-exclusao',
+    description:
+      'Excluir × editar resolvido com "restaurar": a resolução grava só deleted_at e o registro volta com a edição.',
+    run: ({ A, B, sync }) => {
+      seedResearch(A, IDS.research1, 'Techno');
+      sync(A, B);
+      A.delete('research', IDS.research1);
+      B.put('research', IDS.research1, { description: 'ainda uso' });
+      sync(A, B);
+      B.resolve('research', IDS.research1, 'deleted_at', null);
+    },
+  },
+  {
+    name: 'resolucao-nao-decide-exclusao',
+    description:
+      'Resolver um campo (nome) não ressuscita o registro nem fecha, por tabela, o conflito de exclusão.',
+    run: ({ A, B, sync }) => {
+      seedResearch(A, IDS.research1, 'Techno');
+      sync(A, B);
+      A.put('research', IDS.research1, { name: 'Techno Groovy' });
+      A.delete('research', IDS.research1);
+      B.put('research', IDS.research1, { name: 'Techno Peak' });
+      sync(A, B);
+      A.resolve('research', IDS.research1, 'name', 'Techno Peak');
+    },
+  },
+  {
+    name: 'escrita-concorrente-diverge',
+    description:
+      'Escrita local marcada como concorrente (dados de uma faixa provisória reapontados para a definitiva): valor divergente vira conflito; valor igual, não.',
+    run: ({ A, B, sync }) => {
+      seedTrack(A);
+      seedResearch(A, IDS.research1, 'Latin Bass');
+      seedResearch(A, IDS.research2, 'Techno Groovy');
+      decide(A, IDS.trackA, IDS.research1, true, d1);
+      decide(A, IDS.trackA, IDS.research2, true, d2);
+      sync(A, B);
+      B.put(
+        'decision',
+        d1,
+        {
+          user_id: IDS.user,
+          track_id: IDS.trackA,
+          research_id: IDS.research1,
+          decision: false,
+          device_source: B.deviceId,
+        },
+        undefined,
+        { concurrent: true },
+      );
+      B.put(
+        'decision',
+        d2,
+        {
+          user_id: IDS.user,
+          track_id: IDS.trackA,
+          research_id: IDS.research2,
+          decision: true,
+          device_source: B.deviceId,
+        },
+        undefined,
+        { concurrent: true },
+      );
+    },
+  },
 ];

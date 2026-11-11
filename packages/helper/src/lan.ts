@@ -1,4 +1,5 @@
 import {
+  mergeVersionVectors,
   formatPairingUri,
   pairingCode,
   parsePairingUri,
@@ -14,7 +15,7 @@ import type { AddressInfo } from 'node:net';
 import { networkInterfaces } from 'node:os';
 import type { TLSSocket } from 'node:tls';
 import { NonceCache, signRequest, verifyRequest } from './auth';
-import type { Peer, SyncPolicy } from './db';
+import { vvOf, type Peer, type SyncPolicy } from './db';
 import type { Helper } from './helper';
 import { spkiFingerprint } from './identity';
 
@@ -163,11 +164,19 @@ export class Lan {
       const limit = Math.min(Number(payload.limit ?? PULL_LIMIT), PULL_LIMIT);
       const page = this.helper.db.opsSince((payload.vv as VersionVector) ?? {}, limit);
       this.helper.db.markForwarded(page.ops);
+      // o par tinha `vv` e agora recebe esta página
+      this.helper.db.noteKnown(
+        peer.device_id,
+        mergeVersionVectors((payload.vv as VersionVector) ?? {}, vvOf(page.ops)),
+      );
       if (!page.more) this.recordRun(peer.device_id, 'in', 0, page.ops.length);
       return { ...page, vv: this.helper.db.versionVector() };
     }
     if (method === 'POST' && path === '/v1/sync/push') {
-      const inserted = this.helper.db.insertOps((payload.ops as unknown[]) ?? []);
+      const pushed = (payload.ops as unknown[]) ?? [];
+      const inserted = this.helper.db.insertOps(pushed);
+      // quem enviou tem, no mínimo, o que enviou (validado por insertOps)
+      this.helper.db.noteKnown(peer.device_id, vvOf(pushed as Op[]));
       if (inserted.length) {
         this.helper.emit('changed');
         this.helper.emit('ops', inserted.length);
@@ -325,6 +334,9 @@ export class Lan {
       ...p,
       approval_pending: this.pendingApprovals.has(p.device_id),
       approved_until: this.approvals.get(p.device_id) ?? null,
+      // alterações que o par ainda não tem (null = ainda não houve troca com ele)
+      pending: p.known_vv ? this.helper.db.pendingFor(p.known_vv) : null,
+      last_run: this.helper.db.runs(p.device_id, 1)[0] ?? null,
     }));
   }
 
@@ -481,6 +493,8 @@ export class Lan {
         this.helper.db.markForwarded(batch);
         sent += batch.length;
       }
+      // depois do pull + push, o par tem o que tinha mais tudo o que foi enviado
+      this.helper.db.noteKnown(peerId, mergeVersionVectors(remoteVv, vvOf(outgoing)));
       this.helper.db.finishRun(run, { received, sent, status: 'ok' });
       this.helper.db.updatePeer(peerId, { last_sync_at: new Date().toISOString() });
       if (received) {

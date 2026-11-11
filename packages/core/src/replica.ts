@@ -23,12 +23,19 @@ export function buildLocalOp<T extends EntityType>(params: {
   hlc: string;
   userId: string;
   operation?: OpKind;
+  /**
+   * Escrita que não viu o estado atual (base vazia): se o valor divergir, vira conflito em vez
+   * de sobrescrever. Usada ao reapontar dados de uma faixa provisória para a definitiva.
+   */
+  concurrent?: boolean;
 }): Op {
   const { type, id, current, origin, seq, hlc, userId } = params;
   const fields = { ...(params.changes as Record<string, JsonValue>) };
   // Toda escrita afirma que o registro está vivo, exceto a própria exclusão. Assim,
-  // "editar × excluir" concorrentes viram conflito em vez de perda silenciosa.
-  if (!('deleted_at' in fields)) fields.deleted_at = null;
+  // "editar × excluir" concorrentes viram conflito em vez de perda silenciosa. A resolução de
+  // conflito grava só o campo escolhido: resolver um campo não pode ressuscitar um registro
+  // excluído nem decidir, por tabela, um conflito de exclusão.
+  if (!('deleted_at' in fields) && params.operation !== 'resolve') fields.deleted_at = null;
   const merged = { ...(current ?? {}), ...fields };
   const { _v, _c, id: _id, created_at, updated_at, ...data } = merged as Record<string, unknown>;
   void _v;
@@ -49,7 +56,9 @@ export function buildLocalOp<T extends EntityType>(params: {
     entity_id: id,
     operation,
     fields,
-    base: baseFor(current, Object.keys(fields)),
+    base: params.concurrent
+      ? Object.fromEntries(Object.keys(fields).map((f) => [f, [] as string[]]))
+      : baseFor(current, Object.keys(fields)),
   };
 }
 
@@ -100,6 +109,7 @@ export class Replica {
     id: string,
     changes: Partial<EntityDataMap[T]>,
     operation?: OpKind,
+    opts: { concurrent?: boolean } = {},
   ): Op {
     const op = buildLocalOp({
       type,
@@ -111,6 +121,7 @@ export class Replica {
       hlc: this.clock.tick(),
       userId: this.userId,
       operation,
+      concurrent: opts.concurrent,
     });
     this.seq += 1;
     this.applyAndLog(op);

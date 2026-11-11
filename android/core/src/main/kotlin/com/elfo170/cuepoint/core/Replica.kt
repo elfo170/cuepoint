@@ -18,8 +18,14 @@ class Replica(val deviceId: String, val userId: String, now: () -> Long = System
 
     fun get(type: EntityType, id: String) = records["${type.key}:$id"]
 
-    fun put(type: EntityType, id: String, changes: Map<String, JsonElement>, operation: String? = null): Op {
-        val op = Merge.buildLocalOp(type, id, get(type, id), changes, deviceId, seq + 1, clock.tick(), userId, operation)
+    fun put(
+        type: EntityType,
+        id: String,
+        changes: Map<String, JsonElement>,
+        operation: String? = null,
+        concurrent: Boolean = false,
+    ): Op {
+        val op = Merge.buildLocalOp(type, id, get(type, id), changes, deviceId, seq + 1, clock.tick(), userId, operation, concurrent)
         seq += 1
         applyAndLog(op)
         return op

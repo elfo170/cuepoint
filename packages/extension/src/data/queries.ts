@@ -146,3 +146,20 @@ export function categoryUsage(s: Snapshot): CategoryUsage[] {
     }))
     .sort((a, b) => a.category.name.localeCompare(b.category.name, 'pt-BR'));
 }
+
+/**
+ * Categorias vivas com o mesmo nome (sem espaços nas pontas, sem diferenciar maiúsculas) —
+ * típico de categorias criadas em aparelhos diferentes. Em cada grupo, a primeira é o destino da
+ * junção: a mais antiga (desempate pelo id), para que todos os aparelhos escolham a mesma.
+ * Mesma regra no Android (`Queries.categoryDuplicates`).
+ */
+export function categoryDuplicates(categories: Category[]): Category[][] {
+  const groups = new Map<string, Category[]>();
+  for (const c of categories) {
+    const key = c.name.trim().toLocaleLowerCase('pt-BR');
+    groups.set(key, [...(groups.get(key) ?? []), c]);
+  }
+  const older = (a: Category, b: Category) =>
+    a.created_at !== b.created_at ? (a.created_at < b.created_at ? -1 : 1) : a.id < b.id ? -1 : 1;
+  return [...groups.values()].filter((g) => g.length > 1).map((g) => [...g].sort(older));
+}

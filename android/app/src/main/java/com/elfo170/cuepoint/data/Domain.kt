@@ -31,9 +31,13 @@ data class Research(val id: String, val name: String, val description: String, v
     }
 }
 
-data class Category(val id: String, val name: String, val description: String, val deleted: Boolean) {
+data class Category(
+    val id: String, val name: String, val description: String, val deleted: Boolean, val createdAt: String = "",
+) {
     companion object {
-        fun of(o: JsonObject) = Category(o.s("id")!!, o.s("name") ?: "", o.s("description") ?: "", !o.alive())
+        fun of(o: JsonObject) = Category(
+            o.s("id")!!, o.s("name") ?: "", o.s("description") ?: "", !o.alive(), o.s("created_at") ?: "",
+        )
     }
 }
 

@@ -1,4 +1,17 @@
-import { opsMissingFrom, validateOp, type Op, type VersionVector } from '@cuepoint/core';
+import {
+  mergeVersionVectors,
+  opsMissingFrom,
+  validateOp,
+  type Op,
+  type VersionVector,
+} from '@cuepoint/core';
+
+/** Maior seq por origem num conjunto de operações. */
+export function vvOf(ops: Pick<Op, 'origin' | 'seq'>[]): VersionVector {
+  const vv: VersionVector = {};
+  for (const o of ops) vv[o.origin] = Math.max(vv[o.origin] ?? 0, o.seq);
+  return vv;
+}
 import { DatabaseSync } from 'node:sqlite';
 
 export type PeerStatus = 'pending' | 'paired' | 'revoked';
@@ -20,6 +33,8 @@ export interface Peer {
   paired_at: string;
   last_sync_at: string | null;
   last_seen_at: string | null;
+  /** O que este par já tem (vetor de versões), visto na última troca; base das pendências. */
+  known_vv?: VersionVector;
 }
 
 export interface SyncRun {
@@ -89,6 +104,25 @@ export class HelperDb {
       seq: number;
     }[];
     return Object.fromEntries(rows.map((r) => [r.origin, Number(r.seq)]));
+  }
+
+  /**
+   * Quantas operações daqui faltam para quem tem `vv` (alterações a enviar a um par).
+   * As sequências de cada origem são contínuas (entrega causal), então basta a diferença.
+   */
+  pendingFor(vv: VersionVector): number {
+    let n = 0;
+    for (const [origin, max] of Object.entries(this.versionVector())) {
+      n += Math.max(0, max - (vv[origin] ?? 0));
+    }
+    return n;
+  }
+
+  /** Registra que o par tem (pelo menos) o que `vv` indica. */
+  noteKnown(peerId: string, vv: VersionVector): void {
+    const peer = this.peer(peerId);
+    if (!peer) return;
+    this.savePeer({ ...peer, known_vv: mergeVersionVectors(peer.known_vv ?? {}, vv) });
   }
 
   count(): number {

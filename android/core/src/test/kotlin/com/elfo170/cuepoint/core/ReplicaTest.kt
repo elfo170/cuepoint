@@ -35,6 +35,40 @@ class ReplicaTest {
     }
 
     @Test
+    fun resolvingAFieldDoesNotDecideTheDeletionConflict() {
+        val now = clock()
+        val a = Replica("aaaaaaaa-0000-4000-8000-00000000000a", user, now)
+        val b = Replica("bbbbbbbb-0000-4000-8000-00000000000b", user, now)
+        seed(a)
+        b.receive(a.opsSince(b.vv))
+        a.put(EntityType.RESEARCH, research, mapOf("name" to JsonPrimitive("A")))
+        a.delete(EntityType.RESEARCH, research)
+        b.put(EntityType.RESEARCH, research, mapOf("name" to JsonPrimitive("B")))
+        b.receive(a.opsSince(b.vv)); a.receive(b.opsSince(a.vv))
+        assertEquals(listOf("deleted_at", "name"), a.conflicts().map { it.field }.sorted())
+        val op = a.put(EntityType.RESEARCH, research, mapOf("name" to JsonPrimitive("B")), "resolve")
+        assertEquals(setOf("name"), op.fields.keys)
+        b.receive(a.opsSince(b.vv))
+        assertEquals(listOf("deleted_at"), b.conflicts().map { it.field })
+        // restaurar: resolve só deleted_at
+        b.put(EntityType.RESEARCH, research, mapOf("deleted_at" to kotlinx.serialization.json.JsonNull), "resolve")
+        a.receive(b.opsSince(a.vv))
+        assertTrue(a.conflicts().isEmpty())
+        assertTrue(Merge.isAlive(a.get(EntityType.RESEARCH, research)!!))
+    }
+
+    @Test
+    fun concurrentWriteConflictsOnlyWhenValueDiffers() {
+        val a = Replica("aaaaaaaa-0000-4000-8000-00000000000a", user, clock())
+        seed(a)
+        a.put(EntityType.RESEARCH, research, mapOf("name" to JsonPrimitive("Techno")), concurrent = true)
+        assertTrue(a.conflicts().isEmpty())
+        val op = a.put(EntityType.RESEARCH, research, mapOf("name" to JsonPrimitive("Outro")), concurrent = true)
+        assertTrue(op.base.values.all { it.isEmpty() })
+        assertEquals(listOf("name"), a.conflicts().map { it.field })
+    }
+
+    @Test
     fun validationAndNoop() {
         val a = Replica("aaaaaaaa-0000-4000-8000-00000000000a", user, clock())
         seed(a)

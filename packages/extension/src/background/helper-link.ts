@@ -39,6 +39,8 @@ export class HelperLink {
   private syncing: Promise<void> | null = null;
   private listeners = new Set<(event: string, data: unknown) => void>();
   status: HelperStatus = { state: 'absent', error: null, info: null, lastSyncAt: null };
+  /** Chamado depois de receber operações (ex.: associar faixas provisórias às definitivas). */
+  afterReceive: (() => Promise<unknown>) | null = null;
 
   constructor(
     private readonly store: Store,
@@ -141,15 +143,17 @@ export class HelperLink {
           await this.request({ type: 'push', ops: batch });
           await this.store.markSent(batch);
         }
+        let received = 0;
         for (;;) {
           const res = await this.request<{ ops: Op[]; more: boolean }>({
             type: 'pull',
             vv: await this.store.versionVector(),
             limit: BATCH,
           });
-          if (res.ops.length) await this.store.receive(res.ops);
+          if (res.ops.length) received += await this.store.receive(res.ops);
           if (!res.more || !res.ops.length) break;
         }
+        if (received && this.afterReceive) await this.afterReceive();
         this.status = {
           ...this.status,
           lastSyncAt: new Date().toISOString(),

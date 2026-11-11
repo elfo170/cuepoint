@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
+import androidx.compose.material.icons.filled.CallSplit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +49,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.elfo170.cuepoint.container
 import com.elfo170.cuepoint.ui.screens.CategoriesScreen
+import com.elfo170.cuepoint.ui.screens.ConflictsScreen
 import com.elfo170.cuepoint.ui.screens.CurateScreen
 import com.elfo170.cuepoint.ui.screens.DevicesScreen
 import com.elfo170.cuepoint.ui.screens.PlaylistDetailScreen
@@ -53,6 +58,7 @@ import com.elfo170.cuepoint.ui.screens.ResearchDetailScreen
 import com.elfo170.cuepoint.ui.screens.ResearchesScreen
 import com.elfo170.cuepoint.ui.screens.TracksScreen
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private data class Dest(val route: String, val label: String, val icon: ImageVector)
@@ -73,6 +79,8 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
     val route = entry?.destination?.route
     val isTab = TABS.any { it.route == route }
     val pendingPair by LocalContext.current.container.pendingPairUri.collectAsStateWithLifecycle()
+    val dao = LocalContext.current.container.db.dao()
+    val conflicts by remember { dao.observeConflicts().map { it.size } }.collectAsStateWithLifecycle(0)
     LaunchedEffect(pendingPair) { if (pendingPair != null && route != "devices") nav.navigate("devices") }
 
     Scaffold(
@@ -85,6 +93,13 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
                     }
                 },
                 actions = {
+                    if (conflicts > 0 && route != "conflicts") {
+                        IconButton(onClick = { nav.navigate("conflicts") }) {
+                            BadgedBox(badge = { Badge { Text("$conflicts") } }) {
+                                Icon(Icons.Filled.CallSplit, contentDescription = "Conflitos: $conflicts")
+                            }
+                        }
+                    }
                     IconButton(onClick = { nav.navigate("settings") }) { Icon(Icons.Filled.Settings, contentDescription = "Configurações") }
                 },
             )
@@ -121,18 +136,22 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
             composable("categories") { CategoriesScreen() }
             composable("playlists") { PlaylistsScreen(onOpen = { nav.navigate("playlist/$it") }) }
             composable("playlist/{id}") { PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }) }
-            composable("settings") { SettingsScreen(onDevices = { nav.navigate("devices") }) }
+            composable("settings") {
+                SettingsScreen(onDevices = { nav.navigate("devices") }, onConflicts = { nav.navigate("conflicts") })
+            }
             composable("devices") { DevicesScreen() }
+            composable("conflicts") { ConflictsScreen() }
         }
     }
 }
 
 @Composable
-fun SettingsScreen(onDevices: () -> Unit = {}) {
+fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}) {
     val app = LocalContext.current.container
     val scope = rememberCoroutineScope()
     val ops by app.db.dao().observeEventCount().collectAsStateWithLifecycle(0)
     val pending by app.db.dao().observePendingCount().collectAsStateWithLifecycle(0)
+    val conflicts by remember { app.db.dao().observeConflicts().map { it.size } }.collectAsStateWithLifecycle(0)
     var name by remember { mutableStateOf("") }
     var deviceId by remember { mutableStateOf("") }
     var saved by remember { mutableStateOf(false) }
@@ -144,6 +163,9 @@ fun SettingsScreen(onDevices: () -> Unit = {}) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Configurações", style = MaterialTheme.typography.headlineSmall)
         Button(onClick = onDevices, modifier = Modifier.fillMaxWidth()) { Text("Dispositivos e sincronização") }
+        OutlinedButton(onClick = onConflicts, modifier = Modifier.fillMaxWidth()) {
+            Text(if (conflicts == 0) "Conflitos: nenhum" else "Resolver conflitos ($conflicts)")
+        }
         OutlinedTextField(name, { name = it; saved = false }, label = { Text("Nome do aparelho") }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Button(onClick = { scope.launch { app.store.renameDevice(name); saved = true } }, enabled = name.isNotBlank()) { Text("Salvar") }
         if (saved) Text("Nome salvo.")

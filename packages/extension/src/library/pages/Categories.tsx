@@ -1,8 +1,15 @@
-import { Check, Pencil, Plus, X } from 'lucide-react';
+import { Check, Combine, Pencil, Plus, X } from 'lucide-react';
 import { useState } from 'react';
-import { categoryUsage } from '../../data/queries';
+import { categoryDuplicates, categoryUsage } from '../../data/queries';
 import { curation, mutate, useSnapshot } from '../api';
-import { buttonClass, ConfirmButton, EmptyState, inputClass, PageHeader } from '../components';
+import {
+  buttonClass,
+  ConfirmButton,
+  EmptyState,
+  inputClass,
+  PageHeader,
+  secondaryButtonClass,
+} from '../components';
 
 export function CategoriesPage() {
   const snapshot = useSnapshot();
@@ -12,6 +19,8 @@ export function CategoriesPage() {
   );
   if (!snapshot) return null;
   const usage = categoryUsage(snapshot);
+  const duplicates = categoryDuplicates(snapshot.categories);
+  const uses = (id: string) => usage.find((u) => u.category.id === id)?.uses ?? 0;
 
   return (
     <>
@@ -39,6 +48,46 @@ export function CategoriesPage() {
           <Plus size={15} aria-hidden /> Criar
         </button>
       </form>
+
+      {duplicates.length > 0 && (
+        <section
+          data-testid="category-duplicates"
+          className="mb-6 max-w-2xl rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-800 dark:bg-amber-950/30"
+        >
+          <p className="font-medium">Categorias com o mesmo nome</p>
+          <p className="mt-1 mb-3 text-neutral-600 dark:text-neutral-400">
+            Provavelmente criadas em aparelhos diferentes. Juntar move todas as classificações para
+            a mais antiga e exclui as outras.
+          </p>
+          <ul className="space-y-2">
+            {duplicates.map((group) => (
+              <li key={group[0]!.id} className="flex flex-wrap items-center gap-3">
+                <span>
+                  <strong>{group[0]!.name}</strong>{' '}
+                  <span className="text-neutral-500">
+                    ({group.length} categorias, {group.reduce((n, c) => n + uses(c.id), 0)}{' '}
+                    classificação(ões))
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className={secondaryButtonClass}
+                  onClick={() =>
+                    void mutate(() =>
+                      curation.mergeCategories(
+                        group[0]!.id,
+                        group.slice(1).map((c) => c.id),
+                      ),
+                    )
+                  }
+                >
+                  <Combine size={15} aria-hidden /> Juntar
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {usage.length === 0 ? (
         <EmptyState>Nenhuma categoria ainda.</EmptyState>

@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 import { db, mutate, store } from '../api';
 import { buttonClass, inputClass, PageHeader } from '../components';
 
@@ -74,18 +75,25 @@ export function SettingsPage() {
       </section>
 
       <section className="max-w-xl rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-        <h2 className="mb-1 font-semibold">Preparado para sincronização</h2>
+        <h2 className="mb-1 font-semibold">Registro de alterações</h2>
         <p className="mb-3 text-sm text-neutral-500">
-          Todas as alterações ficam registradas num log local, pronto para a sincronização entre
-          aparelhos (próxima fase). Nada é apagado automaticamente.
+          Todas as alterações ficam registradas num log local, que é o que a sincronização troca com
+          os outros aparelhos. Nada é apagado automaticamente.
         </p>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
           <dt className="text-neutral-500">Operações registradas</dt>
           <dd data-testid="ops-count">{info.ops}</dd>
-          <dt className="text-neutral-500">Ainda não sincronizadas</dt>
+          <dt className="text-neutral-500">Ainda não entregues ao serviço auxiliar</dt>
           <dd>{info.pending}</dd>
           <dt className="text-neutral-500">Conflitos abertos</dt>
-          <dd>{info.conflicts}</dd>
+          <dd>
+            {info.conflicts}
+            {info.conflicts > 0 && (
+              <Link to="/conflicts" className="ml-2 text-orange-700 underline">
+                resolver
+              </Link>
+            )}
+          </dd>
         </dl>
       </section>
     </>

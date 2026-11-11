@@ -194,7 +194,8 @@ export class Curation {
   /**
    * Associa uma faixa provisória a uma definitiva (PRD §8.2): decisões, classificações e itens
    * de playlist passam para a definitiva; a provisória fica marcada com `merged_into`.
-   * Decisões divergentes na mesma pesquisa permanecem na definitiva como estavam (não sobrescreve).
+   * Se a definitiva já tem outra decisão na mesma pesquisa, a da provisória entra como escrita
+   * concorrente: valores diferentes viram conflito (nada é descartado em silêncio).
    */
   async mergeTracks(fromId: string, intoId: string): Promise<void> {
     if (fromId === intoId) return;
@@ -206,15 +207,19 @@ export class Curation {
       for (const d of decisions) {
         const targetId = decisionId(intoId, d.research_id);
         const target = await tx.get('decision', targetId);
-        if (!alive(target)) {
-          await tx.put('decision', targetId, {
+        await tx.put(
+          'decision',
+          targetId,
+          {
             user_id: d.user_id,
             track_id: intoId,
             research_id: d.research_id,
             decision: d.decision,
             device_source: d.device_source,
-          });
-        }
+          },
+          undefined,
+          { concurrent: alive(target) },
+        );
         await tx.put('decision', d.id, { deleted_at: now }, 'delete');
       }
       const links = (
@@ -243,6 +248,71 @@ export class Curation {
         await tx.put('playlist_track', item.id, { deleted_at: now }, 'delete');
       }
       await tx.put('track', fromId, { merged_into: intoId });
+    });
+  }
+
+  /**
+   * Associa faixas provisórias às definitivas que chegaram de outro aparelho (rodar depois de
+   * receber operações). Casa pela mesma URL ou, sem URL, por título e artista idênticos — a mesma
+   * regra da identificação local; casamentos ambíguos (duas definitivas) ficam de fora.
+   * Retorna quantas provisórias foram associadas.
+   */
+  async reconcileProvisional(): Promise<number> {
+    await this.store.init();
+    const tracks = (await this.db.tracks.toArray()).filter(alive);
+    const definitive = tracks.filter((t) => t.soundcloud_urn && !t.merged_into);
+    const index = (key: (t: Track) => string | null) => {
+      const map = new Map<string, Track | null>();
+      for (const t of definitive) {
+        const k = key(t);
+        if (k !== null) map.set(k, map.has(k) ? null : t); // null = ambíguo
+      }
+      return map;
+    };
+    const byUrl = index((t) => t.soundcloud_url);
+    const byName = index((t) => `${t.title}\u0000${t.artist}`);
+    let merged = 0;
+    for (const p of tracks.filter((t) => !t.soundcloud_urn && !t.merged_into)) {
+      const target = p.soundcloud_url
+        ? byUrl.get(p.soundcloud_url)
+        : byName.get(`${p.title}\u0000${p.artist}`);
+      if (!target) continue;
+      await this.mergeTracks(p.id, target.id);
+      merged += 1;
+    }
+    return merged;
+  }
+
+  /**
+   * Junta categorias com o mesmo nome (criadas em aparelhos diferentes) na de destino:
+   * classificações e playlists passam para ela, e as demais são excluídas.
+   */
+  async mergeCategories(intoId: string, fromIds: string[]): Promise<void> {
+    const sources = fromIds.filter((id) => id !== intoId);
+    if (!sources.length) return;
+    await this.store.write(async (tx) => {
+      const now = new Date().toISOString();
+      for (const fromId of sources) {
+        const links = (
+          await this.db.track_categories.where('category_id').equals(fromId).toArray()
+        ).filter(alive);
+        for (const l of links) {
+          const target = trackCategoryId(l.track_id, l.research_id, intoId);
+          if (!alive(await tx.get('track_category', target))) {
+            await tx.put('track_category', target, {
+              track_id: l.track_id,
+              research_id: l.research_id,
+              category_id: intoId,
+            });
+          }
+          await tx.put('track_category', l.id, { deleted_at: now }, 'delete');
+        }
+        const playlists = (
+          await this.db.playlists.where('category_id').equals(fromId).toArray()
+        ).filter(alive);
+        for (const p of playlists) await tx.put('playlist', p.id, { category_id: intoId });
+        await tx.put('category', fromId, { deleted_at: now }, 'delete');
+      }
     });
   }
 

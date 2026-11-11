@@ -31,7 +31,17 @@ private data class IdentityMeta(val userId: String, val deviceId: String)
 
 /** Transação de escrita: cada `put` gera uma operação no log (exceto escritas sem efeito). */
 interface WriteTx {
-    suspend fun put(type: EntityType, id: String, changes: Map<String, JsonElement>, operation: String? = null): JsonObject
+    /**
+     * Grava as alterações. Com [concurrent], a escrita não "viu" o estado atual: valor divergente
+     * vira conflito em vez de sobrescrever (ver `Merge.buildLocalOp`).
+     */
+    suspend fun put(
+        type: EntityType,
+        id: String,
+        changes: Map<String, JsonElement>,
+        operation: String? = null,
+        concurrent: Boolean = false,
+    ): JsonObject
     suspend fun get(type: EntityType, id: String): JsonObject?
 }
 
@@ -90,12 +100,21 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
                 val clock = HlcClock(id.deviceId, state.last, now)
                 val tx = object : WriteTx {
                     override suspend fun get(type: EntityType, id: String) = this@Store.get(type, id)
-                    override suspend fun put(type: EntityType, id: String, changes: Map<String, JsonElement>, operation: String?): JsonObject {
+                    override suspend fun put(
+                        type: EntityType,
+                        id: String,
+                        changes: Map<String, JsonElement>,
+                        operation: String?,
+                        concurrent: Boolean,
+                    ): JsonObject {
                         val current = get(type, id)
                         val fields = changes.toMutableMap().apply { if ("deleted_at" !in this) put("deleted_at", JsonNull) }
                         if (operation != "resolve" && Merge.isNoopWrite(current, fields)) return current!!
                         seq += 1
-                        val op = Merge.buildLocalOp(type, id, current, changes, this@Store.identity!!.deviceId, seq, clock.tick(), this@Store.identity!!.userId, operation)
+                        val op = Merge.buildLocalOp(
+                            type, id, current, changes, this@Store.identity!!.deviceId, seq, clock.tick(),
+                            this@Store.identity!!.userId, operation, concurrent,
+                        )
                         touched += type
                         return applyAndLog(op, "local_pending")
                     }
@@ -150,6 +169,24 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
     }
 
     suspend fun versionVector(): Map<String, Long> = dao.versionVector().associate { it.origin to it.seq }
+
+    /**
+     * Quantas operações daqui faltam para quem tem [vv]. As sequências de cada origem são
+     * contínuas (entrega causal), então basta a diferença por origem.
+     */
+    suspend fun pendingFor(vv: Map<String, Long>): Int =
+        versionVector().entries.sumOf { (origin, max) -> maxOf(0L, max - (vv[origin] ?: 0L)) }.toInt()
+
+    /** O que o par [peerId] já tem, visto na última troca com ele (null: ainda não houve troca). */
+    suspend fun knownBy(peerId: String): Map<String, Long>? =
+        getMeta("sync.known.$peerId")?.let { Merge.json.decodeFromString<Map<String, Long>>(it) }
+
+    /** Registra que o par tem (pelo menos) o que [vv] indica. */
+    suspend fun noteKnown(peerId: String, vv: Map<String, Long>) {
+        val prev = knownBy(peerId).orEmpty()
+        val merged = (prev.keys + vv.keys).associateWith { k -> maxOf(prev[k] ?: 0L, vv[k] ?: 0L) }
+        setMeta("sync.known.$peerId", Merge.json.encodeToString(merged))
+    }
 
     suspend fun opsSince(remote: Map<String, Long>): List<Op> =
         dao.events().filter { it.seq > (remote[it.origin] ?: 0) }.map { Merge.json.decodeFromString<Op>(it.json) }

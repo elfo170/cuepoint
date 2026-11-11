@@ -8,6 +8,8 @@ import { HelperLink } from './helper-link';
 const store = new Store();
 const curation = new Curation(store);
 const helper = new HelperLink(store);
+// Provisórias daqui cuja definitiva chegou de outro aparelho são associadas na hora.
+helper.afterReceive = () => curation.reconcileProvisional();
 const HELPER_ALARM = 'cuepoint-helper';
 
 /** Tipos de mensagem que a biblioteca pode repassar ao serviço auxiliar. */

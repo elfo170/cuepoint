@@ -30,6 +30,31 @@ export interface PeerView {
   last_seen_at: string | null;
   approval_pending: boolean;
   approved_until: number | null;
+  /** Alterações que o par ainda não tem (null: ainda não houve troca com ele). */
+  pending?: number | null;
+  last_run?: {
+    direction: 'in' | 'out';
+    finished_at: string | null;
+    started_at: string;
+    received: number;
+    sent: number;
+    status: 'ok' | 'error' | 'running' | 'approval_required';
+    error: string | null;
+  } | null;
+}
+
+const RUN_STATUS: Record<string, string> = {
+  ok: 'concluída',
+  error: 'falhou',
+  running: 'em andamento',
+  approval_required: 'aguardando aprovação',
+};
+
+/** "Última execução: concluída · 3 recebidas, 2 enviadas" (ou o erro). */
+export function describeRun(run: NonNullable<PeerView['last_run']>): string {
+  const status = RUN_STATUS[run.status] ?? run.status;
+  if (run.status === 'error') return `${status}${run.error ? ` (${run.error})` : ''}`;
+  return `${status} · ${run.received} recebida(s), ${run.sent} enviada(s)`;
 }
 
 const helperRequest = <T,>(req: Record<string, unknown>) =>
@@ -252,6 +277,22 @@ export function PeersSection() {
                   Última sync: {fmt(p.last_sync_at)}
                 </span>
               </div>
+              {p.status === 'paired' && (
+                <p className="text-sm text-neutral-500" data-testid="peer-sync-state">
+                  {p.pending == null
+                    ? 'Ainda sem troca de dados com este aparelho.'
+                    : p.pending === 0
+                      ? 'Tudo em dia: nenhuma alteração a enviar.'
+                      : `${p.pending} alteração(ões) a enviar.`}
+                  {p.last_run && (
+                    <>
+                      {' '}
+                      Última execução ({fmt(p.last_run.finished_at ?? p.last_run.started_at)}):{' '}
+                      {describeRun(p.last_run)}.
+                    </>
+                  )}
+                </p>
+              )}
               {p.status === 'pending' && (
                 <div className="flex flex-wrap items-center gap-3 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/30">
                   <ShieldAlert size={16} className="text-amber-600" aria-hidden />

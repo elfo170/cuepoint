@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elfo170.cuepoint.container
 import com.elfo170.cuepoint.sync.SyncEngine
+import com.elfo170.cuepoint.sync.SyncRun
 import com.elfo170.cuepoint.ui.ConfirmDialog
 import com.elfo170.cuepoint.ui.EmptyState
 import com.journeyapps.barcodescanner.ScanContract
@@ -50,6 +52,7 @@ fun DevicesScreen() {
     val scope = rememberCoroutineScope()
     val peers by app.db.dao().observePeers().collectAsStateWithLifecycle(emptyList())
     val results by app.sync.lastResult.collectAsStateWithLifecycle()
+    val ops by app.db.dao().observeEventCount().collectAsStateWithLifecycle(0)
     val pendingUri by app.pendingPairUri.collectAsStateWithLifecycle()
     var pasting by remember { mutableStateOf(false) }
     var pairing by remember { mutableStateOf<SyncEngine.PairingResult?>(null) }
@@ -106,16 +109,35 @@ fun DevicesScreen() {
                         Text("  ${peer.device_name}", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                     }
                     Text("Última sincronização: ${fmt(peer.last_sync_at)}", style = MaterialTheme.typography.bodySmall)
-                    results[peer.id]?.let { r ->
-                        val msg = when (r.status) {
-                            "ok" -> "Sincronizado: ${r.received} recebida(s), ${r.sent} enviada(s)"
+                    // Pendências e última execução vêm do banco: valem mesmo depois de reabrir o app.
+                    val state by produceState<Pair<Int?, SyncRun?>>(
+                        null to null, peer.id, peer.last_sync_at, ops, results[peer.id],
+                    ) { value = app.syncEngine.pendingFor(peer.id) to app.syncEngine.lastRun(peer.id) }
+                    Text(
+                        when (val n = state.first) {
+                            null -> "Ainda sem troca de dados com este aparelho."
+                            0 -> "Tudo em dia: nenhuma alteração a enviar."
+                            else -> "$n alteração(ões) a enviar."
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    val last = results[peer.id]?.let { Triple(it.status, it.received to it.sent, it.error) }
+                        ?: state.second?.let { Triple(it.status, it.received to it.sent, it.error) }
+                    last?.let { (status, counts, err) ->
+                        val msg = when (status) {
+                            "ok" -> "Última execução: ${counts.first} recebida(s), ${counts.second} enviada(s)"
                             "approval_required" -> "Aguardando aprovação no PC (Biblioteca → Dispositivos → Permitir)"
                             "pending_confirmation" -> "Confirme o pareamento no PC"
                             "revoked" -> "Este aparelho foi revogado no PC"
                             "skipped" -> "Sem endereço conhecido do PC"
-                            else -> "Falhou: ${r.error ?: "erro"} (o PC está ligado e na mesma rede?)"
+                            else -> "Falhou: ${err ?: "erro"} (o PC está ligado e na mesma rede?)"
                         }
-                        Text(msg, style = MaterialTheme.typography.bodySmall, color = if (r.status == "ok") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+                        val when_ = state.second?.at?.let { " (${fmt(it)})" }.orEmpty()
+                        Text(
+                            msg + if (results[peer.id] == null) when_ else "",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (status == "ok") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Sincronizar automaticamente", modifier = Modifier.weight(1f))

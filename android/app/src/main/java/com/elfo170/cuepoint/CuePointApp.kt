@@ -47,7 +47,8 @@ class AppContainer(
     val db = CuePointDatabase.create(context, inMemory)
     val store = Store(db)
     val curation = Curation(store)
-    val syncEngine = SyncEngine(store)
+    // Provisórias daqui cuja definitiva chegou do PC são associadas na própria sincronização.
+    val syncEngine = SyncEngine(store, afterReceive = { curation.reconcileProvisional() })
     val sync = SyncScheduler(context, syncEngine, scope)
 
     /** Link/QR de pareamento recebido (cuepoint://pair?...) aguardando a tela de dispositivos. */

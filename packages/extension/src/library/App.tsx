@@ -1,6 +1,8 @@
+import { useLiveQuery } from 'dexie-react-hooks';
 import {
   DatabaseBackup,
   FolderSearch,
+  GitMerge,
   MonitorSmartphone,
   ListMusic,
   ListOrdered,
@@ -10,8 +12,10 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes } from 'react-router';
+import { db } from './api';
 import { BackupPage } from './pages/Backup';
 import { CategoriesPage } from './pages/Categories';
+import { ConflictsPage } from './pages/Conflicts';
 import { DevicesPage } from './pages/Devices';
 import { PeersSection } from './pages/Pairing';
 import { PlaylistDetailPage } from './pages/PlaylistDetail';
@@ -26,6 +30,22 @@ export interface NavItem {
   label: string;
   icon: ReactNode;
   end?: boolean;
+  badge?: ReactNode;
+}
+
+/** Quantidade de conflitos abertos (some quando não há nenhum). */
+function ConflictCount() {
+  const n = useLiveQuery(() => db.conflicts.count(), []) ?? 0;
+  if (!n) return null;
+  return (
+    <span
+      data-testid="conflict-count"
+      aria-label={`${n} conflito(s) abertos`}
+      className="ml-auto rounded-full bg-amber-500 px-1.5 text-xs font-semibold text-white"
+    >
+      {n}
+    </span>
+  );
 }
 
 export const NAV: NavItem[] = [
@@ -33,6 +53,12 @@ export const NAV: NavItem[] = [
   { to: '/tracks', label: 'Músicas', icon: <ListMusic size={16} aria-hidden /> },
   { to: '/categories', label: 'Categorias', icon: <Tags size={16} aria-hidden /> },
   { to: '/playlists', label: 'Playlists', icon: <ListOrdered size={16} aria-hidden /> },
+  {
+    to: '/conflicts',
+    label: 'Conflitos',
+    icon: <GitMerge size={16} aria-hidden />,
+    badge: <ConflictCount />,
+  },
   { to: '/backup', label: 'Backup', icon: <DatabaseBackup size={16} aria-hidden /> },
   { to: '/devices', label: 'Dispositivos', icon: <MonitorSmartphone size={16} aria-hidden /> },
   { to: '/settings', label: 'Configurações', icon: <Settings size={16} aria-hidden /> },
@@ -69,6 +95,7 @@ export function Layout(props: { children: ReactNode; nav?: NavItem[] }) {
             >
               {item.icon}
               {item.label}
+              {item.badge}
             </NavLink>
           ))}
         </nav>
@@ -89,6 +116,7 @@ export function App(props: { extraNav?: NavItem[]; extraRoutes?: ExtraRoute[] })
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/playlists" element={<PlaylistsPage />} />
           <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
+          <Route path="/conflicts" element={<ConflictsPage />} />
           <Route path="/backup" element={<BackupPage />} />
           <Route
             path="/devices"

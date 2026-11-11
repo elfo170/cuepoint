@@ -22,7 +22,12 @@ describe('placas de rede para o mDNS', () => {
   it('sem placa reconhecida, abre uma instância na interface padrão', () => {
     const d = new Discovery(() => [], 60_000);
     running.push(d);
-    d.start({ deviceId: 'cccccccc-0000-4000-8000-00000000000c', name: 'C', port: 47903, onFound: () => undefined });
+    d.start({
+      deviceId: 'cccccccc-0000-4000-8000-00000000000c',
+      name: 'C',
+      port: 47903,
+      onFound: () => undefined,
+    });
     expect(d.interfaces).toEqual(['default']);
     d.stop();
     expect(d.interfaces).toEqual([]);
@@ -32,7 +37,12 @@ describe('placas de rede para o mDNS', () => {
     let addrs: string[] = [];
     const d = new Discovery(() => addrs, 50);
     running.push(d);
-    d.start({ deviceId: 'dddddddd-0000-4000-8000-00000000000d', name: 'D', port: 47904, onFound: () => undefined });
+    d.start({
+      deviceId: 'dddddddd-0000-4000-8000-00000000000d',
+      name: 'D',
+      port: 47904,
+      onFound: () => undefined,
+    });
     expect(d.interfaces).toEqual(['default']);
     const real = lanAddresses();
     if (!real.length) return; // máquina sem rede: nada a reabrir

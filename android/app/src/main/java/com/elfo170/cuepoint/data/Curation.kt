@@ -140,7 +140,11 @@ class Curation(val store: Store) {
         return Track.of(store.put(EntityType.TRACK, track.id, changes))
     }
 
-    /** Associa faixa provisória à definitiva (PRD §8.2). */
+    /**
+     * Associa faixa provisória à definitiva (PRD §8.2). Se a definitiva já tem outra decisão na
+     * mesma pesquisa, a da provisória entra como escrita concorrente: valores diferentes viram
+     * conflito (nada é descartado em silêncio).
+     */
     suspend fun mergeTracks(fromId: String, intoId: String) {
         if (fromId == intoId) return
         val decisions = dao.byTrack(EntityType.DECISION.key, fromId).filter { !it.deleted }.map { Decision.of(Merge.parseObject(it.json)) }
@@ -150,12 +154,15 @@ class Curation(val store: Store) {
         store.write { tx ->
             for (d in decisions) {
                 val target = Ids.decisionId(intoId, d.researchId)
-                if (tx.get(EntityType.DECISION, target)?.let(Merge::isAlive) != true) {
-                    tx.put(EntityType.DECISION, target, mapOf(
+                val exists = tx.get(EntityType.DECISION, target)?.let(Merge::isAlive) == true
+                tx.put(
+                    EntityType.DECISION, target,
+                    mapOf(
                         "user_id" to p(identity.userId), "track_id" to p(intoId), "research_id" to p(d.researchId),
                         "decision" to p(d.decision), "device_source" to p(identity.deviceId),
-                    ))
-                }
+                    ),
+                    concurrent = exists,
+                )
                 tx.put(EntityType.DECISION, d.id, mapOf("deleted_at" to p(now())), "delete")
             }
             for (l in links) {
@@ -174,6 +181,65 @@ class Curation(val store: Store) {
                 tx.put(EntityType.PLAYLIST_TRACK, item.id, mapOf("deleted_at" to p(now())), "delete")
             }
             tx.put(EntityType.TRACK, fromId, mapOf("merged_into" to p(intoId)))
+        }
+    }
+
+    /**
+     * Associa faixas provisórias às definitivas que chegaram de outro aparelho (rodar depois de
+     * receber operações). Casa pela mesma URL ou, sem URL, por título e artista idênticos — a mesma
+     * regra da identificação local; casamentos ambíguos (duas definitivas) ficam de fora.
+     * Espelho de `reconcileProvisional` na extensão. Retorna quantas provisórias foram associadas.
+     */
+    suspend fun reconcileProvisional(): Int {
+        store.init()
+        val tracks = store.all(EntityType.TRACK).map(Track::of).filter { !it.deleted }
+        val definitive = tracks.filter { it.urn != null && it.mergedInto == null }
+        fun index(key: (Track) -> String?): Map<String, Track?> {
+            val map = mutableMapOf<String, Track?>()
+            for (t in definitive) {
+                val k = key(t) ?: continue
+                map[k] = if (map.containsKey(k)) null else t // null = ambíguo
+            }
+            return map
+        }
+        val byUrl = index { it.url }
+        val byName = index { "${it.title}\u0000${it.artist}" }
+        var merged = 0
+        for (p in tracks.filter { it.urn == null && it.mergedInto == null }) {
+            val target = if (p.url != null) byUrl[p.url] else byName["${p.title}\u0000${p.artist}"]
+            if (target == null) continue
+            mergeTracks(p.id, target.id)
+            merged += 1
+        }
+        return merged
+    }
+
+    /**
+     * Junta categorias com o mesmo nome (criadas em aparelhos diferentes) na de destino:
+     * classificações e playlists passam para ela, e as demais são excluídas.
+     * Espelho de `mergeCategories` na extensão.
+     */
+    suspend fun mergeCategories(intoId: String, fromIds: List<String>) {
+        val sources = fromIds.filter { it != intoId }
+        if (sources.isEmpty()) return
+        store.write { tx ->
+            for (fromId in sources) {
+                val links = dao.byCategory(EntityType.TRACK_CATEGORY.key, fromId).filter { !it.deleted }
+                    .map { TrackCategory.of(Merge.parseObject(it.json)) }
+                for (l in links) {
+                    val target = Ids.trackCategoryId(l.trackId, l.researchId, intoId)
+                    if (tx.get(EntityType.TRACK_CATEGORY, target)?.let(Merge::isAlive) != true) {
+                        tx.put(EntityType.TRACK_CATEGORY, target, mapOf(
+                            "track_id" to p(l.trackId), "research_id" to p(l.researchId), "category_id" to p(intoId),
+                        ))
+                    }
+                    tx.put(EntityType.TRACK_CATEGORY, l.id, mapOf("deleted_at" to p(now())), "delete")
+                }
+                for (row in dao.byCategory(EntityType.PLAYLIST.key, fromId).filter { !it.deleted }) {
+                    tx.put(EntityType.PLAYLIST, row.id, mapOf("category_id" to p(intoId)))
+                }
+                tx.put(EntityType.CATEGORY, fromId, mapOf("deleted_at" to p(now())), "delete")
+            }
         }
     }
 

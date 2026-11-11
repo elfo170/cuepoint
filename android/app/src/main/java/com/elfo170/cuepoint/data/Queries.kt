@@ -83,5 +83,16 @@ data class Snapshot(
 
     fun categoryUses(categoryId: String) = trackCategories.count { it.categoryId == categoryId }
 
+    /**
+     * Categorias vivas com o mesmo nome (sem espaços nas pontas, sem diferenciar maiúsculas) —
+     * típico de categorias criadas em aparelhos diferentes. Em cada grupo, a primeira é o destino
+     * da junção: a mais antiga (desempate pelo id), para que todos os aparelhos escolham a mesma.
+     * Mesma regra de `categoryDuplicates` na extensão.
+     */
+    fun categoryDuplicates(): List<List<Category>> =
+        categories.groupBy { it.name.trim().lowercase(Locale.forLanguageTag("pt-BR")) }.values
+            .filter { it.size > 1 }
+            .map { g -> g.sortedWith(compareBy<Category>({ it.createdAt }, { it.id })) }
+
     fun playlistSize(playlistId: String) = playlistTracks.count { it.playlistId == playlistId }
 }

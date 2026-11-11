@@ -19,7 +19,9 @@ export interface DiscoveryParams {
  * Endereços IPv4 das placas de rede locais, sem loopback e sem autoconfiguração (169.254.x).
  * Cada um recebe uma instância própria de mDNS.
  */
-export function lanAddresses(ifaces: NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces()): string[] {
+export function lanAddresses(
+  ifaces: NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces(),
+): string[] {
   const out = new Set<string>();
   for (const list of Object.values(ifaces)) {
     for (const a of list ?? []) {

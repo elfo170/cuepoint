@@ -36,6 +36,11 @@ interface ClockState {
 
 export type ChangeListener = (types: Set<EntityType>) => void;
 
+export interface WriteOptions {
+  /** Escrita que não viu o estado atual: valor divergente vira conflito (ver `buildLocalOp`). */
+  concurrent?: boolean;
+}
+
 function defaultDeviceName(): string {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const os = /Windows/.test(ua)
@@ -150,6 +155,7 @@ export class Store {
         id: string,
         changes: Partial<EntityDataMap[T]>,
         operation?: OpKind,
+        opts?: WriteOptions,
       ) => Promise<EntityRecord<T>>;
       get: <T extends EntityType>(type: T, id: string) => Promise<EntityRecord<T> | undefined>;
     }) => Promise<R>,
@@ -165,6 +171,7 @@ export class Store {
         id: string,
         changes: Partial<EntityDataMap[T]>,
         operation?: OpKind,
+        opts: WriteOptions = {},
       ) => {
         const current = await this.get(type, id);
         // Escrita que não muda nada (ex.: aprovar o que já está aprovado) não gera operação.
@@ -182,6 +189,7 @@ export class Store {
           hlc: clock.tick(),
           userId: this.userId,
           operation,
+          concurrent: opts.concurrent,
         });
         const record = await this.applyAndLog(op, 'local_pending');
         touched.add(type);

@@ -2312,15 +2312,10 @@
           "entity_id": "20000000-0000-4000-8000-000000000001",
           "operation": "resolve",
           "fields": {
-            "name": "Techno Peak",
-            "deleted_at": null
+            "name": "Techno Peak"
           },
           "base": {
             "name": [
-              "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
-              "001767225604000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
-            ],
-            "deleted_at": [
               "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
               "001767225604000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
             ]
@@ -2330,12 +2325,27 @@
       "expected": {
         "records": [
           {
+            "_c": {
+              "deleted_at": [
+                {
+                  "hlc": "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": null
+                },
+                {
+                  "hlc": "001767225604000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": null
+                }
+              ]
+            },
             "_v": {
               "archived": [
                 "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
               ],
               "deleted_at": [
-                "001767225607000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225604000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
               ],
               "description": [
                 "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
@@ -2442,6 +2452,779 @@
           }
         ],
         "conflicts": []
+      }
+    },
+    {
+      "name": "resolucao-de-exclusao",
+      "description": "Excluir × editar resolvido com \"restaurar\": a resolução grava só deleted_at e o registro volta com a edição.",
+      "ops": [
+        {
+          "op_id": "76a841aa-2a7e-5f76-af63-d7de7b1b63be",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 1,
+          "hlc": "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Techno",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "archived": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 2,
+          "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "delete",
+          "fields": {
+            "deleted_at": "2026-01-01T00:00:03.000Z"
+          },
+          "base": {
+            "deleted_at": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "ae46d9c7-9348-5959-b012-9f5006bc247b",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 1,
+          "hlc": "001767225605000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "fields": {
+            "description": "ainda uso",
+            "deleted_at": null
+          },
+          "base": {
+            "description": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "9c5a69b1-5106-5dab-b656-6a0a7c831acd",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 2,
+          "hlc": "001767225608000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "resolve",
+          "fields": {
+            "deleted_at": null
+          },
+          "base": {
+            "deleted_at": [
+              "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+              "001767225605000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "records": [
+          {
+            "_v": {
+              "archived": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225608000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "description": [
+                "001767225605000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "name": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "user_id": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "archived": false,
+            "created_at": "2026-01-01T00:00:01.000Z",
+            "deleted_at": null,
+            "description": "ainda uso",
+            "id": "20000000-0000-4000-8000-000000000001",
+            "name": "Techno",
+            "updated_at": "2026-01-01T00:00:08.000Z",
+            "user_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "conflicts": []
+      }
+    },
+    {
+      "name": "resolucao-nao-decide-exclusao",
+      "description": "Resolver um campo (nome) não ressuscita o registro nem fecha, por tabela, o conflito de exclusão.",
+      "ops": [
+        {
+          "op_id": "76a841aa-2a7e-5f76-af63-d7de7b1b63be",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 1,
+          "hlc": "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Techno",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "archived": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 2,
+          "hlc": "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "fields": {
+            "name": "Techno Groovy",
+            "deleted_at": null
+          },
+          "base": {
+            "name": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "33519d91-fe73-5f3d-aee4-d5bd9ede8876",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 3,
+          "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "delete",
+          "fields": {
+            "deleted_at": "2026-01-01T00:00:04.000Z"
+          },
+          "base": {
+            "deleted_at": [
+              "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "ae46d9c7-9348-5959-b012-9f5006bc247b",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 1,
+          "hlc": "001767225606000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "fields": {
+            "name": "Techno Peak",
+            "deleted_at": null
+          },
+          "base": {
+            "name": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ],
+            "deleted_at": [
+              "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+            ]
+          }
+        },
+        {
+          "op_id": "5396c7e9-7d41-52f8-afd5-24d752a361f4",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 4,
+          "hlc": "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "resolve",
+          "fields": {
+            "name": "Techno Peak"
+          },
+          "base": {
+            "name": [
+              "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+              "001767225606000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "records": [
+          {
+            "_c": {
+              "deleted_at": [
+                {
+                  "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "2026-01-01T00:00:04.000Z"
+                },
+                {
+                  "hlc": "001767225606000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": null
+                }
+              ]
+            },
+            "_v": {
+              "archived": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225606000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "description": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225610000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "user_id": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "archived": false,
+            "created_at": "2026-01-01T00:00:01.000Z",
+            "deleted_at": null,
+            "description": "",
+            "id": "20000000-0000-4000-8000-000000000001",
+            "name": "Techno Peak",
+            "updated_at": "2026-01-01T00:00:10.000Z",
+            "user_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "conflicts": [
+          {
+            "entity_type": "research",
+            "entity_id": "20000000-0000-4000-8000-000000000001",
+            "field": "deleted_at"
+          }
+        ]
+      }
+    },
+    {
+      "name": "escrita-concorrente-diverge",
+      "description": "Escrita local marcada como concorrente (dados de uma faixa provisória reapontados para a definitiva): valor divergente vira conflito; valor igual, não.",
+      "ops": [
+        {
+          "op_id": "76a841aa-2a7e-5f76-af63-d7de7b1b63be",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 1,
+          "hlc": "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "track",
+          "entity_id": "10000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "soundcloud_urn": "soundcloud:tracks:1",
+            "soundcloud_url": "https://soundcloud.com/artist/track",
+            "title": "Track",
+            "artist": "Artist",
+            "artwork_url": null,
+            "metadata_source": "dom",
+            "merged_into": null,
+            "deleted_at": null
+          },
+          "base": {
+            "soundcloud_urn": [],
+            "soundcloud_url": [],
+            "title": [],
+            "artist": [],
+            "artwork_url": [],
+            "metadata_source": [],
+            "merged_into": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 2,
+          "hlc": "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000001",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Latin Bass",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "archived": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "33519d91-fe73-5f3d-aee4-d5bd9ede8876",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 3,
+          "hlc": "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "research",
+          "entity_id": "20000000-0000-4000-8000-000000000002",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "name": "Techno Groovy",
+            "description": "",
+            "archived": false,
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "name": [],
+            "description": [],
+            "archived": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "5396c7e9-7d41-52f8-afd5-24d752a361f4",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 4,
+          "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "decision",
+          "entity_id": "f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "decision": true,
+            "device_source": "aaaaaaaa-0000-4000-8000-00000000000a",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "track_id": [],
+            "research_id": [],
+            "decision": [],
+            "device_source": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "2fc1e933-8aba-578f-a0ce-ae70258633e9",
+          "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+          "seq": 5,
+          "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "decision",
+          "entity_id": "64bd4bfe-d93b-51b7-a25c-256809a18d36",
+          "operation": "create",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000002",
+            "decision": true,
+            "device_source": "aaaaaaaa-0000-4000-8000-00000000000a",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "track_id": [],
+            "research_id": [],
+            "decision": [],
+            "device_source": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "ae46d9c7-9348-5959-b012-9f5006bc247b",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 1,
+          "hlc": "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "decision",
+          "entity_id": "f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e",
+          "operation": "update",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "decision": false,
+            "device_source": "bbbbbbbb-0000-4000-8000-00000000000b",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "track_id": [],
+            "research_id": [],
+            "decision": [],
+            "device_source": [],
+            "deleted_at": []
+          }
+        },
+        {
+          "op_id": "9c5a69b1-5106-5dab-b656-6a0a7c831acd",
+          "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+          "seq": 2,
+          "hlc": "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "entity_type": "decision",
+          "entity_id": "64bd4bfe-d93b-51b7-a25c-256809a18d36",
+          "operation": "update",
+          "fields": {
+            "user_id": "00000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "research_id": "20000000-0000-4000-8000-000000000002",
+            "decision": true,
+            "device_source": "bbbbbbbb-0000-4000-8000-00000000000b",
+            "deleted_at": null
+          },
+          "base": {
+            "user_id": [],
+            "track_id": [],
+            "research_id": [],
+            "decision": [],
+            "device_source": [],
+            "deleted_at": []
+          }
+        }
+      ],
+      "expected": {
+        "records": [
+          {
+            "_c": {
+              "decision": [
+                {
+                  "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": true
+                },
+                {
+                  "hlc": "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": true
+                }
+              ],
+              "deleted_at": [
+                {
+                  "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": null
+                },
+                {
+                  "hlc": "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": null
+                }
+              ],
+              "research_id": [
+                {
+                  "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "20000000-0000-4000-8000-000000000002"
+                },
+                {
+                  "hlc": "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "20000000-0000-4000-8000-000000000002"
+                }
+              ],
+              "track_id": [
+                {
+                  "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "10000000-0000-4000-8000-000000000001"
+                },
+                {
+                  "hlc": "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "10000000-0000-4000-8000-000000000001"
+                }
+              ],
+              "user_id": [
+                {
+                  "hlc": "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "00000000-0000-4000-8000-000000000001"
+                },
+                {
+                  "hlc": "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "00000000-0000-4000-8000-000000000001"
+                }
+              ]
+            },
+            "_v": {
+              "decision": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "deleted_at": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "device_source": [
+                "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "research_id": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "track_id": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "user_id": [
+                "001767225605000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225612000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ]
+            },
+            "created_at": "2026-01-01T00:00:05.000Z",
+            "decision": true,
+            "deleted_at": null,
+            "device_source": "bbbbbbbb-0000-4000-8000-00000000000b",
+            "id": "64bd4bfe-d93b-51b7-a25c-256809a18d36",
+            "research_id": "20000000-0000-4000-8000-000000000002",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "updated_at": "2026-01-01T00:00:12.000Z",
+            "user_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "_c": {
+              "decision": [
+                {
+                  "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": true
+                },
+                {
+                  "hlc": "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": false
+                }
+              ],
+              "deleted_at": [
+                {
+                  "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": null
+                },
+                {
+                  "hlc": "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": null
+                }
+              ],
+              "research_id": [
+                {
+                  "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "20000000-0000-4000-8000-000000000001"
+                },
+                {
+                  "hlc": "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "20000000-0000-4000-8000-000000000001"
+                }
+              ],
+              "track_id": [
+                {
+                  "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "10000000-0000-4000-8000-000000000001"
+                },
+                {
+                  "hlc": "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "10000000-0000-4000-8000-000000000001"
+                }
+              ],
+              "user_id": [
+                {
+                  "hlc": "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                  "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+                  "value": "00000000-0000-4000-8000-000000000001"
+                },
+                {
+                  "hlc": "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b",
+                  "origin": "bbbbbbbb-0000-4000-8000-00000000000b",
+                  "value": "00000000-0000-4000-8000-000000000001"
+                }
+              ]
+            },
+            "_v": {
+              "decision": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "deleted_at": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "device_source": [
+                "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "research_id": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "track_id": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ],
+              "user_id": [
+                "001767225604000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+                "001767225611000:000000:bbbbbbbb-0000-4000-8000-00000000000b"
+              ]
+            },
+            "created_at": "2026-01-01T00:00:04.000Z",
+            "decision": false,
+            "deleted_at": null,
+            "device_source": "bbbbbbbb-0000-4000-8000-00000000000b",
+            "id": "f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e",
+            "research_id": "20000000-0000-4000-8000-000000000001",
+            "track_id": "10000000-0000-4000-8000-000000000001",
+            "updated_at": "2026-01-01T00:00:11.000Z",
+            "user_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "_v": {
+              "archived": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "description": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "user_id": [
+                "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "archived": false,
+            "created_at": "2026-01-01T00:00:02.000Z",
+            "deleted_at": null,
+            "description": "",
+            "id": "20000000-0000-4000-8000-000000000001",
+            "name": "Latin Bass",
+            "updated_at": "2026-01-01T00:00:02.000Z",
+            "user_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "_v": {
+              "archived": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "description": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "name": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "user_id": [
+                "001767225603000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "archived": false,
+            "created_at": "2026-01-01T00:00:03.000Z",
+            "deleted_at": null,
+            "description": "",
+            "id": "20000000-0000-4000-8000-000000000002",
+            "name": "Techno Groovy",
+            "updated_at": "2026-01-01T00:00:03.000Z",
+            "user_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "_v": {
+              "artist": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "artwork_url": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "deleted_at": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "merged_into": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "metadata_source": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "soundcloud_url": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "soundcloud_urn": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ],
+              "title": [
+                "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+              ]
+            },
+            "artist": "Artist",
+            "artwork_url": null,
+            "created_at": "2026-01-01T00:00:01.000Z",
+            "deleted_at": null,
+            "id": "10000000-0000-4000-8000-000000000001",
+            "merged_into": null,
+            "metadata_source": "dom",
+            "soundcloud_url": "https://soundcloud.com/artist/track",
+            "soundcloud_urn": "soundcloud:tracks:1",
+            "title": "Track",
+            "updated_at": "2026-01-01T00:00:01.000Z"
+          }
+        ],
+        "conflicts": [
+          {
+            "entity_type": "decision",
+            "entity_id": "f4a5d625-0ee7-5d7b-bbd0-cc7ad66a953e",
+            "field": "decision"
+          }
+        ]
       }
     }
   ]

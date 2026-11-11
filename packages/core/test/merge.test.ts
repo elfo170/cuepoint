@@ -94,6 +94,36 @@ describe('cenários de mesclagem (PRD §5.6)', () => {
     expect(r.world.B.get('research', IDS.research1)?.name).toBe('Techno Peak');
   });
 
+  it('restaurar resolve o conflito de exclusão e mantém a edição', () => {
+    const r = find('resolucao-de-exclusao');
+    expect(r.conflicts).toEqual([]);
+    const rec = r.world.A.get('research', IDS.research1);
+    expect(rec?.deleted_at).toBeNull();
+    expect(rec?.description).toBe('ainda uso');
+    const resolveOp = r.ops.find((o) => o.operation === 'resolve');
+    expect(Object.keys(resolveOp!.fields)).toEqual(['deleted_at']);
+  });
+
+  it('resolver um campo não decide o conflito de exclusão', () => {
+    const r = find('resolucao-nao-decide-exclusao');
+    expect(r.conflicts.map((c) => c.field)).toEqual(['deleted_at']);
+    expect(r.world.B.get('research', IDS.research1)?.name).toBe('Techno Peak');
+    const resolveOp = r.ops.find((o) => o.operation === 'resolve');
+    expect(Object.keys(resolveOp!.fields)).toEqual(['name']);
+  });
+
+  it('escrita concorrente diverge em conflito só quando o valor é diferente', () => {
+    const r = find('escrita-concorrente-diverge');
+    expect(r.conflicts).toEqual([
+      {
+        entity_type: 'decision',
+        entity_id: decisionId(IDS.trackA, IDS.research1),
+        field: 'decision',
+      },
+    ]);
+    expect(r.world.B.conflicts()).toEqual(r.conflicts);
+  });
+
   it('alterações são retransmitidas A→B→C', () => {
     const r = find('retransmissao-a-b-c');
     expect(r.world.A.get('research', IDS.research1)?.description).toBe('editado em C');

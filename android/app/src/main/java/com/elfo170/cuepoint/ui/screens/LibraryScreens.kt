@@ -17,7 +17,9 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -264,6 +266,34 @@ fun CategoriesScreen() {
             Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Categorias", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
                 IconButton(onClick = { creating = true }) { Icon(Icons.Filled.Add, contentDescription = "Criar categoria") }
+            }
+        }
+        val duplicates = snapshot.categoryDuplicates()
+        if (duplicates.isNotEmpty()) item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Categorias com o mesmo nome", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        "Provavelmente criadas em aparelhos diferentes. Juntar move todas as classificações " +
+                            "para a mais antiga e exclui as outras.",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    duplicates.forEach { g ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "${g.first().name} (${g.size} categorias, ${g.sumOf { snapshot.categoryUses(it.id) }} classificação(ões))",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                            OutlinedButton(onClick = {
+                                scope.launch { app.curation.mergeCategories(g.first().id, g.drop(1).map { it.id }) }
+                            }) { Text("Juntar") }
+                        }
+                    }
+                }
             }
         }
         if (snapshot.categories.isEmpty()) item { EmptyState("Nenhuma categoria ainda.") }

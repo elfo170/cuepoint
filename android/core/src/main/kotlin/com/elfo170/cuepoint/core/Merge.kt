@@ -107,7 +107,13 @@ object Merge {
         }
     }
 
-    /** Monta a operação local para as alterações desejadas (inclui `deleted_at = null` implícito). */
+    /**
+     * Monta a operação local para as alterações desejadas. Inclui `deleted_at = null` implícito,
+     * exceto na resolução de conflito, que grava só o campo escolhido (não ressuscita um registro
+     * excluído nem decide, por tabela, um conflito de exclusão). Com [concurrent], a base fica
+     * vazia: valor divergente vira conflito em vez de sobrescrever (dados de faixa provisória
+     * reapontados para a definitiva). Espelho de `buildLocalOp` em packages/core.
+     */
     fun buildLocalOp(
         type: EntityType,
         id: String,
@@ -118,9 +124,10 @@ object Merge {
         hlc: String,
         userId: String,
         operation: String? = null,
+        concurrent: Boolean = false,
     ): Op {
         val fields = changes.toMutableMap()
-        if ("deleted_at" !in fields) fields["deleted_at"] = JsonNull
+        if ("deleted_at" !in fields && operation != "resolve") fields["deleted_at"] = JsonNull
         val merged = (current ?: JsonObject(emptyMap())).toMutableMap().apply { putAll(fields) }
         Model.validate(type, merged.filterKeys { it !in Model.SYSTEM_FIELDS })
         val kind = operation ?: when {
@@ -139,7 +146,7 @@ object Merge {
             entityId = id,
             operation = kind,
             fields = JsonObject(fields),
-            base = fields.keys.associateWith { v[it] ?: emptyList() },
+            base = fields.keys.associateWith { if (concurrent) emptyList() else v[it] ?: emptyList() },
         )
     }
 

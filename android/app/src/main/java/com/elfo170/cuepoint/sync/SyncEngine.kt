@@ -32,8 +32,16 @@ data class SyncResult(val status: String, val received: Int = 0, val sent: Int =
 class SyncEngine(
     private val store: Store,
     private val clientFactory: (host: String, port: Int, certFp: String, deviceId: String, key: PrivateKey) -> PeerClient = ::PeerClient,
+    /** Chamado depois de receber operações (ex.: associar faixas provisórias às definitivas). */
+    private val afterReceive: suspend () -> Unit = {},
 ) {
     private val dao = store.db.dao()
+
+    /** Alterações daqui que o par ainda não tem (null: ainda não houve troca com ele). */
+    suspend fun pendingFor(peerId: String): Int? = store.knownBy(peerId)?.let { store.pendingFor(it) }
+
+    /** Última execução registrada com o par (sucesso, erro ou aguardando aprovação). */
+    suspend fun lastRun(peerId: String): SyncRun? = runs().firstOrNull { it.peerId == peerId }
 
     /** Chaves de assinatura do aparelho (geradas na primeira vez). */
     suspend fun keys(): Pair<PrivateKey, String> {
@@ -110,6 +118,8 @@ class SyncEngine(
                     remoteVv = page.getValue("vv").jsonObject.mapValues { (_, v) -> v.jsonPrimitive.long }
                     if (!page.getValue("more").jsonPrimitive.boolean || ops.isEmpty()) break
                 }
+                // antes do envio, para que as associações feitas agora já sigam nesta mesma troca
+                if (received > 0) afterReceive()
                 val outgoing = store.opsSince(remoteVv)
                 for (batch in outgoing.chunked(Protocol.PULL_LIMIT)) {
                     val body = """{"ops":${Merge.json.encodeToString(batch)}}"""
@@ -117,6 +127,9 @@ class SyncEngine(
                     store.markSent(batch)
                     sent += batch.size
                 }
+                // depois do pull + push, o PC tem o que tinha mais tudo o que foi enviado
+                store.noteKnown(peerId, remoteVv)
+                store.noteKnown(peerId, outgoing.groupBy { it.origin }.mapValues { (_, o) -> o.maxOf { it.seq } })
                 val now = Hlc.isoOf(System.currentTimeMillis())
                 dao.putDevice(peer.copy(last_sync_at = now))
                 record(SyncRun(peerId, now, "ok", received, sent))
