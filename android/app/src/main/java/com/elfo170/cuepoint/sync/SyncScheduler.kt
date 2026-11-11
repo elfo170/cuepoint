@@ -126,10 +126,17 @@ class SyncScheduler(private val context: Context, private val engine: SyncEngine
                     }
                     override fun onServiceResolved(info: NsdServiceInfo) {
                         val id = info.attributes["id"]?.toString(Charsets.UTF_8) ?: return
-                        @Suppress("DEPRECATION")
-                        val host = info.host?.hostAddress ?: return
-                        Log.i(TAG, "serviço resolvido: $host:${info.port}")
-                        scope.launch { runCatching { if (engine.seen(id, host, info.port)) syncAll() } }
+                        // O anúncio traz todos os endereços do PC (inclusive de placas virtuais).
+                        val announced = if (Build.VERSION.SDK_INT >= 34) {
+                            info.hostAddresses.mapNotNull { it.hostAddress }
+                        } else {
+                            @Suppress("DEPRECATION")
+                            listOfNotNull(info.host?.hostAddress)
+                        }
+                        val hosts = LanAddresses.preferSameSubnet(announced, LanAddresses.local())
+                        Log.i(TAG, "serviço resolvido: ${hosts.joinToString()} (anunciados: ${announced.joinToString()}) porta ${info.port}")
+                        if (hosts.isEmpty()) return
+                        scope.launch { runCatching { if (engine.seen(id, hosts, info.port)) syncAll() } }
                     }
                 })
             }

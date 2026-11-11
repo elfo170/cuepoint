@@ -157,11 +157,14 @@ class SyncEngine(
         dao.device(peerId)?.let { dao.putDevice(it.copy(sync_policy = policy)) }
     }
 
-    /** Atualiza endereço/porta de um par encontrado na rede (NSD). */
-    suspend fun seen(peerId: String, host: String, port: Int): Boolean {
+    /**
+     * Atualiza endereços/porta de um par encontrado na rede (NSD). [hosts] vêm na ordem de
+     * preferência (mesma sub-rede primeiro) e passam à frente dos endereços já conhecidos.
+     */
+    suspend fun seen(peerId: String, hosts: List<String>, port: Int): Boolean {
         val peer = dao.device(peerId) ?: return false
         if (peer.pairing_status != "paired") return false
-        val addresses = (listOf(host) + peer.addresses.orEmpty().split(',')).filter { it.isNotBlank() }.distinct().take(4)
+        val addresses = (hosts + peer.addresses.orEmpty().split(',')).filter { it.isNotBlank() }.distinct().take(4)
         dao.putDevice(peer.copy(addresses = addresses.joinToString(","), port = port))
         return true
     }
