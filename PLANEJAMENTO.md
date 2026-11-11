@@ -379,15 +379,10 @@ atualizada; e **um commit** (`git add` dos caminhos da sprint + `git commit`). *
 - **Pronto quando:** os testes de isolamento passam e a documentação está completa.
 - Commit: `feat: valida a api do soundcloud e prepara o isolamento multiusuário`
 
-## Checkpoints manuais (dependem do usuário)
+## Checkpoints manuais pendentes (dependem do usuário)
 
 Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção *Status*.
 
-| Sprint | Validação |
-|---|---|
-| 6 | Uso real em playlists do SoundCloud no Chrome (PRD §19, Fase 1) |
-| 12 | Celular real: notificação na tela bloqueada e metadados do app do SoundCloud |
-| 13 | Celular real na mesma Wi-Fi: descoberta mDNS e pareamento pela câmera; regra de firewall do Windows |
 | 15 | Credenciais de app OAuth do SoundCloud, se existirem |
 
 ## Verificação
@@ -416,6 +411,60 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
   trocável por Ktor.
 - **API do SoundCloud fechada:** a funcionalidade não é implementada e os exports locais continuam
   disponíveis.
+
+## Próximos passos (ordem acordada em 10/11/2026)
+
+**Objetivo:** extensão e app 100% funcionais. **Ordem:** Feature C (capas e links no celular) → Sprint 14 → Sprint 15. Cada etapa começa só com autorização do usuário e termina com um commit (sem push).
+
+### Onde o projeto está
+
+- P0 (MVP Chrome), P1 (sincronização na LAN, conflitos) e P2 até a Sprint 13 estão concluídos e **validados em aparelhos reais**: checkpoints das Sprints 6, 12 e 13 e validação real da Sprint 10 (ver *Status*).
+- A feature de notificação na tela bloqueada foi **abortada** (seções "cartão espelho", "notificação com serviço em primeiro plano" e "notificações em foco" ficam só como histórico). A notificação de curadoria é a da Sprint 12/13.
+- Uso real: a **biblioteca do PC (Chrome) tem dados reais — nunca apagar nem restaurar por cima sem pedido explícito**. O celular foi instalado limpo e adotou o usuário do PC; está pareado com o PC ("DESKTOP"), política "pedir aprovação" nos dois lados.
+
+### Feature C — capas e links no celular
+
+**Problema:** faixas vistas só no celular ficam sem capa e sem link. A MediaSession do SoundCloud traz título, artista e o id (URN `soundcloud:tracks:<id>`), mas não traz o endereço da página nem o da capa (`METADATA_KEY_ART_URI`/`ALBUM_ART_URI` vazios). Faixas que passam pelo Chrome já chegam com `soundcloud_url` e `artwork_url` pela sincronização (o widget lê da página).
+
+**Não precisa da API do SoundCloud.** Abordagem:
+- **Capa vinda da sessão:** a sessão tem 7 campos de metadados; a capa provavelmente vem como **imagem pronta** (`METADATA_KEY_ART`, `ALBUM_ART` ou `DISPLAY_ICON` — bitmap). **Primeiro passo: confirmar com log** em `MediaListenerService.publish` (`media/MediaListenerService.kt`) quais chaves chegam preenchidas. Se vier bitmap: reduzir (~256 px) e guardar em **cache local** do app (ex.: `filesDir/artwork/<trackId>.webp`), associado ao id da faixa. **Não sincroniza**: o campo `artwork_url` do modelo é um endereço web (validado como URL no schema), então a imagem fica só no celular.
+- **Capa vinda do Chrome:** quando a faixa tiver `artwork_url` (sincronizado), usar esse endereço como reserva. O app **não tem biblioteca de imagens** — decidir na implementação entre adicionar uma (ex.: Coil) ou um carregador próprio pequeno (download + `BitmapFactory`, com cache).
+- **Link "Abrir no SoundCloud":** sem API não dá para descobrir o endereço web a partir do id, e interfaces internas do SoundCloud estão fora do PRD. Mas o app do SoundCloud abre a faixa pelo **link interno `soundcloud://sounds:<id>`** (o mesmo formato que a página publica em `al:android:url` e que `SoundCloudUrls`/`MediaMetadataParser` já reconhecem). Usar `Intent(ACTION_VIEW, "soundcloud://sounds:<id>")`; se a faixa tiver `soundcloud_url`, usar o endereço web como alternativa; tratar `ActivityNotFoundException` (app do SoundCloud ausente) — se for preciso consultar antes, declarar `<queries>` para o esquema `soundcloud` no manifesto (visibilidade de pacotes do Android 11+).
+- **Onde aparece:** `TrackLine` (`ui/Components.kt`, usado em Músicas e no detalhe da pesquisa) e a tela Curar (`ui/screens/CurateScreen.kt`): miniatura da capa + botão/ação "Abrir no SoundCloud".
+- **Pronto quando:** testes (conversão URN → link interno, cache da capa, escolha da fonte da capa); `npm run android -- assembleDebug testDebugUnitTest` verde; no celular real, uma faixa vista só no celular mostra a capa e o botão abre o app do SoundCloud na faixa.
+- **Commit sugerido:** `feat: mostra capa e abre a faixa no soundcloud a partir do celular`.
+
+### Sprint 14 — Android: backup, acabamento e APK
+
+Escopo original (seção *Sprints*), com o que já se sabe:
+- **Backup automático no celular** no formato comum `cuepoint-backup` v1. A referência está em `packages/core/src/backup.ts` (`createBackup`, `validateBackup`, `parseBackup`, `backupCounts`; JSON com todas as tabelas, log de operações, metadados e **SHA-256 do conteúdo canônico**). **O Android ainda não tem nada de backup** e **não existem vetores de backup** em `spec/vectors` (hoje: `ids`, `merge`, `protocol`, `compaction`) — criar `spec/vectors/backup.json` gerado pelo TS e validado no Kotlin, para garantir a restauração cruzada.
+- **Destino:** pasta escolhida pelo usuário via SAF ou armazenamento externo do app (PRD/Arquitetura → Backup). Restauração: valida checksum, schema e integridade referencial antes de mexer em dados, faz backup de segurança antes e restaura em uma única transação (tudo ou nada) — mesmas regras do Chrome.
+- **Restauração cruzada:** backup do Chrome restaurado no celular e vice-versa (teste automatizado com os vetores).
+- **APK de release assinado** (`assembleRelease`) com chave local: `keystore.properties` e `*.keystore` já estão no `.gitignore`; ainda não há `signingConfig` em `android/app/build.gradle.kts`.
+- Estados vazios e ajustes finais; README do Android.
+- **Decisões do usuário a pedir no início:** onde guardar a chave de assinatura (arquivo `.keystore` e senha, fora do git); destino padrão do backup no celular (pasta via SAF × armazenamento do app) e frequência.
+- **Pronto quando:** APK de release gerado e restauração cruzada passando. Commit: `chore: adiciona backup no android e gera apk para distribuição manual`.
+
+### Sprint 15 — P3: API do SoundCloud e preparação multiusuário
+
+Escopo original (seção *Sprints*):
+- `docs/SOUNDCLOUD_API.md` com a validação das permissões da API oficial. Com credenciais OAuth de app do SoundCloud: exportar playlist interna (`chrome.identity.launchWebAuthFlow` + PKCE, token protegido). **Sem credenciais: nenhuma operação via API** (PRD §11.2) — ficam só os exports locais.
+- Isolamento por `user_id` nos repositórios e na sincronização (operações de outro usuário recusadas), com testes; `docs/MULTIUSUARIO.md` com o desenho do compartilhamento por convite.
+- **Pergunta ao usuário no início:** se existem credenciais de app OAuth do SoundCloud.
+- Commit: `feat: valida a api do soundcloud e prepara o isolamento multiusuário`.
+
+### Como retomar numa sessão nova (ambiente e regras)
+
+- **Build e testes:**
+  - Raiz: `npm run lint` · `npm test` · `npm run build` · `npm run e2e` (Playwright, ~1 min).
+  - Android: `$env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'; android\gradlew.bat -p android test assembleDebug` (inclui `:core`, que valida os `spec/vectors`). Vetores TS: `npm run vectors -w @cuepoint/core`.
+- **Atualizar o serviço do PC** depois de mudar `packages/helper` ou `packages/core`: `npm run build -w @cuepoint/helper`, encerrar o processo `node … cuepoint-helper.mjs daemon` (porta 47800 ocupada impede o novo) e rodar `npm run helper:install`. Extensão: `npm run build` e recarregar em `chrome://extensions`.
+- **Celular (Redmi Note 14 Pro 5G, HyperOS 2, Android 15)**, via adb (`C:\Users\Leo\AppData\Local\Android\Sdk\platform-tools\adb.exe`):
+  - instalar com `adb install -r` (mantém os dados); o celular precisa estar **desbloqueado**; instalação nova (não atualização) pede confirmação na tela e "Instalar via USB" ligado.
+  - **Regra: adb só no pacote do CuePoint e só leitura** (`run-as` para copiar o banco, `logcat` com a tag `CuePointSync`, `dumpsys`). Qualquer escrita fora disso (configurações do sistema, outros apps) exige autorização explícita. No celular, só o usuário olha a tela.
+  - Depois de instalar, o usuário abre o app uma vez (o HyperOS desconecta o serviço de leitura na atualização).
+- **Rede:** PC no cabo (192.168.1.14) e celular na Wi-Fi (192.168.1.7); o PC tem placa do VirtualBox (192.168.56.1). Descoberta mDNS funcionando desde a correção de uma instância por placa.
+- **Git:** um commit por sprint/feature, Conventional Commits em pt-BR, **sem push**; não incluir no commit arquivos alterados pelo usuário (ex.: `.gitignore`, `roadmap.md`) sem combinar.
 
 ## Status
 
@@ -450,7 +499,7 @@ Não bloqueiam o fluxo automático. Ficam registrados como pendentes na seção 
 - O cartão padrão comporta 4 botões personalizados; o seletor de categorias completo exige desbloquear (regra do Android).
 - **Decisão (10/11/2026):** a feature de notificação na tela bloqueada foi abortada para priorizar a extensão e o app funcionando por completo. As seções abaixo ficam como registro histórico.
 
-**Nova ordem (prioridade: app no celular):** 11 → 12 (Android funcionando sozinho) → 7 → 8 → 9 → 13 (sincronização com o Chrome) → 10 → 14 → 15.
+**Nova ordem (prioridade: app no celular):** 11 → 12 (Android funcionando sozinho) → 7 → 8 → 9 → 13 (sincronização com o Chrome) → 10 → Feature C (capas e links no celular) → 14 → 15. Detalhes em "Próximos passos".
 
 **Ajustes após a Sprint 6:** script `npm run dev` (recompilação automática); teclas digitadas no widget não acionam mais os atalhos do SoundCloud (`keyguard.js` em `document_start`); escritas sem efeito (repetir decisão, categoria, nome ou exclusão) não geram operações.
 
