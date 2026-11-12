@@ -104,7 +104,11 @@ A ordem entre a issue #1 e a Sprint 15 ainda não foi decidida.
 - Isolamento por `user_id` aplicado nos repositórios e na sync (operações de outro usuário são
   recusadas), com testes.
 - `docs/MULTIUSUARIO.md` com o desenho do compartilhamento por convite.
-- **Pergunta ao usuário no início:** existem credenciais de app OAuth do SoundCloud?
+- **Credenciais do autor:** criadas em 11/11/2026 (app `CuePoint` na conta Artist Pro do usuário).
+  - Ficam no `.env` da raiz, ignorado pelo Git, como `SC_CLIENT_ID` e `SC_CLIENT_SECRET`.
+  - **Nunca usar o prefixo `VITE_`**, que levaria o valor para a extensão compilada.
+  - O `.env` serve só para desenvolvimento e testes. Na versão distribuída, cada usuário informa as
+    próprias credenciais pelo assistente.
 - **Pronto quando:** os testes de isolamento passam e a documentação está completa.
 - Commit: `feat: valida a api do soundcloud e prepara o isolamento multiusuário`
 
@@ -230,7 +234,9 @@ dizer **outras pessoas instalando o CuePoint**, não várias contas dentro do ap
 - **Tokens por aparelho:** cada um tem os seus, nunca compartilhados (o refresh token é de uso único).
 - **O que sincroniza:** só o URN da playlist exportada, para PC e celular atualizarem a mesma
   playlist.
-- **Endereço de retorno:** o mesmo endereço local nos dois, `http://127.0.0.1:<porta fixa>/callback`.
+- **Endereço de retorno:** o mesmo endereço local nos dois, `http://127.0.0.1:47801/callback`.
+  - **O SoundCloud aceitou esse endereço no cadastro do app** (11/11/2026).
+  - A porta 47801 fica ao lado da 47800, que o serviço do PC usa na rede local.
   - No PC, quem atende é o serviço do PC. No celular, um servidor local que o app abre só durante o
     login.
   - Hipótese: um único endereço de retorno por app. `cuepoint://` provavelmente não é aceito.
@@ -247,7 +253,8 @@ dizer **outras pessoas instalando o CuePoint**, não várias contas dentro do ap
   não documentadas e client_id do SoundCloud). A criação é sempre pelo assistente manual.
 
 **A testar com credenciais reais:**
-- Endereço de retorno `http://127.0.0.1:<porta>` aceito, nos dois aparelhos.
+- ~~SoundCloud aceita o endereço de retorno `http://127.0.0.1:47801/callback`~~ ✅ (11/11/2026).
+- Login completo com retorno local no PC (serviço do PC) e no celular (servidor local do app).
 - Se o `PUT` substitui a lista de faixas.
 - Faixas de outros artistas e `blocked` em playlist.
 - `you/apps` no navegador do celular.
@@ -403,7 +410,7 @@ aguardar decisão.
 
 | Sprint | Pendência |
 |---|---|
-| 15 | Credenciais de app OAuth do SoundCloud (exigem Artist Pro), se existirem |
+| 15 | ~~Credenciais de app OAuth do SoundCloud (exigem Artist Pro)~~ ✅ criadas em 11/11/2026, no `.env` |
 ## Verificação
 
 - **Raiz:** `npm run verify:env` · `npm run lint` · `npm test` · `npm run build` · `npm run e2e`
