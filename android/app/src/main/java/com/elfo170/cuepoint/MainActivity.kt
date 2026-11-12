@@ -25,6 +25,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+        // Abrir o app reativa a notificação de curadoria dispensada (issue #1).
+        lifecycleScope.launch { container.setNotificationDismissed(false) }
         reconnectListener()
     }
 

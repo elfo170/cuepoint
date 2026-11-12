@@ -36,6 +36,10 @@ android {
     }
 
     buildTypes {
+        // Pacote próprio: o debug convive com a release instalada (dados e permissões separados).
+        debug {
+            applicationIdSuffix = ".debug"
+        }
         release {
             isMinifyEnabled = false
             signingConfig = releaseSigning
