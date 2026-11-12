@@ -22,11 +22,10 @@ só começa com autorização do usuário.
 | Etapa | Situação |
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
-| Sprint 15 — API do SoundCloud e preparação multiusuário | Pendente. Ver *Sprint 15*. |
+| Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Planejada (11/11/2026), aguardando autorização. Ver *Sprint 15*. |
+| Sprint 16 — SoundCloud no celular | Pendente (depende da Sprint 15). Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
-
-A ordem entre a issue #1 e a Sprint 15 ainda não foi decidida.
 
 ## Premissas
 
@@ -95,22 +94,27 @@ A ordem entre a issue #1 e a Sprint 15 ainda não foi decidida.
 - Operações pendentes do mesmo registro que nenhum outro aparelho recebeu são compactadas antes do
   envio.
 
-## Sprint 15 — P3: API do SoundCloud e preparação multiusuário
+## Sprint 15 — P3: Exportação para o SoundCloud (PC) e isolamento por usuário
 
-- `docs/SOUNDCLOUD_API.md`: validação das permissões da API oficial.
-  - Com credenciais OAuth de app: exportar playlist interna para o SoundCloud, inclusive atualizar
-    uma playlist já publicada (PKCE; troca e renovação do token pelo serviço do PC, ver *Decisões*).
-  - Sem credenciais: **nenhuma operação via API** (PRD §11.2); ficam só os exports locais.
+Escopo (decidido em 11/11/2026): **assistente na extensão + OAuth e exportação pelo serviço do PC**,
+isolamento por `user_id` e documentação. A parte do celular fica na **Sprint 16**. O plano de
+execução está em *Plano da Sprint 15*, depois das decisões.
+
+- Com credenciais OAuth de app: exportar playlist interna para o SoundCloud, inclusive atualizar
+  uma playlist já publicada (PKCE; troca e renovação do token pelo serviço do PC, ver *Decisões*).
+- Sem credenciais: **nenhuma operação via API** (PRD §11.2); ficam só os exports locais.
 - Isolamento por `user_id` aplicado nos repositórios e na sync (operações de outro usuário são
   recusadas), com testes.
-- `docs/MULTIUSUARIO.md` com o desenho do compartilhamento por convite.
+- `docs/SOUNDCLOUD_API.md`, `docs/PRIVACIDADE.md` e `docs/MULTIUSUARIO.md` (desenho do
+  compartilhamento por convite).
 - **Credenciais do autor:** criadas em 11/11/2026 (app `CuePoint` na conta Artist Pro do usuário).
   - Ficam no `.env` da raiz, ignorado pelo Git, como `SC_CLIENT_ID` e `SC_CLIENT_SECRET`.
   - **Nunca usar o prefixo `VITE_`**, que levaria o valor para a extensão compilada.
   - O `.env` serve só para desenvolvimento e testes. Na versão distribuída, cada usuário informa as
     próprias credenciais pelo assistente.
-- **Pronto quando:** os testes de isolamento passam e a documentação está completa.
-- Commit: `feat: valida a api do soundcloud e prepara o isolamento multiusuário`
+- **Pronto quando:** testes de isolamento e do módulo SoundCloud passam (TS, serviço do PC, Kotlin e
+  vetores), exportação e atualização reais conferidas pelo usuário e documentação completa.
+- Commit: `feat: exporta playlists para o soundcloud e isola os dados por usuário`
 
 > ⚠️ **A exportação para o SoundCloud só funciona para quem tem Artist Pro.** Sem nuvem (PRD §15),
 > cada pessoa que usa o CuePoint registra o **próprio** app no SoundCloud, e registrar exige Artist
@@ -259,6 +263,137 @@ dizer **outras pessoas instalando o CuePoint**, não várias contas dentro do ap
 - Faixas de outros artistas e `blocked` em playlist.
 - `you/apps` no navegador do celular.
 - Comportamento das credenciais se o Pro vencer.
+
+### Decisões complementares (aprovadas pelo usuário em 11/11/2026)
+
+| Tema | Decisão |
+|---|---|
+| Escopo | PC completo nesta sprint; celular na Sprint 16 |
+| Pareamento com aparelho que já tem biblioteca de **outro** `user_id` | **Recusar** com mensagem clara, antes de salvar o par |
+| Segredos no PC (`client_secret` e tokens) | **DPAPI do Windows** |
+| Atualizar playlist publicada | **Espelhar o CuePoint** (mesma lista e ordem), com confirmação mostrando o que entra e o que sai |
+| Visibilidade de uma playlist nova | Privada por padrão, escolhida no diálogo |
+
+**Por que o pareamento precisa da recusa:** a mesclagem (`applyOp`, `packages/core/src/merge.ts`)
+trabalha por id e trata `user_id` como um campo qualquer; nada compara o usuário da operação com o
+local (`Store.receive` da extensão e do Android, `insertOps` do serviço do PC). Hoje, um aparelho com
+biblioteca própria de outro usuário que pareia (o `adoptUserIfEmpty` só adota o usuário do PC quando
+o aparelho está vazio) **mistura as duas bibliotecas em silêncio**, sem conflito. Com o isolamento
+ligado, esse aparelho parearia e depois teria todas as operações recusadas. Os dados reais estão
+limpos: as 189 operações do `helper.db` (3 origens) têm o mesmo `user_id` da identidade do serviço
+do PC (conferido só leitura em 11/11/2026).
+
+### Plano da Sprint 15
+
+Ordem: isolamento → serviço do PC + validação com credenciais reais → extensão → docs → verificação.
+A validação real vem cedo porque pode mudar o desenho (por exemplo, a semântica do `PUT`).
+
+**Bloco 1 — Isolamento por `user_id`**
+- **Core TS** (`packages/core/src/ops.ts`): `assertSameUser(op, userId)` + `ForeignUserError`
+  (código `foreign_user`). **Kotlin** (`android/core/.../Model.kt`): equivalente, e `Op.validate()`
+  passa a validar o formato de `user_id` (paridade com o zod).
+- **Recebimento:** `Store.receive` da extensão (`packages/extension/src/data/store.ts`) e do Android
+  (`Store.kt`) recusam o lote inteiro se alguma operação for de outro usuário (nada é aplicado).
+  Serviço do PC: `insertOps` (`packages/helper/src/db.ts`) recusa nos três caminhos (push local,
+  `POST /v1/sync/push` e resultado do pull) → HTTP 409 `foreign_user`.
+- **`hello` do serviço do PC** (`helper.ts`): hoje sobrescreve o `userId` em silêncio; passa a
+  recusar troca de usuário quando já há operações, como já faz com o `deviceId`.
+- **Pareamento:** o pedido `POST /v1/pair` passa a levar `user_id` e `has_library`. O servidor
+  (`lan.ts`) responde 409 `foreign_user` **sem consumir o token** quando o usuário é outro e a
+  biblioteca não está vazia. O cliente Android (`SyncEngine.pair`) e o PC↔PC (`joinPairing`) também
+  conferem a resposta e não salvam o par. Aparelho vazio continua adotando o usuário do PC.
+  Mensagem: "Este aparelho tem a biblioteca de outra pessoa. Para parear, apague a biblioteca dele
+  ou restaure nele um backup deste PC."
+- **Repositórios:** leituras de Research, Category, Decision e Playlist filtram pelo usuário local
+  (extensão: `data/queries.ts`, `data/curation.ts`, `data/playlists.ts`; Android: `Queries.kt`,
+  `Curation.kt`). Track, TrackCategory e PlaylistTrack ficam globais ou derivados do pai (Track é
+  `uuidv5(urn)`, igual para todos). As escritas já carimbam o usuário da loja.
+- **Backup de outro usuário** restaurado num aparelho pareado: a sync falha com `foreign_user` e a
+  mensagem aparece no histórico de sync (o restore não muda).
+- **Vetores:** `spec/vectors/isolation.json` (aceita o mesmo usuário, recusa outro, pareamento
+  vazio × não vazio), gerado no TS e lido pelo Kotlin (`SpecVectorsTest.kt`).
+- **Testes:** `packages/core/test`, `packages/extension/test/store.test.ts`,
+  `packages/helper/test/lan.test.ts` (pareamento recusado, push de outro usuário → 409),
+  `helper.test.ts` (`hello` com outro usuário) e Android `SyncStoreTest.kt`.
+
+**Bloco 2 — Serviço do PC: segredos, OAuth e exportação** (novos arquivos em `packages/helper/src/`)
+- `secrets.ts`: DPAPI (`ProtectedData`, escopo `CurrentUser`) via `powershell.exe -NoProfile
+  -NonInteractive`, com os dados **pelo stdin** (nunca na linha de comando). O cifrado fica no
+  `helper.db` (`meta`, chave `sc:secrets`). Interface `SecretBox` injetável: os testes usam uma
+  falsa, e um teste real roda só em `win32`.
+- `soundcloud/oauth.ts`: PKCE S256 + `state`, `https://secure.soundcloud.com/authorize` e
+  `/oauth/token` (com `client_secret`). Renovação em execução única quando faltar menos de 5 min;
+  `invalid_grant`/`invalid_client` → estado `reconnect`, sem repetir.
+- `soundcloud/callback.ts`: `node:http` em `127.0.0.1:47801`, aberto só durante um login (timeout de
+  5 min); confere o `state` e responde uma página simples "Pode fechar esta aba". Fechado no `stop()`
+  do `daemon.ts`.
+- `soundcloud/api.ts`: `fetch` com base `https://api.soundcloud.com` e header
+  `Authorization: OAuth <token>`; 429 com recuo exponencial limitado (3 tentativas); 401 → uma
+  renovação e falha clara; paginação `linked_partitioning` + `next_href`.
+- `soundcloud/export.ts`: monta `{"playlist":{title, description, sharing, tracks:[{urn}]}}`.
+  - Faixa sem URN: `GET /resolve?url=` se tiver URL; senão é pulada e listada.
+  - Criar: `POST /playlists`.
+  - Atualizar (espelho): `GET /playlists/{urn}/tracks` → diferença em memória (entra, sai, ordem) →
+    confirmação → `PUT /playlists/{urn}`. 404 → oferecer criar outra.
+  - Nada da API é guardado além do URN da playlist.
+- **Validação das credenciais** (passo 4 do assistente): uma troca `client_credentials` ao salvar;
+  erro vira mensagem simples.
+- **Handlers IPC** (`h.register`): `sc:status`, `sc:configure {clientId, clientSecret}`, `sc:forget`
+  (apaga credenciais e tokens), `sc:login` (devolve a URL de autorização), `sc:logout`
+  (`POST /disconnect` + apagar tokens), `sc:diff` e `sc:export`. Evento `sc` ao concluir login ou
+  erro. Respostas abaixo de 1 MB (limite do Native Messaging).
+- **Dev com o `.env`:** `scripts/sc-dev.mjs` (fora do bundle) carrega com `process.loadEnvFile()` e
+  roda contra a API real numa pasta de dados temporária: login, `GET /me`, cria uma playlist privada
+  de teste, `PUT` com faixa removida e reordenada, faixa de outro artista e `blocked`, e apaga a
+  playlist de teste. Os resultados vão para `docs/SOUNDCLOUD_API.md`.
+- **Testes:** `packages/helper/test/soundcloud.test.ts` com `fetch` falso (PKCE, troca, renovação
+  única, 429, 401, paginação, espelho/diferença, faixas sem URN) e o servidor de retorno na porta 0.
+
+**Bloco 3 — Extensão**
+- `HELPER_FORWARD` com os tipos `sc:*` e repasse do evento `sc` (`src/background/index.ts`).
+- **Seção "SoundCloud" em Configurações** (`src/library/pages/Settings.tsx` + componente novo), com
+  os passos 1–7 do assistente aprovado:
+  - selo **"Requer Artist Pro"** e pergunta inicial (sem Pro → explica e aponta os exports locais);
+  - "Criar sua chave" abre `soundcloud.com/you/apps` com nome, descrição e
+    `http://127.0.0.1:47801/callback`, cada um com **Copiar**;
+  - "Código do app" e "Senha do app" (mascarado), com o aviso de que ficam só no PC;
+  - "Entrar com SoundCloud" abre a aba de autorização (`chrome.tabs.create`) e termina em
+    "Conectado como @…";
+  - **Reconectar**, **Desconectar** e "Remover credenciais";
+  - sem o serviço do PC: explica que ele é necessário.
+- **Playlist** (`src/library/pages/PlaylistDetail.tsx`): cartão "Exportar para o SoundCloud" com o
+  selo. Sem `external_playlist_id`: escolher pública/privada e exportar. Com: "Atualizar no
+  SoundCloud" → mostra o que entra e o que sai → confirma. Link para abrir no SoundCloud e lista das
+  faixas puladas. `Playlists.update` (`src/data/playlists.ts`) passa a aceitar
+  `external_playlist_id`, que sincroniza para o celular.
+- Manifesto sem mudança: as chamadas à API saem do serviço do PC.
+- Prints do `you/apps` no assistente: capturados no checkpoint manual; até lá, só texto.
+
+**Bloco 4 — Documentação**
+- `docs/SOUNDCLOUD_API.md`: endpoints usados, autenticação, limites, resultados dos itens *A testar*
+  e checklist dos Termos (ações só pelo usuário, desconectar, apagar em 7 dias, só o URN guardado,
+  nome sem a marca).
+- `docs/PRIVACIDADE.md`: política de privacidade exigida pelos Termos (o que fica no aparelho e o que
+  vai ao SoundCloud), utilizável como site no cadastro do app.
+- `docs/MULTIUSUARIO.md`: isolamento implementado + desenho do compartilhamento por convite
+  (futuro, sem código).
+- `README.md`: "Exportar para o SoundCloud (requer Artist Pro)" e passo a passo do assistente.
+
+**Verificação**
+- Comandos da seção *Verificação*, mais `npm run vectors -w @cuepoint/core` (gera
+  `isolation.json`).
+- Serviço do PC reinstalado e extensão recarregada (ver *Como retomar*); a sync PC ⇄ celular real
+  continua funcionando (mesmo `user_id`). A biblioteca real do PC nunca é apagada nem restaurada.
+
+## Sprint 16 — SoundCloud no celular
+
+- Credenciais enviadas **uma vez** por um endpoint assinado novo (ex.: `POST /v1/sc/credentials`),
+  só para par `paired`. **Não** pela resposta do `/v1/pair`, que sai antes da confirmação do código
+  de 6 dígitos.
+- Guarda no Android Keystore (hoje o app não usa o Keystore; a chave de assinatura fica no Room).
+- Servidor local em `127.0.0.1:47801` só durante o login.
+- Exportar e atualizar no celular sem o PC ligado, usando o mesmo `external_playlist_id`.
+- Commit próprio.
 
 ## Issue #1 — Notificação do CuePoint reaparece após bloqueio da tela
 
@@ -411,6 +546,12 @@ aguardar decisão.
 | Sprint | Pendência |
 |---|---|
 | 15 | ~~Credenciais de app OAuth do SoundCloud (exigem Artist Pro)~~ ✅ criadas em 11/11/2026, no `.env` |
+| 15 | Login real no PC pelo assistente ("Conectado como @…") |
+| 15 | Exportar e atualizar uma playlist de teste e conferir no SoundCloud |
+| 15 | Rodar `scripts/sc-dev.mjs` (o `PUT` substitui?, faixas de outros artistas, `blocked`) |
+| 15 | Prints do `you/apps` para o assistente |
+| 15 | Pro vencido: não testável; tratado como "credenciais inválidas" |
+
 ## Verificação
 
 - **Raiz:** `npm run verify:env` · `npm run lint` · `npm test` · `npm run build` · `npm run e2e`
