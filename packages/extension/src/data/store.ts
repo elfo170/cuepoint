@@ -1,5 +1,6 @@
 import {
   applyOp,
+  assertSameUser,
   buildLocalOp,
   isNoopWrite,
   CausalityError,
@@ -116,6 +117,33 @@ export class Store {
     this.identity = null;
   }
 
+  /** Nada registrado ainda (nenhuma operação no log): pode adotar o usuário de outro aparelho. */
+  async isEmpty(): Promise<boolean> {
+    return (await this.db.sync_events.count()) === 0;
+  }
+
+  /**
+   * No pareamento com outro PC, um aparelho ainda vazio adota o usuário dele, para que os dois
+   * sejam a mesma pessoa (isolamento por usuário). Espelha `Store.adoptUserIfEmpty` do Android.
+   */
+  async adoptUserIfEmpty(userId: string): Promise<boolean> {
+    const { user, device } = await this.init();
+    if (user.id === userId) return false;
+    const adopted = await this.db.transaction(
+      'rw',
+      [this.db.meta, this.db.users, this.db.devices, this.db.sync_events],
+      async () => {
+        if ((await this.db.sync_events.count()) > 0) return false;
+        await this.db.users.put({ id: userId, created_at: new Date().toISOString() });
+        await this.db.devices.update(device.id, { user_id: userId });
+        await this.db.meta.put({ key: 'identity', value: { userId, deviceId: device.id } });
+        return true;
+      },
+    );
+    this.identity = null;
+    return adopted;
+  }
+
   /** Esquece a identidade em cache (após restaurar um backup). */
   resetIdentity(): void {
     this.identity = null;
@@ -227,6 +255,8 @@ export class Store {
   async receive(ops: unknown[]): Promise<number> {
     await this.init();
     const validated = ops.map(validateOp).sort((a, b) => (a.hlc < b.hlc ? -1 : 1));
+    // Isolamento por usuário: um lote com operação de outro usuário é recusado inteiro.
+    assertSameUser(validated, this.userId);
     const touched = new Set<EntityType>();
     const applied = await this.db.transaction('rw', this.db.writeTables, async () => {
       const vv = await this.versionVector();

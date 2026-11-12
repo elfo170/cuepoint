@@ -4,10 +4,13 @@ import { Discovery } from './discovery';
 import { Helper } from './helper';
 import { startIpcServer } from './ipc';
 import { Lan } from './lan';
+import { defaultSecretBox } from './secrets';
+import { SoundCloud } from './soundcloud/client';
 
 export interface RunningDaemon {
   helper: Helper;
   lan: Lan;
+  soundcloud: SoundCloud;
   ipc: Server;
   stop: () => Promise<void>;
 }
@@ -22,6 +25,8 @@ export async function startDaemon(config: Config & { mdns?: boolean }): Promise<
   const helper = new Helper({ dataDir: config.dataDir, port: config.port, pipe: config.pipe });
   await helper.start();
   const lan = new Lan(helper);
+  // só chama a API quando o usuário pede (exportar, entrar, desconectar)
+  const soundcloud = new SoundCloud(helper, { box: defaultSecretBox() });
   const ipc = await startIpcServer(helper, config.pipe);
   await lan.listen();
   helper.portProvider = () => lan.port;
@@ -58,10 +63,11 @@ export async function startDaemon(config: Config & { mdns?: boolean }): Promise<
     clearInterval(timer);
     clearTimeout(debounce);
     discovery.stop();
+    await soundcloud.close();
     await lan.close();
     await new Promise<void>((r) => ipc.close(() => r()));
     helper.close();
   };
   process.once('SIGINT', () => void stop().then(() => process.exit(0)));
-  return { helper, lan, ipc, stop };
+  return { helper, lan, soundcloud, ipc, stop };
 }

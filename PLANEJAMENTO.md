@@ -22,7 +22,7 @@ só começa com autorização do usuário.
 | Etapa | Situação |
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
-| Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Planejada (11/11/2026), aguardando autorização. Ver *Sprint 15*. |
+| Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Falta abrir o PR para `main`. Ver *Sprint 15*. |
 | Sprint 16 — SoundCloud no celular | Pendente (depende da Sprint 15). Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
@@ -221,7 +221,7 @@ dizer **outras pessoas instalando o CuePoint**, não várias contas dentro do ap
 1. O cartão "Exportar para o SoundCloud" exibe o selo **"Requer Artist Pro"** e pergunta antes de
    tudo. Sem Pro: o CuePoint explica e oferece os exports locais.
 2. "Criar sua chave": abre `soundcloud.com/you/apps` e mostra o que preencher (nome, descrição e
-   endereço de retorno, cada um com **Copiar**, e prints).
+   endereço de retorno, cada um com **Copiar**; sem prints, decidido em 11/11/2026).
 3. A pessoa cola "Código do app" (client_id) e "Senha do app" (secret, mascarado), com o aviso de que
    ficam só no aparelho. A extensão repassa ao serviço do PC e não guarda.
 4. Validação imediata, com erros em linguagem simples.
@@ -258,9 +258,11 @@ dizer **outras pessoas instalando o CuePoint**, não várias contas dentro do ap
 
 **A testar com credenciais reais:**
 - ~~SoundCloud aceita o endereço de retorno `http://127.0.0.1:47801/callback`~~ ✅ (11/11/2026).
-- Login completo com retorno local no PC (serviço do PC) e no celular (servidor local do app).
-- Se o `PUT` substitui a lista de faixas.
-- Faixas de outros artistas e `blocked` em playlist.
+- ~~Login completo com retorno local no PC (serviço do PC)~~ ✅ (11/11/2026). No celular: Sprint 16.
+- ~~Se o `PUT` substitui a lista de faixas~~ ✅ **substitui** (remove e reordena), 11/11/2026.
+- Divergência da OpenAPI: `client_credentials` só aceita o app em HTTP Basic; a renovação só no
+  corpo (ver `docs/SOUNDCLOUD_API.md`).
+- ~~Faixas de outros artistas em playlist~~ ✅ aceitas (11/11/2026). `blocked`: não testado.
 - `you/apps` no navegador do celular.
 - Comportamento das credenciais se o Pro vencer.
 
@@ -298,12 +300,17 @@ A validação real vem cedo porque pode mudar o desenho (por exemplo, a semânti
   `POST /v1/sync/push` e resultado do pull) → HTTP 409 `foreign_user`.
 - **`hello` do serviço do PC** (`helper.ts`): hoje sobrescreve o `userId` em silêncio; passa a
   recusar troca de usuário quando já há operações, como já faz com o `deviceId`.
-- **Pareamento:** o pedido `POST /v1/pair` passa a levar `user_id` e `has_library`. O servidor
-  (`lan.ts`) responde 409 `foreign_user` **sem consumir o token** quando o usuário é outro e a
-  biblioteca não está vazia. O cliente Android (`SyncEngine.pair`) e o PC↔PC (`joinPairing`) também
-  conferem a resposta e não salvam o par. Aparelho vazio continua adotando o usuário do PC.
-  Mensagem: "Este aparelho tem a biblioteca de outra pessoa. Para parear, apague a biblioteca dele
-  ou restaure nele um backup deste PC."
+- **Pareamento:** o pedido `POST /v1/pair` passa a levar `user_id` e `can_adopt` (aparelho vazio
+  que pode adotar o usuário; no PC, só com a extensão e o serviço vazios, ver *PC ⇄ PC*). O servidor (`lan.ts`) responde 409 `foreign_user` **sem consumir o token** quando o
+  usuário é outro e o aparelho não pode adotar. O cliente Android (`SyncEngine.pair`) e o PC↔PC
+  (`joinPairing`) também conferem a resposta e não salvam o par. Aparelho vazio continua adotando o
+  usuário do PC. Mensagem única (TS e Kotlin, `FOREIGN_USER_MESSAGE`): "Os aparelhos são de
+  usuários diferentes. Para parear, apague a biblioteca do aparelho novo ou restaure nele um backup
+  deste aparelho."
+- **PC ⇄ PC (decidido em 11/11/2026):** cada extensão cria o próprio usuário, então dois PCs novos
+  seriam recusados. Ao parear com outro PC, se a extensão **e** o serviço estão vazios, o serviço
+  manda `can_adopt: true`, adota o usuário do outro PC e devolve `adoptedUserId`; a extensão adota
+  junto (`Store.adoptUserIfEmpty`, como o Android). Coberto em `lan.test.ts`, `store.test.ts` e e2e.
 - **Repositórios:** leituras de Research, Category, Decision e Playlist filtram pelo usuário local
   (extensão: `data/queries.ts`, `data/curation.ts`, `data/playlists.ts`; Android: `Queries.kt`,
   `Curation.kt`). Track, TrackCategory e PlaylistTrack ficam globais ou derivados do pai (Track é
@@ -367,7 +374,8 @@ A validação real vem cedo porque pode mudar o desenho (por exemplo, a semânti
   faixas puladas. `Playlists.update` (`src/data/playlists.ts`) passa a aceitar
   `external_playlist_id`, que sincroniza para o celular.
 - Manifesto sem mudança: as chamadas à API saem do serviço do PC.
-- Prints do `you/apps` no assistente: capturados no checkpoint manual; até lá, só texto.
+- Prints do `you/apps` no assistente: **não implementar** (decisão de 11/11/2026); o texto com
+  **Copiar** mostrou-se suficiente no teste real.
 
 **Bloco 4 — Documentação**
 - `docs/SOUNDCLOUD_API.md`: endpoints usados, autenticação, limites, resultados dos itens *A testar*
@@ -546,10 +554,10 @@ aguardar decisão.
 | Sprint | Pendência |
 |---|---|
 | 15 | ~~Credenciais de app OAuth do SoundCloud (exigem Artist Pro)~~ ✅ criadas em 11/11/2026, no `.env` |
-| 15 | Login real no PC pelo assistente ("Conectado como @…") |
-| 15 | Exportar e atualizar uma playlist de teste e conferir no SoundCloud |
-| 15 | Rodar `scripts/sc-dev.mjs` (o `PUT` substitui?, faixas de outros artistas, `blocked`) |
-| 15 | Prints do `you/apps` para o assistente |
+| 15 | ~~Login real no PC pelo assistente ("Conectado como @…")~~ ✅ 11/11/2026 (serviço do PC e extensão atualizados; 192 operações, um só usuário) |
+| 15 | ~~Exportar e atualizar uma playlist de teste e conferir no SoundCloud~~ ✅ 11/11/2026 |
+| 15 | ~~Rodar `npm run sc:dev`~~ ✅ 11/11/2026 (login, criar, `PUT` substitui, faixa de outro artista aceita). `blocked`: não testado (opcional) |
+| 15 | ~~Prints do `you/apps` para o assistente~~ dispensados: só texto (11/11/2026) |
 | 15 | Pro vencido: não testável; tratado como "credenciais inválidas" |
 
 ## Verificação

@@ -88,9 +88,29 @@ no widget. Nela você:
   categorias;
 - gerencia as **categorias**;
 - monta **playlists**: à mão ou a partir de uma pesquisa ou categoria. Dá para reordenar e exportar
-  como lista de links, CSV ou JSON;
+  como lista de links, CSV ou JSON, ou direto para o SoundCloud (requer Artist Pro, veja abaixo);
 - faz e restaura **backups** (seção 7);
 - pareia o celular em **Dispositivos** (seção 6).
+
+### Exportar para o SoundCloud (requer Artist Pro)
+
+O CuePoint cria e atualiza playlists na sua conta do SoundCloud. Para isso, **você** registra um
+app na API do SoundCloud, e o registro exige uma assinatura **Artist Pro**. Também é preciso o
+serviço do PC (seção 6.1), que guarda as credenciais cifradas com a sua conta do Windows.
+
+1. Em **Configurações → Exportar para o SoundCloud**, responda que tem Artist Pro.
+2. Clique em **Abrir soundcloud.com/you/apps** e registre um app com os valores mostrados (cada um
+   tem um botão **Copiar**). O endereço de retorno é `http://127.0.0.1:47801/callback`.
+3. Cole o **Client ID** e o **Client Secret** e clique em **Salvar e conferir**.
+4. Clique em **Entrar com SoundCloud** e autorize na aba que abrir. Ao final aparece "Conectado
+   como @…".
+5. Na página de uma playlist, use **Exportar para o SoundCloud** (privada por padrão). Depois,
+   **Atualizar no SoundCloud** mostra o que entra, o que sai e se a ordem muda; a playlist no
+   SoundCloud fica igual à do CuePoint depois da confirmação.
+
+Faixas sem link do SoundCloud ficam de fora e aparecem listadas. **Desconectar** revoga o acesso;
+**Remover credenciais** apaga também o código e a senha do app. Detalhes:
+[docs/SOUNDCLOUD_API.md](docs/SOUNDCLOUD_API.md) · [privacidade](docs/PRIVACIDADE.md).
 
 **Faixa "provisória":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
 internet). Ela entra como provisória e é associada sozinha à definitiva assim que o identificador
@@ -203,11 +223,13 @@ celular antigo.
 | A notificação do CuePoint sumiu e não volta                   | Ela foi dispensada ou o SoundCloud foi fechado. Abra o CuePoint (e o SoundCloud) para ela voltar.                                                                                 |
 | A notificação some da tela bloqueada                          | Limitação de alguns sistemas, como o HyperOS: ela some quando chega outra notificação. Continua disponível na cortina.                                                             |
 | Uma faixa aparece como "provisória"                           | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
+| Pareamento recusado: "os aparelhos são de usuários diferentes" | O aparelho novo já tem a biblioteca de outra pessoa (ou outra biblioteca sua). Apague a biblioteca dele ou restaure nele um backup do PC e pareie de novo. |
+| A exportação pede para **Reconectar**                         | O acesso ao SoundCloud caiu (Artist Pro vencido, senha do app trocada ou autorização revogada). Clique em **Reconectar**; se falhar, confira as credenciais do app. |
 
 ## 9. Roadmap
 
-- **Integração com o SoundCloud para criar e atualizar playlists**: enviar as playlists do
-  CuePoint direto para a sua conta e mantê-las atualizadas.
+- **Exportar para o SoundCloud também pelo celular**, sem o PC ligado (no PC já funciona, com
+  Artist Pro).
 - Sincronização direta entre dois celulares.
 - Compartilhamento de bibliotecas por convite.
 - Múltiplos dispositivos.
@@ -238,8 +260,10 @@ npm run lint             # ESLint + Prettier
 npm run e2e              # Playwright: widget, biblioteca, backup e critérios de aceite
 npm run android:check    # testes + APK de debug do Android
 npm run helper:install   # instala o serviço do PC a partir do repositório
+npm run sc:dev           # valida a API do SoundCloud com o .env (SC_CLIENT_ID/SC_CLIENT_SECRET)
 npm run release:package  # monta os arquivos da release em release\<tag>\
 ```
 
 Mais contexto: [PRD](CuePoint_PRD_v1.0.md) · [planejamento e status](PLANEJAMENTO.md) ·
-[contrato TS ⇄ Kotlin](spec/README.md).
+[contrato TS ⇄ Kotlin](spec/README.md) · [API do SoundCloud](docs/SOUNDCLOUD_API.md) ·
+[multiusuário](docs/MULTIUSUARIO.md).

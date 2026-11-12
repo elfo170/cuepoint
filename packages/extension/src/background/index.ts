@@ -25,7 +25,36 @@ const HELPER_FORWARD = new Set([
   'approval:grant',
   'approvals:list',
   'runs:list',
+  // SoundCloud (Sprint 15): credenciais e tokens ficam só no serviço do PC
+  'sc:status',
+  'sc:configure',
+  'sc:forget',
+  'sc:login',
+  'sc:logout',
+  'sc:diff',
+  'sc:export',
 ]);
+
+/** Exportar/atualizar resolve links e respeita esperas do SoundCloud: pode demorar. */
+const SLOW_TIMEOUT_MS = 3 * 60 * 1000;
+
+/**
+ * Pareamento com outro PC. Se esta extensão ainda está vazia, avisa o serviço que pode adotar o
+ * usuário do outro PC (isolamento por usuário) e adota junto quando ele confirma.
+ */
+async function joinPairing(req: Record<string, unknown>) {
+  await helper.connect();
+  const res = await helper.request<{ adoptedUserId?: string | null }>({
+    ...req,
+    canAdopt: await store.isEmpty(),
+  });
+  if (res.adoptedUserId && !(await store.adoptUserIfEmpty(res.adoptedUserId))) {
+    throw new Error(
+      'Este PC registrou alterações durante o pareamento. Apague a biblioteca dele e pareie de novo.',
+    );
+  }
+  return res;
+}
 
 async function openLibrary(hash?: string) {
   const url = chrome.runtime.getURL(`library.html${hash ? `#${hash}` : ''}`);
@@ -81,7 +110,7 @@ helper.onEvent((event, data) => {
       requireInteraction: true,
     });
   }
-  if (event === 'peers' || event === 'approval')
+  if (event === 'peers' || event === 'approval' || event === 'sc')
     chrome.runtime.sendMessage({ type: CHANGED_MESSAGE }).catch(() => undefined);
 });
 
@@ -127,7 +156,12 @@ chrome.runtime.onMessage.addListener((request: Request, _sender, sendResponse) =
       reply(Promise.reject(new Error('operação não permitida')));
       return true;
     }
-    reply(helper.connect().then(() => helper.request(req as Record<string, unknown>)));
+    if (req.type === 'pairing:join') {
+      reply(joinPairing(req as Record<string, unknown>));
+      return true;
+    }
+    const timeout = req.type.startsWith('sc:') ? SLOW_TIMEOUT_MS : undefined;
+    reply(helper.connect().then(() => helper.request(req as Record<string, unknown>, timeout)));
     return true;
   }
   reply(

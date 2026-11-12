@@ -8,7 +8,15 @@ import {
   type EntityType,
   type JsonValue,
 } from './model';
-import { compareOps, opId, opsMissingFrom, type Op, type OpKind, type VersionVector } from './ops';
+import {
+  assertSameUser,
+  compareOps,
+  opId,
+  opsMissingFrom,
+  type Op,
+  type OpKind,
+  type VersionVector,
+} from './ops';
 
 export class CausalityError extends Error {}
 
@@ -140,6 +148,7 @@ export class Replica {
 
   /** Recebe operações remotas. Idempotente; exige entrega causal. Retorna quantas aplicou. */
   receive(ops: Op[]): number {
+    assertSameUser(ops, this.userId);
     let applied = 0;
     for (const op of [...ops].sort(compareOps)) {
       const have = this.vv[op.origin] ?? 0;

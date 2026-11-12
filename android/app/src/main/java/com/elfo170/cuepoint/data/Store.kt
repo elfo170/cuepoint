@@ -10,6 +10,7 @@ import com.elfo170.cuepoint.core.EntityType
 import com.elfo170.cuepoint.core.Hlc
 import com.elfo170.cuepoint.core.HlcClock
 import com.elfo170.cuepoint.core.Ids
+import com.elfo170.cuepoint.core.Isolation
 import com.elfo170.cuepoint.core.Merge
 import com.elfo170.cuepoint.core.Op
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -92,7 +93,11 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
     suspend fun get(type: EntityType, id: String): JsonObject? =
         dao.entity(type.key, id)?.let { Merge.parseObject(it.json) }
 
-    suspend fun all(type: EntityType): List<JsonObject> = dao.entities(type.key).map { Merge.parseObject(it.json) }
+    /** Registros do usuário local (isolamento por usuário, PRD §16). */
+    suspend fun all(type: EntityType): List<JsonObject> {
+        val userId = init().userId
+        return dao.entities(type.key).map { Merge.parseObject(it.json) }.filter { Isolation.owned(it, userId) }
+    }
 
     suspend fun <R> write(block: suspend (WriteTx) -> R): R {
         val id = init()
@@ -147,6 +152,9 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
     /** Recebe operações de outro aparelho (entrega causal, idempotente). */
     suspend fun receive(ops: List<Op>): Int {
         val id = init()
+        val validated = ops.map { it.validate() }
+        // Isolamento por usuário: um lote com operação de outro usuário é recusado inteiro.
+        Isolation.assertSameUser(validated, id.userId)
         val touched = mutableSetOf<EntityType>()
         val applied = mutex.withLock {
             db.withTransaction {
@@ -154,7 +162,7 @@ class Store(val db: CuePointDatabase, private val now: () -> Long = System::curr
                 val state = dao.meta("clock")?.let { Merge.json.decodeFromString<ClockState>(it) } ?: ClockState()
                 val clock = HlcClock(id.deviceId, state.last, now)
                 var count = 0
-                for (op in ops.map { it.validate() }.sortedBy { it.hlc }) {
+                for (op in validated.sortedBy { it.hlc }) {
                     val have = vv[op.origin] ?: 0
                     if (op.seq <= have) continue
                     if (op.seq != have + 1) throw CausalityException("lacuna em ${op.origin}: esperado ${have + 1}, recebido ${op.seq}")

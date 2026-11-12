@@ -13,6 +13,7 @@ import {
   TrackCell,
 } from '../components';
 import { downloadText } from '../download';
+import { SoundCloudExport } from './SoundCloudExport';
 
 export function PlaylistDetailPage() {
   const { id = '' } = useParams();
@@ -95,6 +96,7 @@ export function PlaylistDetailPage() {
           </div>
         }
       />
+      <SoundCloudExport playlist={playlist} items={items} />
       {notice && (
         <p role="status" className="mb-3 text-sm text-neutral-500">
           {notice}

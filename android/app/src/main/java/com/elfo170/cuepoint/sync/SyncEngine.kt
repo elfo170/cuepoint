@@ -1,6 +1,9 @@
 package com.elfo170.cuepoint.sync
 
+import com.elfo170.cuepoint.core.FOREIGN_USER_MESSAGE
+import com.elfo170.cuepoint.core.ForeignUserException
 import com.elfo170.cuepoint.core.Hlc
+import com.elfo170.cuepoint.core.Isolation
 import com.elfo170.cuepoint.core.Merge
 import com.elfo170.cuepoint.core.Op
 import com.elfo170.cuepoint.core.Protocol
@@ -68,6 +71,9 @@ class SyncEngine(
                     "device_id" to kotlinx.serialization.json.JsonPrimitive(id.deviceId),
                     "name" to kotlinx.serialization.json.JsonPrimitive(id.deviceName),
                     "public_key" to kotlinx.serialization.json.JsonPrimitive(publicKey),
+                    "user_id" to kotlinx.serialization.json.JsonPrimitive(id.userId),
+                    // vazio: adota o usuário do PC; com biblioteca de outro usuário, o PC recusa
+                    "can_adopt" to kotlinx.serialization.json.JsonPrimitive(dao.entityCount() == 0),
                 ),
             ),
         )
@@ -76,7 +82,12 @@ class SyncEngine(
             try {
                 val res = Merge.parseObject(clientFactory(host, p.port, p.certFp, id.deviceId, key).post("/v1/pair", body, signed = false))
                 require(res.getValue("device_id").jsonPrimitive.content == p.deviceId) { "aparelho inesperado" }
-                store.adoptUserIfEmpty(res.getValue("user_id").jsonPrimitive.content)
+                val pcUser = res.getValue("user_id").jsonPrimitive.content
+                // PC antigo (sem a recusa no servidor): confere aqui antes de salvar o par
+                if (Isolation.pairingUserDecision(pcUser, id.userId, dao.entityCount() == 0) == Isolation.FOREIGN) {
+                    throw ForeignUserException()
+                }
+                store.adoptUserIfEmpty(pcUser)
                 dao.putDevice(
                     DeviceRow(
                         id = p.deviceId, user_id = store.init().userId, device_name = p.name, public_key = p.publicKey,
@@ -86,7 +97,15 @@ class SyncEngine(
                 )
                 return PairingResult(p.deviceId, p.name, res.getValue("sas").jsonPrimitive.content)
             } catch (e: PeerHttpException) {
-                throw IllegalStateException(if (e.code == "invalid_token") "Código expirado ou já usado. Gere um novo no PC." else e.code)
+                throw IllegalStateException(
+                    when (e.code) {
+                        "invalid_token" -> "Código expirado ou já usado. Gere um novo no PC."
+                        "foreign_user" -> FOREIGN_USER_MESSAGE
+                        else -> e.code
+                    },
+                )
+            } catch (e: ForeignUserException) {
+                throw IllegalStateException(e.message)
             } catch (e: Exception) {
                 last = e
             }
@@ -141,9 +160,14 @@ class SyncEngine(
                     "revoked" -> "revoked"
                     else -> "error"
                 }
+                // foreign_user (o PC recusou o envio) segue como erro com o código
                 if (status == "revoked") dao.putDevice(peer.copy(pairing_status = "revoked"))
                 record(SyncRun(peerId, Hlc.isoOf(System.currentTimeMillis()), status, received, sent, e.code))
                 return SyncResult(status, received, sent, e.code)
+            } catch (e: ForeignUserException) {
+                // o PC mandou operações de outro usuário: nada foi aplicado; não adianta outro endereço
+                record(SyncRun(peerId, Hlc.isoOf(System.currentTimeMillis()), "error", received, sent, e.code))
+                return SyncResult("error", received, sent, e.code)
             } catch (e: Exception) {
                 lastError = e
             }

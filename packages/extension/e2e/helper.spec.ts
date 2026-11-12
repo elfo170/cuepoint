@@ -101,15 +101,16 @@ test('pareamento pela biblioteca: QR, código de verificação, confirmação e 
   await other.start();
   const otherLan = new Lan(other, () => ['127.0.0.1']);
   await otherLan.listen();
-  await other.handleLocal({
-    type: 'hello',
-    deviceId: 'dddddddd-0000-4000-8000-00000000000d',
-    userId: '00000000-0000-4000-8000-000000000001',
-    deviceName: 'Outro aparelho',
-  });
   try {
     const lib = await openLibrary(context, '/devices');
     await expect(lib.getByTestId('helper-state')).toHaveText('conectado', { timeout: 20_000 });
+    // isolamento por usuário: o outro aparelho precisa ser do mesmo usuário deste PC
+    await other.handleLocal({
+      type: 'hello',
+      deviceId: 'dddddddd-0000-4000-8000-00000000000d',
+      userId: JSON.parse(helperCli(['status', '--pipe', pipe])).identity.userId,
+      deviceName: 'Outro aparelho',
+    });
     await lib.getByRole('link', { name: 'Pesquisas' }).click();
     await lib.getByLabel('Nome da pesquisa').fill('Do PC');
     await lib.getByRole('button', { name: 'Criar pesquisa' }).click();
@@ -145,6 +146,53 @@ test('pareamento pela biblioteca: QR, código de verificação, confirmação e 
     expect(res.status).toBe('ok');
     expect(res.received).toBeGreaterThan(0);
     await expect(lib.getByTestId('peer-row')).toContainText('Última sync:');
+  } finally {
+    await otherLan.close();
+    other.close();
+  }
+});
+
+test('PC vazio pareia com outro PC e passa a usar a mesma biblioteca (adota o usuário)', async ({
+  context,
+}) => {
+  const { Helper } = await import('../../helper/src/helper');
+  const { Lan } = await import('../../helper/src/lan');
+  const otherUser = '00000000-0000-4000-8000-0000000000aa';
+  const other = new Helper({
+    dataDir: mkdtempSync(join(tmpdir(), 'cuepoint-e2e-peer-')),
+    port: 0,
+    pipe: 'unused',
+  });
+  await other.start();
+  const otherLan = new Lan(other, () => ['127.0.0.1']);
+  await otherLan.listen();
+  await other.handleLocal({
+    type: 'hello',
+    deviceId: 'eeeeeeee-0000-4000-8000-00000000000e',
+    userId: otherUser,
+    deviceName: 'PC principal',
+  });
+  try {
+    const lib = await openLibrary(context, '/devices');
+    await expect(lib.getByTestId('helper-state')).toHaveText('conectado', { timeout: 20_000 });
+    const { uri } = (await other.handleLocal({ type: 'pairing:create' })) as { uri: string };
+    await lib.getByRole('button', { name: 'Parear com outro PC' }).click();
+    await lib.getByLabel('Código do outro computador').fill(uri);
+    await lib.getByRole('button', { name: 'Parear', exact: true }).click();
+    await expect(lib.getByText('passou a usar a mesma biblioteca de PC principal')).toBeVisible();
+    expect(JSON.parse(helperCli(['status', '--pipe', pipe])).identity.userId).toBe(otherUser);
+
+    // o que este PC cria agora é do mesmo usuário e chega ao serviço sem ser recusado
+    await lib.getByRole('link', { name: 'Pesquisas' }).click();
+    await lib.getByLabel('Nome da pesquisa').fill('Criada no PC novo');
+    await lib.getByRole('button', { name: 'Criar pesquisa' }).click();
+    await expect
+      .poll(() => JSON.parse(helperCli(['status', '--pipe', pipe])).ops as number, {
+        timeout: 15_000,
+      })
+      .toBeGreaterThan(0);
+    await lib.getByRole('link', { name: 'Configurações' }).click();
+    await expect(lib.getByText(otherUser)).toBeVisible();
   } finally {
     await otherLan.close();
     other.close();

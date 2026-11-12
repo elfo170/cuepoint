@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { BackgroundHandler } from '../src/background/handler';
 import { Curation, type TrackInput } from '../src/data/curation';
 import { CuePointDB } from '../src/data/db';
+import { loadSnapshot } from '../src/data/queries';
 import { Store } from '../src/data/store';
 
 let counter = 0;
@@ -244,5 +245,63 @@ describe('escritas sem efeito não geram operações', () => {
     const current = await store.get('research', research.id);
     await curation.updateResearch(research.id, { name: current!.name });
     expect(await db.conflicts.count()).toBe(0);
+  });
+});
+
+describe('isolamento por usuário', () => {
+  const OTHER = '00000000-0000-4000-8000-0000000000ff';
+
+  it('recusa o lote inteiro quando há operação de outro usuário', async () => {
+    const { db, store } = setup();
+    await store.init();
+    const mine = new Replica('bbbbbbbb-0000-4000-8000-00000000000b', store.userId);
+    const theirs = new Replica('cccccccc-0000-4000-8000-00000000000c', OTHER);
+    const fields = { name: 'R', description: '', archived: false };
+    mine.put('research', '20000000-0000-4000-8000-000000000001', {
+      ...fields,
+      user_id: store.userId,
+    });
+    theirs.put('research', '20000000-0000-4000-8000-000000000002', { ...fields, user_id: OTHER });
+    await expect(store.receive([...mine.log, ...theirs.log])).rejects.toThrow(
+      /usuários diferentes/,
+    );
+    expect(await db.researches.count()).toBe(0);
+    expect(await store.versionVector()).toEqual({});
+  });
+
+  it('leituras mostram só os registros do usuário local', async () => {
+    const { db, store, curation } = setup();
+    await store.init();
+    const own = await curation.createResearch('Minha');
+    await db.researches.put({ ...own, id: '20000000-0000-4000-8000-0000000000aa', user_id: OTHER });
+    await db.categories.put({
+      id: '30000000-0000-4000-8000-0000000000aa',
+      user_id: OTHER,
+      name: 'Alheia',
+      description: '',
+      deleted_at: null,
+      created_at: own.created_at,
+      updated_at: own.updated_at,
+      _v: {},
+    });
+    expect((await curation.listResearches()).map((r) => r.id)).toEqual([own.id]);
+    expect(await curation.listCategories()).toEqual([]);
+    expect((await loadSnapshot(db)).researches.map((r) => r.id)).toEqual([own.id]);
+  });
+});
+
+describe('adoção de usuário no pareamento entre PCs', () => {
+  it('extensão vazia adota o usuário do outro PC; com alterações, não', async () => {
+    const OTHER = '00000000-0000-4000-8000-0000000000ee';
+    const { db, store, curation } = setup();
+    await store.init();
+    expect(await store.isEmpty()).toBe(true);
+    expect(await store.adoptUserIfEmpty(OTHER)).toBe(true);
+    expect((await store.init()).user.id).toBe(OTHER);
+    expect((await new Store(db).init()).device.user_id).toBe(OTHER);
+    const r = await curation.createResearch('Depois da adoção');
+    expect(r.user_id).toBe(OTHER);
+    expect(await store.adoptUserIfEmpty('00000000-0000-4000-8000-0000000000dd')).toBe(false);
+    expect((await store.init()).user.id).toBe(OTHER);
   });
 });

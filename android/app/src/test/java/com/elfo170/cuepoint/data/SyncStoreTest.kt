@@ -2,14 +2,21 @@ package com.elfo170.cuepoint.data
 
 import androidx.test.core.app.ApplicationProvider
 import com.elfo170.cuepoint.core.EntityType
+import com.elfo170.cuepoint.core.ForeignUserException
+import com.elfo170.cuepoint.core.Merge
 import com.elfo170.cuepoint.core.Ids
 import com.elfo170.cuepoint.core.Protocol
 import com.elfo170.cuepoint.core.Replica
 import com.elfo170.cuepoint.sync.PinnedTrustManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -73,6 +80,41 @@ class SyncStoreTest {
         assertEquals(pcUser, store.init().userId)
         curation.createResearch("Algo")
         assertFalse(store.adoptUserIfEmpty("ffffffff-0000-4000-8000-000000000001"))
+    }
+
+    @Test
+    fun rejectsWholeBatchFromAnotherUser() = runTest {
+        val me = store.init().userId
+        val other = "ffffffff-0000-4000-8000-000000000001"
+        fun research(user: String, device: String, id: String) = Replica(device, user).put(
+            EntityType.RESEARCH,
+            id,
+            mapOf(
+                "user_id" to JsonPrimitive(user), "name" to JsonPrimitive("R"),
+                "description" to JsonPrimitive(""), "archived" to JsonPrimitive(false),
+            ),
+        )
+        val mine = research(me, "bbbbbbbb-0000-4000-8000-00000000000b", "20000000-0000-4000-8000-000000000001")
+        val theirs = research(other, "cccccccc-0000-4000-8000-00000000000c", "20000000-0000-4000-8000-000000000002")
+        assertThrows(ForeignUserException::class.java) { runBlocking { store.receive(listOf(mine, theirs)) } }
+        assertEquals(0, db.dao().entityCount())
+        assertTrue(store.versionVector().isEmpty())
+        assertEquals(1, store.receive(listOf(mine)))
+    }
+
+    @Test
+    fun readsShowOnlyLocalUserRecords() = runTest {
+        val own = curation.createResearch("Minha")
+        val foreign = Merge.parseObject(db.dao().entity("research", own.id)!!.json).toMutableMap().apply {
+            put("id", JsonPrimitive("20000000-0000-4000-8000-0000000000aa"))
+            put("user_id", JsonPrimitive("ffffffff-0000-4000-8000-000000000001"))
+        }
+        val row = db.dao().entity("research", own.id)!!
+        db.dao().upsertEntity(row.copy(id = "20000000-0000-4000-8000-0000000000aa", json = JsonObject(foreign).toString()))
+        assertEquals(listOf(own.id), curation.listResearches().map { it.id })
+        val snap = Snapshot.of(db.dao().observeAll().first(), store.init().userId)
+        assertEquals(listOf(own.id), snap.researches.map { it.id })
+        assertEquals(2, Snapshot.of(db.dao().observeAll().first()).researches.size)
     }
 
     @Test

@@ -6,6 +6,7 @@ import {
   type PlaylistTrack,
   type Track,
 } from '@cuepoint/core';
+import { localUserId, ownedBy } from './queries';
 import type { Store } from './store';
 
 const alive = <T extends { deleted_at: string | null }>(r: T | undefined): r is T =>
@@ -30,8 +31,11 @@ export class Playlists {
   }
 
   async list(): Promise<Playlist[]> {
+    // só leitura (pode rodar dentro de liveQuery): o usuário vem da identidade gravada
+    const userId = await localUserId(this.db);
     return (await this.db.playlists.toArray())
       .filter(alive)
+      .filter(ownedBy(userId))
       .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }
 
@@ -106,7 +110,11 @@ export class Playlists {
     });
   }
 
-  async update(id: string, changes: Partial<Pick<Playlist, 'name' | 'description'>>) {
+  /** `external_playlist_id`: URN da playlist exportada para o SoundCloud (sincroniza). */
+  async update(
+    id: string,
+    changes: Partial<Pick<Playlist, 'name' | 'description' | 'external_playlist_id'>>,
+  ) {
     await this.store.put('playlist', id, changes);
   }
 

@@ -34,6 +34,8 @@ export interface HelperEvents {
   changed: [];
   peers: [];
   approval: [peer: { device_id: string; name: string }];
+  /** Estado da conexão com o SoundCloud mudou (login, renovação falhou, desconexão). */
+  sc: [status: unknown];
 }
 
 export const PULL_PAGE = 200;
@@ -63,7 +65,7 @@ export class Helper extends EventEmitter<HelperEvents> {
       this.db.opsSince((r.vv as VersionVector) ?? {}, Number(r.limit ?? PULL_PAGE)),
     );
     this.register('push', (r) => {
-      const inserted = this.db.insertOps((r.ops as unknown[]) ?? []);
+      const inserted = this.insertOps((r.ops as unknown[]) ?? []);
       if (inserted.length) this.emit('changed');
       return { applied: inserted.length, vv: this.db.versionVector() };
     });
@@ -95,6 +97,11 @@ export class Helper extends EventEmitter<HelperEvents> {
     return handler(req as Record<string, unknown>);
   }
 
+  /** Insere operações recebidas, recusando as de outro usuário (isolamento, PRD §16). */
+  insertOps(ops: unknown[]): Op[] {
+    return this.db.insertOps(ops, this.identity?.userId);
+  }
+
   get identity(): LocalIdentity | undefined {
     const raw = this.db.getMeta('identity');
     return raw ? (JSON.parse(raw) as LocalIdentity) : undefined;
@@ -105,6 +112,11 @@ export class Helper extends EventEmitter<HelperEvents> {
     if (current && current.deviceId !== r.deviceId) {
       throw new Error(
         `Este serviço já pertence ao aparelho ${current.name} (${current.deviceId}). Restaure o backup desse aparelho ou reinstale o serviço.`,
+      );
+    }
+    if (current && current.userId !== r.userId && this.db.count() > 0) {
+      throw new Error(
+        'Este serviço guarda a biblioteca de outro usuário. Restaure o backup desse usuário ou reinstale o serviço.',
       );
     }
     const next = { deviceId: r.deviceId, userId: r.userId, name: r.deviceName };

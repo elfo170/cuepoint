@@ -120,6 +120,7 @@ data class Op(
         Hlc.parse(hlc)
         EntityType.of(entityType)
         require(seq > 0) { "seq inválido" }
+        require(Isolation.isUuid(userId)) { "user_id inválido em $opId" }
         return this
     }
 }

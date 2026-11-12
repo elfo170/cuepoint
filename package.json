@@ -24,6 +24,7 @@
     "android:check": "npm run android -- test assembleDebug",
     "dev": "npm run dev -w @cuepoint/extension",
     "helper:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-helper.ps1",
+    "sc:dev": "node packages/helper/scripts/sc-dev.mjs",
     "helper:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-helper.ps1",
     "release:package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-release.ps1"
   },

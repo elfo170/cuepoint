@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { db, mutate, store } from '../api';
 import { buttonClass, inputClass, PageHeader } from '../components';
+import { SoundCloudSettings } from './SoundCloudSettings';
 
 /** Configurações do aparelho (PRD §4.3: nome automático inicial, personalizável). */
 export function SettingsPage() {
@@ -73,6 +74,8 @@ export function SettingsPage() {
           <dd>{new Date(info.device.created_at).toLocaleString('pt-BR')}</dd>
         </dl>
       </section>
+
+      <SoundCloudSettings />
 
       <section className="max-w-xl rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
         <h2 className="mb-1 font-semibold">Registro de alterações</h2>

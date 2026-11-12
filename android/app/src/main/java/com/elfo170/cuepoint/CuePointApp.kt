@@ -66,7 +66,7 @@ class AppContainer(
 
     /** Biblioteca reativa: recalculada a cada escrita no banco. */
     val snapshot: StateFlow<Snapshot> = db.dao().observeAll()
-        .map(Snapshot::of)
+        .map { Snapshot.of(it, store.init().userId) }
         .stateIn(scope, SharingStarted.Eagerly, Snapshot.EMPTY)
 
     val activeResearchId: Flow<String?> = db.dao().observeMeta("activeResearchId").map { it?.takeIf(String::isNotEmpty) }
