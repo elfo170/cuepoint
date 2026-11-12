@@ -99,7 +99,7 @@ A ordem entre a issue #1 e a Sprint 15 ainda não foi decidida.
 
 - `docs/SOUNDCLOUD_API.md`: validação das permissões da API oficial.
   - Com credenciais OAuth de app: exportar playlist interna para o SoundCloud, inclusive atualizar
-    uma playlist já publicada (`chrome.identity.launchWebAuthFlow` + PKCE, token protegido).
+    uma playlist já publicada (PKCE; troca e renovação do token pelo serviço do PC, ver *Decisões*).
   - Sem credenciais: **nenhuma operação via API** (PRD §11.2); ficam só os exports locais.
 - Isolamento por `user_id` aplicado nos repositórios e na sync (operações de outro usuário são
   recusadas), com testes.
@@ -107,6 +107,151 @@ A ordem entre a issue #1 e a Sprint 15 ainda não foi decidida.
 - **Pergunta ao usuário no início:** existem credenciais de app OAuth do SoundCloud?
 - **Pronto quando:** os testes de isolamento passam e a documentação está completa.
 - Commit: `feat: valida a api do soundcloud e prepara o isolamento multiusuário`
+
+> ⚠️ **A exportação para o SoundCloud só funciona para quem tem Artist Pro.** Sem nuvem (PRD §15),
+> cada pessoa que usa o CuePoint registra o **próprio** app no SoundCloud, e registrar exige Artist
+> Pro. Isso precisa ficar evidente na interface, no código e na documentação de instalação.
+
+### Prompt inicial da integração (11/11/2026)
+
+Instruções fornecidas pelo usuário para integrar a API do SoundCloud, registradas na íntegra:
+
+```text
+You are helping integrate the SoundCloud API.
+
+Authoritative technical sources (use these; do not invent endpoints or headers):
+- OpenAPI spec JSON: https://developers.soundcloud.com/docs/api/explorer/api.json
+- OpenAPI spec YAML (GitHub): https://github.com/soundcloud/api/blob/master/openapi/api.yaml
+- API Guide (auth, uploads, playback, pagination, errors): https://developers.soundcloud.com/docs/api/guide
+- API credentials CLI (use this before a browser flow): curl -fsSL https://raw.githubusercontent.com/soundcloud/api/master/scripts/sc-api-auth.mjs | node --input-type=module - --remote --name "My API App" --description "What my integration does" --website "https://example.com"
+- Register app / credential guidance (Artist Pro, Client ID & secret): https://developers.soundcloud.com/docs/api/register-app
+- LLM-oriented overview: https://developers.soundcloud.com/docs/llm-context
+- API Explorer (interactive browsing only, not endpoint discovery): https://developers.soundcloud.com/docs/api/explorer/open-api
+
+Rules:
+1. Parse the OpenAPI JSON before selecting an endpoint. Use the API Explorer only to try or inspect an endpoint after finding it in the spec.
+2. Base URL for API calls: https://api.soundcloud.com. Token endpoint host: https://secure.soundcloud.com
+3. Authentication is OAuth 2.1; PKCE is required for the authorization code flow. Prefer the flows and parameters described in the API Guide.
+4. Send access tokens on API requests using the header: Authorization: OAuth <access_token> (unless the spec documents a different requirement for a specific endpoint).
+5. Access tokens expire after roughly one hour. Refresh tokens are single-use; implement refresh without infinite retry loops. Refreshing and reusing tokens until they are close to expiry avoids unnecessary token exchanges that can hit rate limits on new-token requests.
+6. Client Credentials token exchange is rate-limited (per app and per IP). Cache access tokens; renew with the refresh_token grant instead of requesting new client_credentials tokens on every startup or request.
+7. Respect rate limits (including play-stream limits). On HTTP 429, back off exponentially and surface errors clearly.
+8. Many list endpoints support pagination with linked_partitioning=true and a next_href field; follow it until absent.
+9. Not all tracks are playable for every client; handle preview/blocked/streamable states as documented.
+10. Never hardcode client_id, client_secret, or tokens; load them from environment variables or a secrets manager.
+11. Comply with the SoundCloud API Terms of Use and attribution/branding requirements when shipping a product.
+```
+
+### Descobertas (brainstorming de 11/11/2026, sem código)
+
+Fontes lidas: OpenAPI (`api.json`, OpenAPI 3.0.4), API Guide, Get an API key, Terms of Use, Rate
+limits, Credential rotation, LLM Context e o código do `sc-api-auth.mjs`. "Multiusuário" aqui quer
+dizer **outras pessoas instalando o CuePoint**, não várias contas dentro do app.
+
+**Endpoints (conferidos na OpenAPI):**
+
+| Necessidade | Endpoint | Observação |
+|---|---|---|
+| Criar playlist | `POST /playlists` | JSON `{"playlist":{"title","description","sharing":"public"\|"private","tracks":[{"urn":"soundcloud:tracks:N"}]}}` |
+| Atualizar playlist | `PUT /playlists/{playlist_urn}` | Mesmo corpo. Não documentado se a lista de faixas enviada substitui a anterior |
+| Ler playlist | `GET /playlists/{urn}`, `GET /me/playlists`, `GET /playlists/{urn}/tracks` | Paginação `linked_partitioning` + `next_href` |
+| Conta conectada | `GET /me` | Mostrar "Conectado como @…" |
+| Link → URN | `GET /resolve?url=` | Para faixas sem URN |
+| Desconectar | `POST /disconnect` | Revoga só os tokens do app (204) |
+| Disponibilidade | campo `access`: `playable`, `preview`, `blocked` | |
+
+- A OpenAPI identifica faixas por **URN** (`{"urn": ...}`), o mesmo formato que o CuePoint já guarda;
+  o exemplo do Guide usa `{"id": N}`. Vale a OpenAPI.
+- Autenticação: `https://secure.soundcloud.com/authorize` e `https://secure.soundcloud.com/oauth/token`,
+  header `Authorization: OAuth <token>`. Não há escopos. O access token dura cerca de 1 h. O refresh
+  token é de uso único, e a validade dele não é documentada.
+
+**Artist Pro e o secret:**
+- O Artist Pro é exigido do **dono do app** (registrar e clonar credenciais). Nenhuma página exige
+  plano do **usuário final** para autorizar o app ou criar e editar playlists.
+- A troca e a renovação do token **exigem `client_secret` mesmo com PKCE** ("all clients are
+  currently treated as confidential").
+- O secret não pode ficar em código do lado do cliente nem ser repassado a terceiros. Os Termos
+  proíbem usar o client_id de outra pessoa "a menos que trabalhem no mesmo app".
+- Consequência: um app único do autor, distribuído a todos, exigiria um servidor guardando o secret
+  (nuvem, fora do escopo) ou exporia o secret (proibido).
+- Não documentado: o que acontece com as credenciais se o Pro do dono vencer.
+
+**Termos e limites:**
+- Limites de requisição **por client_id**, na ordem de 100 requisições por minuto no geral, sujeitos
+  a mudança. Sem limite documentado para escrita de playlist.
+- O stream não é usado pelo CuePoint. A LLM Context diz 15.000 requisições por dia e a página Rate
+  limits diz 1.500.
+- Ações só iniciadas deliberadamente pelo usuário.
+- Botão de desconectar obrigatório; dados apagados em até 7 dias após desconectar.
+- Política de privacidade obrigatória.
+- Proibido armazenar "User Content" vindo da API de forma persistente.
+- Nome do app sem a marca SoundCloud; sem anúncios em torno de conteúdo de usuários.
+- Não documentados: limite de faixas por playlist; se dá para incluir faixas de outros artistas ou
+  `blocked`; regras de endereço de retorno para extensão do Chrome (`chromiumapp.org`).
+
+**Script oficial `sc-api-auth.mjs`:**
+- O modo `--remote` cria um código de pareamento, mostra
+  `https://secure.soundcloud.com/activate/<código>` (abre em qualquer aparelho), consulta até a
+  aprovação e então cria o app (`POST /me/apps`) ou devolve o já existente.
+- O retorno inclui `client_id` e `client_secret`.
+- `update-redirect` altera o endereço de retorno e só aceita URL absoluta `http`/`https`.
+- `clone` (máx. 3 credenciais por app) e `revoke` também existem.
+- Usa rotas não documentadas (`api-reg.soundcloud.com/pairing/...`, `/me/apps`) e um client_id do
+  próprio SoundCloud descrito como "Scoped to this tool only". O próprio login local do script usa
+  `http://127.0.0.1:8765/callback`.
+
+### Decisões (aprovadas pelo usuário em 11/11/2026)
+
+| Opção | Quem precisa de Pro | Decisão |
+|---|---|---|
+| A. Cada pessoa registra o próprio app e informa as credenciais no CuePoint | **Cada usuário** | **Adotada** |
+| B. Servidor do autor guarda um secret único | Só o autor | Fora do escopo (nuvem, PRD §15) |
+| C. Secret do autor embutido na extensão, no serviço ou no APK | Só o autor | **Proibida** pelos termos |
+
+**Assistente para quem não é dev (extensão + serviço do PC):**
+1. O cartão "Exportar para o SoundCloud" exibe o selo **"Requer Artist Pro"** e pergunta antes de
+   tudo. Sem Pro: o CuePoint explica e oferece os exports locais.
+2. "Criar sua chave": abre `soundcloud.com/you/apps` e mostra o que preencher (nome, descrição e
+   endereço de retorno, cada um com **Copiar**, e prints).
+3. A pessoa cola "Código do app" (client_id) e "Senha do app" (secret, mascarado), com o aviso de que
+   ficam só no aparelho. A extensão repassa ao serviço do PC e não guarda.
+4. Validação imediata, com erros em linguagem simples.
+5. "Entrar com SoundCloud" (PKCE). O retorno vai para o serviço do PC. Ao final, "Conectado como @…".
+6. Renovação automática. Credenciais inválidas (por exemplo, Pro vencido): avisar e mostrar
+   **Reconectar**, sem repetir em loop.
+7. Botão **Desconectar** (`/disconnect` + apagar tokens).
+
+**Aparelhos:**
+- **Criação do app:** fluxo principal **no PC**, onde é mais confortável copiar e colar.
+- **Celular independente:** recebe as credenciais **uma vez pelo canal de pareamento**, criptografado.
+  - **Nunca pela sync normal**, que replica e guarda histórico.
+  - Guarda com o Android Keystore. Faz o **próprio login** e exporta **sem precisar do PC ligado**.
+- **Tokens por aparelho:** cada um tem os seus, nunca compartilhados (o refresh token é de uso único).
+- **O que sincroniza:** só o URN da playlist exportada, para PC e celular atualizarem a mesma
+  playlist.
+- **Endereço de retorno:** o mesmo endereço local nos dois, `http://127.0.0.1:<porta fixa>/callback`.
+  - No PC, quem atende é o serviço do PC. No celular, um servidor local que o app abre só durante o
+    login.
+  - Hipótese: um único endereço de retorno por app. `cuepoint://` provavelmente não é aceito.
+- **Criar o app só pelo celular:** alternativa, se `soundcloud.com/you/apps` funcionar bem no
+  navegador do celular.
+
+**Regras:**
+- Credenciais são **do usuário**: nada de client_id ou secret no repositório nem no build (regra 10
+  do prompt).
+- Guardar da API só o URN da playlist exportada.
+- **Não** automatizar "Adicionar à playlist" na página do SoundCloud para quem não tem Pro (termos do
+  site). Para essas pessoas, melhorar os exports locais.
+- **Não** usar o fluxo de pareamento do `sc-api-auth.mjs` para criar o app automaticamente (rotas
+  não documentadas e client_id do SoundCloud). A criação é sempre pelo assistente manual.
+
+**A testar com credenciais reais:**
+- Endereço de retorno `http://127.0.0.1:<porta>` aceito, nos dois aparelhos.
+- Se o `PUT` substitui a lista de faixas.
+- Faixas de outros artistas e `blocked` em playlist.
+- `you/apps` no navegador do celular.
+- Comportamento das credenciais se o Pro vencer.
 
 ## Issue #1 — Notificação do CuePoint reaparece após bloqueio da tela
 
@@ -258,8 +403,7 @@ aguardar decisão.
 
 | Sprint | Pendência |
 |---|---|
-| 15 | Credenciais de app OAuth do SoundCloud, se existirem |
-
+| 15 | Credenciais de app OAuth do SoundCloud (exigem Artist Pro), se existirem |
 ## Verificação
 
 - **Raiz:** `npm run verify:env` · `npm run lint` · `npm test` · `npm run build` · `npm run e2e`
@@ -272,6 +416,12 @@ aguardar decisão.
 
 - **API do SoundCloud fechada:** a funcionalidade não é implementada e os exports locais continuam
   disponíveis.
+- **Exportação depende do Artist Pro de cada usuário:** recurso para poucos, opcional, que nunca
+  bloqueia a curadoria local (PRD §11.3).
+- **Pro do usuário vence:** comportamento das credenciais não documentado. Tratar como "credenciais
+  inválidas".
+- **Termos da API mudam ou o SoundCloud revoga o acesso:** o SoundCloud pode revogar a seu critério,
+  e os limites de requisição são "sujeitos a mudança".
 - **Android mata o processo ou restringe segundo plano:** o listener é mantido pelo sistema, há
   WorkManager e a sync é retomada com idempotência.
 
