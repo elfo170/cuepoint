@@ -21,7 +21,7 @@ só começa com autorização do usuário.
 
 | Etapa | Situação |
 |---|---|
-| Issue #1 — notificação reaparece após bloquear a tela | Aberta. Ver *Issue #1*. |
+| Issue #1 — notificação reaparece após bloquear a tela | Corrigida e validada no celular (debug); falta o commit e a próxima release. Ver *Issue #1*. |
 | Sprint 15 — API do SoundCloud e preparação multiusuário | Pendente. Ver *Sprint 15*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
@@ -126,17 +126,51 @@ CuePoint dos recentes → bloquear a tela → aguardar alguns minutos.
 - Validar o comportamento depois de bloquear e desbloquear a tela.
 - Não depender de manter o app aberto nos recentes.
 
-**Hipóteses (lidas no código, ainda não confirmadas, sem log do aparelho):**
-1. **Faixa antiga nunca é limpa.** Em `MediaListenerService.attach`, quando a sessão do SoundCloud
-   some, o `controller` é zerado e `publish()` retorna sem chamar `setNowPlaying(null)`; a última
-   faixa fica em `_nowPlaying`. O `onListenerConnected` chama `container.refreshNotification()`, que
-   republica a notificação com a faixa velha. O HyperOS derruba e reconecta o listener depois do
-   bloqueio de tela (há também `ListenerHealth.requestReconnect`).
-2. **Notificação de sincronização.** O worker periódico (15 min) roda `SyncScheduler.syncAll` e, com
-   a política `ask`, `askApproval` posta "Sincronizar com <aparelho>?".
+**Confirmado com o usuário:** a notificação que volta é a de **curadoria** (não a "Sincronizar
+com…"). Decisão: depois de dispensada, ela **só volta quando o app for aberto**.
 
-**Primeiro passo:** confirmar com o usuário qual notificação reaparece (curadoria ou "Sincronizar
-com…") e, se preciso, coletar `adb logcat` do pacote (só leitura). Isso decide entre as hipóteses.
+**Causa (lida no código):** `AppContainer.refreshNotification()` republicava a notificação sempre
+que havia faixa, sem saber da dispensa (não havia `deleteIntent`; no Android 14+ notificação
+contínua pode ser dispensada). Caminhos que a recriavam: reconexão do serviço de leitura
+(`onListenerConnected`), qualquer escrita no banco (o `combine` com o `snapshot`), processo
+recriado pelo sistema e a faixa velha que nunca era limpa quando a sessão do SoundCloud acabava.
+
+**Correção:**
+- `deleteIntent` → `CurationActionReceiver.ACTION_DISMISSED` → `setNotificationDismissed(true)`,
+  gravado na meta `notif.dismissed` (sobrevive ao HyperOS encerrar o processo).
+  `refreshNotification()` não publica enquanto estiver dispensada; `MainActivity.onStart` reativa.
+- `MediaListenerService`: sem sessão ou com estado `NONE`/`STOPPED`/`ERROR` chama
+  `clearMediaSessionTrack()` (só esquece faixas da sessão de mídia, não as compartilhadas).
+- Logs na tag `CuePointMedia`: conexão do serviço, sessão escolhida, dispensa/reativação e
+  notificação suprimida.
+- Testes em `AppContainerTest`.
+
+**Validado no celular (11/11/2026, APK debug, logcat `CuePointMedia` + eventos do sistema):**
+1. Dispensada, trocar de faixa: não aparece ("notificação suprimida"); abrir o app: volta. ✅
+2. Dispensada com o SoundCloud **pausado** (sessão viva), app fora dos recentes, 15 min bloqueado:
+   não volta, mesmo com o WorkManager recriando o processo duas vezes. ✅
+3. Sem dispensar, forçar parada do SoundCloud: a notificação some sozinha; 15 min bloqueado com o
+   serviço de leitura conectado e eventos de sessão no desbloqueio: nada aparece. ✅
+4. ✓/✗ na cortina continuam funcionando. ✅
+5. Na tela bloqueada o sistema não deixa deslizar a notificação (Android 14+ com notificação
+   contínua): a dispensa só acontece desbloqueado, e lá ela é registrada.
+
+6. Ajuste posterior (decisão do usuário): sessão **pausada sem a notificação do player** conta como
+   encerrada (o HyperOS pode manter a sessão do SoundCloud viva sem o cartão dele). Dispensar o
+   cartão do SoundCloud pausado → a do CuePoint some junto. ✅ Tirar o SoundCloud dos recentes
+   encerrou a sessão (estado 0) → a do CuePoint some. ✅
+7. Reconexão do serviço com a notificação dispensada: **não reproduzível neste aparelho**. Desligar o
+   acesso às notificações encerra o processo ("PermissionHelper") e o HyperOS recusa religar o
+   serviço até o app ser aberto (o que reativa a notificação por decisão). Coberto pelo teste
+   automático: a supressão fica em `refreshNotification()`, único ponto de publicação.
+
+**Aprendizados do teste:**
+- Tirar o SoundCloud dos recentes **não fecha o player** no HyperOS: o processo e a sessão de mídia
+  continuam (pausada, com bloco no centro de controle). Só "Forçar parada" encerra a sessão.
+- O HyperOS recusa religar o serviço de leitura de um app tirado dos recentes ("SwipeUpClean" +
+  `AutoStartManagerService: Reject service`) até o app ser aberto, mesmo com início automático
+  liberado. A dispensa ainda é recebida com o processo morto (o sistema o sobe para o `deleteIntent`).
+- Se o app é encerrado com a notificação na tela, ela fica como está até o serviço religar.
 
 ## Notificação do Android — desenho, tentativas e análise futura
 
@@ -255,7 +289,10 @@ aguardar decisão.
     autorização explícita. No celular, só o usuário olha a tela.
   - Depois de instalar, o usuário abre o app uma vez (o HyperOS desconecta o serviço de leitura na
     atualização).
-  - APK de release e APK de debug têm assinaturas diferentes: trocar um pelo outro exige
-    desinstalar, então fazer backup antes.
+  - O debug é outro pacote (`com.elfo170.cuepoint.debug`, nome "CuePoint (debug)") e convive com
+    a release: dados, identidade e permissões próprios (liberar acesso às notificações, permissão
+    de notificações, início automático e bateria no debug também). Ele começa vazio e não fica
+    pareado com o PC. Os dois leem o SoundCloud, então os dois mostram notificação.
+  - adb só leitura vale para os dois pacotes (`com.elfo170.cuepoint` e `.debug`).
 - **Git:** um commit por etapa, Conventional Commits em pt-BR; não incluir no commit arquivos
   alterados pelo usuário (ex.: `.gitignore`, `roadmap.md`) sem combinar.

@@ -104,7 +104,22 @@ class AppContainer(
 
     private val notifyMutex = Mutex()
 
+    /**
+     * O usuário dispensou a notificação de curadoria: ela só volta quando o app for aberto.
+     * Fica gravada no banco porque o HyperOS encerra o processo e o sistema o recria sozinho
+     * (reconexão do serviço de leitura, sincronização periódica), o que republicaria a notificação.
+     */
+    @Volatile private var notificationDismissed = false
+    private val dismissedLoaded = kotlinx.coroutines.CompletableDeferred<Unit>()
+
     init {
+        scope.launch {
+            try {
+                notificationDismissed = store.getMeta(KEY_NOTIF_DISMISSED) == "1"
+            } finally {
+                dismissedLoaded.complete(Unit)
+            }
+        }
         scope.launch { acceptAnyPlayer = store.getMeta("media.anyPlayer") == "1" }
         // Chave local do experimento de notificação abandonado (variante escolhida no build debug).
         scope.launch { store.deleteMeta("media.notifVariant") }
@@ -152,6 +167,27 @@ class AppContainer(
 
     fun setManualTrack(track: TrackInput) = setNowPlaying(track)
 
+    /**
+     * A sessão de mídia lida terminou (o player fechou ou parou): esquece a faixa, o que cancela a
+     * notificação. Faixas vindas de compartilhamento ou digitadas no app são mantidas.
+     */
+    fun clearMediaSessionTrack() {
+        if (_nowPlaying.value?.source == MEDIA_SESSION_SOURCE) setNowPlaying(null)
+    }
+
+    /** Registra a dispensa da notificação pelo usuário (`true`) ou a reativa ao abrir o app (`false`). */
+    suspend fun setNotificationDismissed(dismissed: Boolean) {
+        dismissedLoaded.await()
+        if (notificationDismissed == dismissed) {
+            if (!dismissed) refreshNotification()
+            return
+        }
+        notificationDismissed = dismissed
+        if (dismissed) store.setMeta(KEY_NOTIF_DISMISSED, "1") else store.deleteMeta(KEY_NOTIF_DISMISSED)
+        android.util.Log.d(MEDIA_TAG, "notificação ${if (dismissed) "dispensada pelo usuário" else "reativada ao abrir o app"}")
+        refreshNotification()
+    }
+
     /** Registra a decisão da faixa atual na pesquisa ativa (notificação, widget ou tela). */
     suspend fun decideCurrent(value: Boolean?) {
         val track = _nowPlaying.value ?: return
@@ -164,9 +200,13 @@ class AppContainer(
 
     fun refreshNotification() {
         scope.launch {
+            dismissedLoaded.await()
             notifyMutex.withLock {
                 val track = _nowPlaying.value
-                if (track == null) {
+                if (track == null || notificationDismissed) {
+                    if (notificationDismissed && track != null) {
+                        android.util.Log.d(MEDIA_TAG, "notificação suprimida (dispensada): ${track.title}")
+                    }
                     CurationNotification.cancel(context)
                     return@withLock
                 }
@@ -175,6 +215,12 @@ class AppContainer(
                 CurationNotification.show(context, track, name, _currentState.value)
             }
         }
+    }
+
+    companion object {
+        const val KEY_NOTIF_DISMISSED = "notif.dismissed"
+        const val MEDIA_SESSION_SOURCE = "mediasession"
+        private const val MEDIA_TAG = "CuePointMedia"
     }
 }
 

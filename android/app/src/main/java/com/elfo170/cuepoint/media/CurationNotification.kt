@@ -86,6 +86,9 @@ object CurationNotification {
             .setContentText("$sub — $decision")
             .setSubText(if (track.urn == null) "provisória" else null)
             .setContentIntent(open)
+            // No Android 14+ o usuário pode dispensar notificações contínuas: o app precisa saber
+            // para não republicá-la (issue #1). Só dispara na dispensa do usuário, não no cancel().
+            .setDeleteIntent(action(context, CurationActionReceiver.ACTION_DISMISSED, 12))
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setSilent(true)
