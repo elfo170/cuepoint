@@ -59,9 +59,15 @@ Conferir a assinatura:
 adb install -r android/app/build/outputs/apk/release/app-release.apk
 ```
 
-O debug e o release têm **assinaturas diferentes**: o Android não instala um por cima do outro.
-Para trocar o debug pelo release sem perder dados, primeiro faça um backup (abaixo), desinstale,
-instale o release e restaure o backup.
+O debug é outro pacote (`com.elfo170.cuepoint.debug`, nome **CuePoint (debug)**) e **convive com
+o release** instalado: dá para testar sem mexer no app de uso diário. O debug tem dados,
+identidade e permissões próprios: começa vazio, não fica pareado com o PC e precisa das mesmas
+liberações abaixo. Se os dois tiverem acesso às notificações, os dois leem o SoundCloud e mostram
+notificação.
+
+```powershell
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+```
 
 Depois de instalar, abra o app e libere o **acesso às notificações** e a permissão de
 **notificações**. No HyperOS/MIUI, libere também o **início automático** e tire o app da
@@ -74,8 +80,8 @@ Depois de instalar, abra o app e libere o **acesso às notificações** e a perm
 - **Formato:** `cuepoint-backup` v1, o mesmo do Chrome. Um JSON com todas as tabelas, o log de
   operações e o SHA-256 do conteúdo canônico. Backup do PC restaura no celular e vice-versa.
 - **Pasta:** escolhida pelo usuário no seletor do sistema (ex.: `Downloads/CuePoint`). Sem pasta,
-  os arquivos ficam no armazenamento do app (`Android/data/com.elfo170.cuepoint/files/backups`),
-  e essa pasta é apagada na desinstalação.
+  os arquivos ficam no armazenamento do app (`Android/data/com.elfo170.cuepoint/files/backups`;
+  no debug, `com.elfo170.cuepoint.debug`), e essa pasta é apagada na desinstalação.
 - **Automático:** diário e a cada 100 alterações, só quando houve mudança. Pode ser desligado.
 - **Restauração:** confere checksum, formato e referências antes de mexer em qualquer coisa,
   faz um backup de segurança (`…-antes-de-restaurar.json`) e substitui a biblioteca numa única
@@ -90,5 +96,10 @@ adb logcat -s CuePointSync CuePointMedia CuePointBackup
 ```
 
 - `CuePointSync`: descoberta e sincronização.
-- `CuePointMedia`: metadados lidos da sessão do SoundCloud.
+- `CuePointMedia`: leitura do SoundCloud e notificação de curadoria: conexão do serviço de
+  leitura, sessão escolhida e encerrada, metadados lidos, notificação dispensada, reativada ao
+  abrir o app e suprimida enquanto dispensada.
+
+Os dois apps (release e debug) usam as mesmas tags. Para separar, use `-v uid` e compare com o
+`uid` de cada pacote (`adb shell dumpsys package <pacote> | findstr uid`).
 - `CuePointBackup`: falhas do backup automático.

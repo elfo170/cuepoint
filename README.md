@@ -200,6 +200,7 @@ celular antigo.
 | `Instalar.cmd` diz que o Node.js não foi encontrado ou é antigo | Instale o Node.js LTS em [nodejs.org](https://nodejs.org), feche a janela e rode `Instalar.cmd` de novo.                                                                         |
 | O celular não encontra o PC                                   | Os dois precisam estar na mesma rede (rede de convidados isola os aparelhos). Permita o Node.js no Firewall do Windows em redes privadas. Abra o app do CuePoint para forçar uma tentativa. |
 | A notificação do CuePoint não aparece no celular              | Confira o cartão de configuração no app: acesso às notificações, permissão de notificações e, em Xiaomi, início automático e bateria sem restrições. Depois abra o app uma vez. |
+| A notificação do CuePoint sumiu e não volta                   | Ela foi dispensada ou o SoundCloud foi fechado. Abra o CuePoint (e o SoundCloud) para ela voltar.                                                                                 |
 | A notificação some da tela bloqueada                          | Limitação de alguns sistemas, como o HyperOS: ela some quando chega outra notificação. Continua disponível na cortina.                                                             |
 | Uma faixa aparece como "provisória"                           | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
 
