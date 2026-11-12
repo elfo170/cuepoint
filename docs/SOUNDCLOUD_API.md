@@ -1,9 +1,14 @@
 # API do SoundCloud no CuePoint
 
 Validação da API oficial (PRD §11.2) e de como o CuePoint a usa. Fontes: OpenAPI
-(`https://developers.soundcloud.com/docs/api/explorer/api.json`, conferida em 11/11/2026), API
-Guide, Terms of Use e Rate limits. Decisões e descobertas completas: *Sprint 15* no
+(`https://developers.soundcloud.com/docs/api/explorer/api.json`, conferida em 11/11/2026 e de novo
+em 12/11/2026, antes da Sprint 16: endpoints, parâmetros e esquemas usados sem mudança), API
+Guide, Terms of Use e Rate limits. Decisões e descobertas completas: *Sprint 15* e *Sprint 16* no
 [PLANEJAMENTO.md](../PLANEJAMENTO.md).
+
+A forma dos pedidos (token, login, caminhos, corpo da playlist, diferença de faixas) é definida uma
+vez em `packages/core/src/soundcloud.ts`. O app Android usa o espelho Kotlin
+(`SoundCloudProtocol`), e a paridade é conferida por `spec/vectors/soundcloud.json`.
 
 > ⚠️ **Exportar para o SoundCloud exige Artist Pro.** Sem servidor do CuePoint (PRD §15), cada
 > pessoa registra o **próprio** app na API, e registrar exige Artist Pro. Sem isso, ficam os

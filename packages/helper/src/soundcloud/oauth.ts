@@ -1,17 +1,28 @@
+import {
+  SC_API_BASE,
+  SC_AUTHORIZE_URL,
+  SC_CALLBACK_HOST,
+  SC_CALLBACK_PORT,
+  SC_REDIRECT_URI,
+  SC_TOKEN_URL,
+  scAuthorizeUrl,
+  scTokenErrorCode,
+  scTokenRequest,
+} from '@cuepoint/core';
 import { createHash, randomBytes } from 'node:crypto';
 
 /**
  * OAuth 2.1 do SoundCloud (API Guide + OpenAPI `OAuthToken`): authorization code com PKCE (S256).
- * A troca e a renovação exigem `client_secret` mesmo com PKCE ("all clients are confidential"),
- * por isso acontecem só no serviço do PC. Ver docs/SOUNDCLOUD_API.md.
+ * A troca e a renovação exigem `client_secret` mesmo com PKCE ("all clients are confidential").
+ * A forma dos pedidos vem do `@cuepoint/core` (a mesma do app Android). Ver docs/SOUNDCLOUD_API.md.
  */
-export const AUTHORIZE_URL = 'https://secure.soundcloud.com/authorize';
-export const TOKEN_URL = 'https://secure.soundcloud.com/oauth/token';
-export const API_BASE = 'https://api.soundcloud.com';
-export const CALLBACK_HOST = '127.0.0.1';
-export const CALLBACK_PORT = 47801;
+export const AUTHORIZE_URL = SC_AUTHORIZE_URL;
+export const TOKEN_URL = SC_TOKEN_URL;
+export const API_BASE = SC_API_BASE;
+export const CALLBACK_HOST = SC_CALLBACK_HOST;
+export const CALLBACK_PORT = SC_CALLBACK_PORT;
 /** Endereço de retorno cadastrado no app do SoundCloud (aceito em 11/11/2026). */
-export const REDIRECT_URI = `http://${CALLBACK_HOST}:${CALLBACK_PORT}/callback`;
+export const REDIRECT_URI = SC_REDIRECT_URI;
 
 export type FetchLike = typeof fetch;
 
@@ -57,17 +68,7 @@ export function randomState(): string {
   return b64url(randomBytes(16));
 }
 
-export function authorizeUrl(p: { clientId: string; challenge: string; state: string }): string {
-  const q = new URLSearchParams({
-    client_id: p.clientId,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'code',
-    code_challenge: p.challenge,
-    code_challenge_method: 'S256',
-    state: p.state,
-  });
-  return `${AUTHORIZE_URL}?${q.toString()}`;
-}
+export const authorizeUrl = scAuthorizeUrl;
 
 export interface Credentials {
   clientId: string;
@@ -85,24 +86,12 @@ export async function requestToken(
   params: Record<string, string>,
   now = Date.now(),
 ): Promise<TokenSet> {
-  // Conferido na API real (11/11/2026), divergindo da OpenAPI: `client_credentials` só aceita o app
-  // em HTTP Basic (no corpo → 401 invalid_client); `refresh_token` só no corpo (Basic →
-  // invalid_request). `authorization_code` segue o API Guide (corpo).
-  const basic = params.grant_type === 'client_credentials';
-  const body = new URLSearchParams({
-    ...(basic ? {} : { client_id: creds.clientId, client_secret: creds.clientSecret }),
-    ...params,
-  });
-  const headers: Record<string, string> = {
-    accept: 'application/json; charset=utf-8',
-    'content-type': 'application/x-www-form-urlencoded',
-  };
-  if (basic) {
-    headers.authorization = `Basic ${Buffer.from(`${creds.clientId}:${creds.clientSecret}`).toString('base64')}`;
-  }
+  // Basic só em `client_credentials`; nas outras trocas o app vai no corpo (divergência da
+  // OpenAPI conferida na API real em 11/11/2026; ver `scTokenRequest` no core).
+  const req = scTokenRequest(creds, params);
   let res: Response;
   try {
-    res = await fetchFn(TOKEN_URL, { method: 'POST', headers, body: body.toString() });
+    res = await fetchFn(req.url, { method: 'POST', headers: req.headers, body: req.body });
   } catch {
     throw new ScError('network', 'Sem conexão com o SoundCloud. Verifique a internet.');
   }
@@ -115,16 +104,17 @@ export async function requestToken(
       expiresAt: now + (Number.isFinite(ttl) ? ttl : 3600) * 1000,
     };
   }
-  if (res.status === 429)
-    throw new ScError('rate_limited', 'O SoundCloud pediu para esperar. Tente de novo mais tarde.');
   const error = String(json.error ?? '');
-  if (error === 'invalid_client' || res.status === 401)
+  const code = scTokenErrorCode(res.status, error);
+  if (code === 'rate_limited')
+    throw new ScError('rate_limited', 'O SoundCloud pediu para esperar. Tente de novo mais tarde.');
+  if (code === 'invalid_client')
     throw new ScError(
       'invalid_client',
       'O SoundCloud não aceitou o código e a senha do app. Confira os dois em soundcloud.com/you/apps (o app exige Artist Pro ativo).',
       res.status,
     );
-  if (error === 'invalid_grant')
+  if (code === 'reconnect')
     throw new ScError(
       'reconnect',
       'O acesso ao SoundCloud expirou. Clique em Reconectar.',

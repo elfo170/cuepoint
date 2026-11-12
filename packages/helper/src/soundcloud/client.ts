@@ -1,3 +1,11 @@
+import {
+  SC_REFRESH_MARGIN_MS,
+  SC_RETRY_DELAYS_MS,
+  SC_TRACK_URN,
+  scDiffTracks,
+  scPaths,
+  scPlaylistBody,
+} from '@cuepoint/core';
 import type { Helper } from '../helper';
 import type { SecretBox } from '../secrets';
 import { waitForCallback, type CallbackWaiter } from './callback';
@@ -19,11 +27,11 @@ const SECRETS_KEY = 'sc:secrets';
 /** Marca não secreta: o acesso caiu e o usuário precisa reconectar. */
 const RECONNECT_KEY = 'sc:reconnect';
 /** Renova o access token quando faltar menos que isto para expirar. */
-export const REFRESH_MARGIN_MS = 5 * 60 * 1000;
+export const REFRESH_MARGIN_MS = SC_REFRESH_MARGIN_MS;
 /** Esperas depois de um 429 antes de desistir. */
-export const RETRY_DELAYS_MS = [1000, 2000, 4000];
+export const RETRY_DELAYS_MS: readonly number[] = SC_RETRY_DELAYS_MS;
 const MAX_PAGES = 100;
-const TRACK_URN = /^soundcloud:tracks:\d+$/;
+const TRACK_URN = SC_TRACK_URN;
 
 interface Vault extends Credentials {
   tokens: TokenSet | null;
@@ -271,7 +279,7 @@ export class SoundCloud {
     await this.waiter?.close();
     const v = await this.load();
     if (v?.tokens) {
-      await this.call('POST', '/disconnect').catch(() => undefined);
+      await this.call('POST', scPaths.disconnect).catch(() => undefined);
       await this.save({ ...v, tokens: null });
     }
     this.user = null;
@@ -404,7 +412,7 @@ export class SoundCloud {
   }
 
   private async loadMe() {
-    const me = await this.json<{ username?: string; permalink_url?: string }>('GET', '/me');
+    const me = await this.json<{ username?: string; permalink_url?: string }>('GET', scPaths.me);
     this.user = { username: me.username ?? '?', permalinkUrl: me.permalink_url ?? null };
   }
 
@@ -413,7 +421,7 @@ export class SoundCloud {
     if (this.resolved.has(link)) return this.resolved.get(link)!;
     let urn: string | null = null;
     try {
-      const first = await this.call('GET', `/resolve?url=${encodeURIComponent(link)}`, undefined, {
+      const first = await this.call('GET', scPaths.resolve(link), undefined, {
         redirect: 'manual',
       });
       let data: { kind?: string; urn?: string; location?: string } = await first
@@ -457,8 +465,7 @@ export class SoundCloud {
   /** Faixas da playlist no SoundCloud, inclusive bloqueadas, seguindo `next_href`. */
   private async remoteTracks(playlistUrn: string): Promise<DiffTrack[]> {
     const out: DiffTrack[] = [];
-    let next: string | undefined =
-      `/playlists/${encodeURIComponent(playlistUrn)}/tracks?access=playable,preview,blocked&linked_partitioning=true`;
+    let next: string | undefined = scPaths.playlistTracks(playlistUrn);
     for (let page = 0; next && page < MAX_PAGES; page++) {
       const data: {
         collection?: { urn?: string; title?: string; user?: { username?: string } }[];
@@ -490,13 +497,7 @@ export class SoundCloud {
         };
       throw e;
     }
-    const localSet = new Set(local.tracks.map((t) => t.urn));
-    const remoteSet = new Set(remote.map((t) => t.urn));
-    const add = local.tracks.filter((t) => !remoteSet.has(t.urn));
-    const remove = remote.filter((t) => !localSet.has(t.urn));
-    const common = (list: DiffTrack[], other: Set<string>) =>
-      list.filter((t) => other.has(t.urn)).map((t) => t.urn);
-    const reordered = common(local.tracks, remoteSet).join() !== common(remote, localSet).join();
+    const { add, remove, reordered } = scDiffTracks(local.tracks, remote);
     return {
       exists: true,
       add,
@@ -521,20 +522,18 @@ export class SoundCloud {
     const title = input.title.trim();
     if (!title) throw new ScError('api', 'A playlist precisa de um nome.');
     const local = await this.prepare(input.tracks);
-    const playlist = {
-      title,
-      description: input.description,
-      tracks: local.tracks.map((t) => ({ urn: t.urn })),
-    };
+    const urns = local.tracks.map((t) => t.urn);
     const saved = input.playlistUrn
       ? await this.json<{ urn?: string; permalink_url?: string }>(
           'PUT',
-          `/playlists/${encodeURIComponent(input.playlistUrn)}`,
-          { playlist },
+          scPaths.playlist(input.playlistUrn),
+          scPlaylistBody({ title, description: input.description, urns }),
         )
-      : await this.json<{ urn?: string; permalink_url?: string }>('POST', '/playlists', {
-          playlist: { ...playlist, sharing: input.sharing },
-        });
+      : await this.json<{ urn?: string; permalink_url?: string }>(
+          'POST',
+          scPaths.playlists,
+          scPlaylistBody({ title, description: input.description, urns, sharing: input.sharing }),
+        );
     const urn = saved.urn ?? input.playlistUrn;
     if (!urn) throw new ScError('api', 'O SoundCloud não devolveu o identificador da playlist.');
     const remote = await this.remoteTracks(urn).catch(() => null);

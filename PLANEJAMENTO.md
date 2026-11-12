@@ -23,7 +23,7 @@ só começa com autorização do usuário.
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
 | Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Push feito; falta o PR para `main`. Ver *Sprint 15*. |
-| Sprint 16 — SoundCloud no celular | Pendente (depende da Sprint 15). Ver *Sprint 16*. |
+| Sprint 16 — SoundCloud no celular | Planejada (12/11/2026) em quatro sprints, 16.1 a 16.4, um commit cada, sem push. 16.1 concluída (OpenAPI reconferida em 12/11/2026, sem mudanças). Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
 
@@ -395,13 +395,182 @@ A validação real vem cedo porque pode mudar o desenho (por exemplo, a semânti
 
 ## Sprint 16 — SoundCloud no celular
 
-- Credenciais enviadas **uma vez** por um endpoint assinado novo (ex.: `POST /v1/sc/credentials`),
-  só para par `paired`. **Não** pela resposta do `/v1/pair`, que sai antes da confirmação do código
-  de 6 dígitos.
-- Guarda no Android Keystore (hoje o app não usa o Keystore; a chave de assinatura fica no Room).
-- Servidor local em `127.0.0.1:47801` só durante o login.
-- Exportar e atualizar no celular sem o PC ligado, usando o mesmo `external_playlist_id`.
-- Commit próprio.
+Objetivo: exportar e atualizar playlists pelo app Android **sem o PC ligado**, cumprindo as
+decisões de 11/11/2026 (*Aparelhos*):
+- credenciais entregues uma vez pelo canal de pareamento, nunca pela sync;
+- Keystore do Android;
+- tokens próprios em cada aparelho;
+- servidor local na porta 47801 só durante o login;
+- mesmo `external_playlist_id`.
+
+**Fatos levantados (12/11/2026, só leitura):**
+- **O celular é só cliente.** Ele não abre porta; sync, pareamento e revogação partem dele
+  (`sync/PeerClient.kt`, `sync/SyncEngine.kt`). A "entrega" é então uma requisição assinada que o
+  **celular faz ao PC**, e o PC responde com as credenciais. **Não** pela resposta do `/v1/pair`,
+  que sai antes da confirmação do código de 6 dígitos.
+- **O canal já é confidencial:** HTTPS com o SPKI do PC fixado pelo QR. O `route()` de `lan.ts`
+  confere assinatura, nonce, par `paired`, mesmo usuário e aprovação.
+- **Bibliotecas no app.** Ainda não usa Keystore (a chave de assinatura fica no `meta` do Room),
+  Custom Tabs nem servidor HTTP embutido. Já tem OkHttp 4.12, MockWebServer (sem uso) e
+  Robolectric.
+- **`external_playlist_id` no Android.** Existe no esquema (`core/Model.kt`), mas
+  `data/Domain.kt` descarta o campo e `Curation.kt` não o altera.
+
+### Decisões (aprovadas pelo usuário em 12/11/2026)
+
+| Tema | Decisão |
+|---|---|
+| Entrega das credenciais | **Liberar no PC + buscar no celular:** "Enviar para <aparelho>" na extensão abre uma janela de **10 min, de uso único**; no celular, "Receber do PC". Fora da janela, ou numa segunda tentativa, o PC recusa |
+| Digitar à mão no celular | **Sim**, como alternativa (sem PC, ou app criado pelo navegador do celular) |
+| Tela da playlist no celular | **Paridade com o PC:** privada ou pública, prévia do que entra e sai, confirmação, Desvincular, Abrir, faixas puladas |
+| Formato | Quatro sprints (16.1 a 16.4), com testes e critério de pronto; **um commit por sprint, sem push** |
+
+### Regras que valem para todas as sprints
+
+- **Token divergente da OpenAPI (lembrete técnico):**
+  - `client_credentials` só com o app em **HTTP Basic**;
+  - `authorization_code` e `refresh_token` com `client_id`/`client_secret` **no corpo**;
+  - `redirect_uri` também na renovação.
+
+  A montagem do pedido vira função pura conferida por vetor compartilhado (16.1). O Android usa
+  obrigatoriamente essa função.
+- **Prompt da integração:**
+  - Regra 1: OpenAPI conferida antes de codar (16.1). O celular usa só endpoints já conferidos.
+  - Regra 5: renovação em execução única.
+  - Regra 6: `client_credentials` só ao configurar ou receber.
+  - Regra 7: 429 → espera 1 s, 2 s e 4 s.
+  - Regras 8 e 9: `next_href` e `access=playable,preview,blocked`.
+  - Regra 10: nada embutido.
+  - Regra 11: Desconectar e privacidade.
+- **Verificação padrão:** `npm run lint`, `npm test`, `npm run build` e o build Android (ver
+  *Verificação*), mais o que cada sprint indicar. Cada sprint só começa com autorização do usuário.
+
+### Sprint 16.1 — Protocolo do SoundCloud compartilhado (TS ⇄ Kotlin)
+
+- **Conferência da OpenAPI** (`api.json` atual): `POST /playlists`, `PUT /playlists/{urn}`,
+  `GET /playlists/{urn}/tracks`, `GET /me`, `GET /resolve`, `POST /disconnect`, `/authorize` e
+  `/oauth/token`. Se algo mudou, parar e avisar. Data registrada em `docs/SOUNDCLOUD_API.md`.
+- **Novo `packages/core/src/soundcloud.ts`** (puro):
+  - constantes;
+  - `tokenRequest(creds, params) → {headers, body}`, extraído de `requestToken` (`oauth.ts`);
+  - `authorizeUrl`;
+  - `diffTracks(local, remote)`, extraído de `SoundCloud.diff` (`client.ts`).
+
+  O serviço do PC importa daqui.
+- **`spec/vectors/soundcloud.json`** (via `npm run vectors -w @cuepoint/core`): pedidos dos três
+  grants, URL de autorização e casos de diferença.
+- **Kotlin `android/core/.../core/SoundCloudProtocol.kt`:** espelho puro.
+- **Testes:**
+  - `packages/core/test/soundcloud.test.ts`: vetor + "Basic só em `client_credentials`";
+  - `soundcloud.test.ts` do helper sem mudar as asserções;
+  - `SoundCloudVectorsTest.kt` no `:core`.
+- **Pronto quando:** OpenAPI conferida, vetor gerado, suítes TS e Kotlin passando e verificação
+  padrão verde.
+- Commit: `refactor: compartilha o protocolo do soundcloud entre ts e kotlin`
+
+### Sprint 16.2 — Liberar as credenciais para um celular pareado (PC + extensão)
+
+- **`SoundCloud`** (`client.ts`):
+  - `credentials()`;
+  - liberações em memória (`Map<peerId, expiresAt>`, 10 min, uso único);
+  - IPC `sc:share {peerId}` (só par `paired` do mesmo usuário, com credenciais) e
+    `sc:share-cancel`;
+  - `sc:status` informa as liberações e `sharedAt`.
+- **`Lan`** (`lan.ts`): provedor de credenciais vindo do `daemon.ts`; rota `POST /v1/sc/credentials`
+  depois das checagens atuais de `route()`. Respostas:
+  - 404 `sc_not_configured`;
+  - 409 `sc_not_shared`;
+  - 200 `{client_id, client_secret}`, que consome a liberação, grava `sc_shared_at` no peer e
+    emite `sc`.
+- **Extensão:**
+  - `HELPER_FORWARD` ganha `sc:share` e `sc:share-cancel`.
+  - Bloco "Usar no celular" em `SoundCloudSettings.tsx`: **Enviar para <nome>**, contagem, instrução
+    e **Cancelar**, depois "Enviado em <data>".
+  - Texto "ficam só neste PC" ajustado.
+- Docs: entrega ao celular em `SOUNDCLOUD_API.md` e `PRIVACIDADE.md`.
+- **Testes:**
+  - `lan.test.ts` (variante de `raw` com caminho e corpo): pendente 403, sem liberação 409,
+    liberado 200, segunda chamada 409, expirada 409, revogado 403, não configurado 404, outro
+    usuário 409 `foreign_user`;
+  - `soundcloud.test.ts`: `sc:share` recusado, `sc:share-cancel`;
+  - teste do bloco na extensão e `npm run e2e`.
+- **Pronto quando:** testes e verificação padrão + e2e verdes; conferido no PC (serviço reinstalado,
+  extensão recarregada) que o botão aparece para o Redmi, a contagem corre e o cancelamento
+  funciona.
+- Commit: `feat: libera as credenciais do soundcloud para um celular pareado`
+
+### Sprint 16.3 — Android: credenciais no Keystore e login
+
+Novo pacote `android/app/src/main/java/com/elfo170/cuepoint/soundcloud/`.
+- **`SecretBox.kt`:** `KeystoreBox` (AES-256-GCM, alias `cuepoint.sc`) e `PlainBox` (testes). Cofre
+  `{clientId, clientSecret, tokens}` cifrado no `meta` (`sc.vault`), marca `sc.reconnect`, fora do
+  backup.
+- **`CallbackServer.kt`:** `ServerSocket` em `127.0.0.1:47801` (porta injetável), só durante o login
+  (5 min).
+  - Mesma página do PC, com "Voltar ao CuePoint" (`cuepoint://soundcloud`).
+  - `state` errado → continua esperando; porta ocupada → mensagem clara.
+- **`ScApi.kt`** (OkHttp, bases injetáveis): `requestToken` via
+  `SoundCloudProtocol.tokenRequest`; `call` com 401 → uma renovação e 429 → 1/2/4 s; `GET /me` e
+  `POST /disconnect`.
+- **`SoundCloudService.kt`** (no `AppContainer`, `StateFlow<ScStatus>`):
+  - `configure`;
+  - `receiveFromPc(peerId)`, via `SyncEngine.fetchScCredentials`, que reaproveita endereços e
+    assinatura;
+  - `login()` (`ACTION_VIEW`), `logout()` e `forget()`;
+  - renovação com `Mutex`.
+- **Interface:**
+  - rota `soundcloud` + botão em Configurações;
+  - `ui/screens/SoundCloudScreen.kt`: selo "Requer Artist Pro"; **Receber do PC** ou **Digitar
+    código e senha**; Entrar, "Conectado como @…", Reconectar, Desconectar, Remover credenciais.
+- **Manifest:** host `soundcloud` no filtro `VIEW cuepoint://`.
+- **Testes** (Robolectric + MockWebServer):
+  - `ScApiTest`: Basic só em `client_credentials`; renovação única concorrente; `invalid_grant` →
+    `reconnect` sem repetir; 401; 429;
+  - `CallbackServerTest`;
+  - `SoundCloudServiceTest`: cofre cifrado; `receiveFromPc` com 200, 409 e 404; `forget`; backup
+    sem `sc.*`.
+- **Pronto quando:** testes e verificação padrão verdes, mais o checkpoint real no Redmi:
+  - Enviar/Receber do PC funciona, e a segunda tentativa é recusada;
+  - o login volta para `127.0.0.1:47801` e mostra "Conectado como @…";
+  - Desconectar e Reconectar funcionam.
+- Commit: `feat: conecta o celular ao soundcloud com credenciais no keystore`
+
+### Sprint 16.4 — Android: exportar e atualizar playlists sem o PC
+
+- **Dados:** `Playlist.externalPlaylistId` (`data/Domain.kt`), `Curation.setExternalPlaylistId`
+  (sincroniza) e `exportTracks(items)`.
+- **`ScApi`:**
+  - `resolveUrn` (302);
+  - `prepare` (faixas puladas);
+  - `remoteTracks` (`access=playable,preview,blocked` + `next_href`);
+  - `diff` (com `diffTracks`);
+  - `export`: `POST` com `sharing`, `PUT` sem, releitura para `verified`, 404 → `exists=false`.
+- **Interface** (`PlaylistDetailScreen`): cartão com paridade com o `SoundCloudExport.tsx`:
+  - sem configuração → tela SoundCloud;
+  - Privada/Pública + Exportar;
+  - Atualizar → prévia → Confirmar;
+  - Desvincular, Abrir, faixas puladas, aviso de `verified=false` e Criar outra.
+- **Docs finais:** `SOUNDCLOUD_API.md` (seção "No celular" e resultados), `PRIVACIDADE.md`,
+  `README.md` e este planejamento.
+- **Testes:**
+  - `ScApiTest`: resolve, paginação, `POST`/`PUT`, verificação, 404, puladas e duplicadas;
+  - `CurationTest`: `setExternalPlaylistId`;
+  - teste do cartão (estados).
+- **Pronto quando:** testes, verificação padrão, e2e e vetores verdes, mais o checkpoint real:
+  - exportar e atualizar pelo celular com o serviço do PC parado, conferindo no SoundCloud;
+  - religar o PC: o URN chega pela sync e o PC espelha a mesma playlist.
+- Commit: `feat: exporta playlists para o soundcloud pelo celular`
+
+### Riscos da Sprint 16
+
+- **HyperOS mata o app enquanto o navegador está aberto** e o retorno do login não chega. Login
+  curto; tentar de novo. Se acontecer no teste real, avaliar com o usuário um serviço em primeiro
+  plano curto.
+- **Porta 47801 ocupada no celular:** mensagem clara.
+- **PC troca ou remove as credenciais depois da entrega:** o celular mantém as antigas até receber
+  de novo.
+- **PC e celular atualizam a mesma playlist juntos:** `external_playlist_id` last-write-wins; vale o
+  último `PUT`.
 
 ## Issue #1 — Notificação do CuePoint reaparece após bloqueio da tela
 
@@ -559,6 +728,10 @@ aguardar decisão.
 | 15 | ~~Rodar `npm run sc:dev`~~ ✅ 11/11/2026 (login, criar, `PUT` substitui, faixa de outro artista aceita). `blocked`: não testado (opcional) |
 | 15 | ~~Prints do `you/apps` para o assistente~~ dispensados: só texto (11/11/2026) |
 | 15 | Pro vencido: não testável; tratado como "credenciais inválidas" |
+| 16.2 | Conferir no PC o bloco "Usar no celular" (Enviar, contagem, Cancelar) |
+| 16.3 | No Redmi: Receber do PC, login com retorno em `127.0.0.1:47801`, Desconectar/Reconectar |
+| 16.4 | No Redmi, com o PC parado: exportar e atualizar uma playlist de teste; depois o PC espelha a mesma |
+| 16.4 | Opcional: `soundcloud.com/you/apps` no navegador do celular |
 
 ## Verificação
 
