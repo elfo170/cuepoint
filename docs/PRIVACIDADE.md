@@ -13,8 +13,9 @@ o autor do programa.
   app, e só é trocada entre os **seus** aparelhos pareados, pela rede local, com conexão cifrada.
 - **Backups:** arquivos JSON que você gera, na pasta que escolher.
 - **Exportação para o SoundCloud** (opcional, exige Artist Pro): o código e a senha do app que
-  **você** registrou no SoundCloud e os tokens de acesso ficam só no serviço do PC, cifrados com a
-  sua conta do Windows. Não entram na sincronização.
+  **você** registrou no SoundCloud e os tokens de acesso ficam no serviço do PC, cifrados com a sua
+  conta do Windows. Não entram na sincronização. Se você usar **Enviar para o celular**, o código e
+  a senha do app vão uma única vez para o seu celular pareado, pela conexão cifrada do pareamento.
 
 ## O que é enviado ao SoundCloud
 

@@ -5,6 +5,16 @@ import { CHANGED_MESSAGE, send } from '../shared/messages';
 /** Espelho dos tipos do serviço do PC (packages/helper/src/soundcloud/client.ts). */
 export type ScState = 'unconfigured' | 'configured' | 'connected' | 'reconnect';
 
+/** Aparelho pareado que pode receber as credenciais do app (bloco "Usar no celular"). */
+export interface ScShareDevice {
+  peerId: string;
+  name: string;
+  /** Liberação ativa até (epoch ms), ou null. */
+  expiresAt: number | null;
+  /** Quando o aparelho buscou as credenciais pela última vez (ISO). */
+  sharedAt: string | null;
+}
+
 export interface ScStatus {
   state: ScState;
   clientId: string | null;
@@ -12,6 +22,7 @@ export interface ScStatus {
   loginPending: boolean;
   lastError: string | null;
   redirectUri: string;
+  devices: ScShareDevice[];
 }
 
 export interface ExportTrack {

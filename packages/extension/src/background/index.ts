@@ -33,6 +33,9 @@ const HELPER_FORWARD = new Set([
   'sc:logout',
   'sc:diff',
   'sc:export',
+  // Sprint 16.2: liberar as credenciais do app para um celular pareado buscar uma vez
+  'sc:share',
+  'sc:share-cancel',
 ]);
 
 /** Exportar/atualizar resolve links e respeita esperas do SoundCloud: pode demorar. */

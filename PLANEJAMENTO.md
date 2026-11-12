@@ -23,7 +23,7 @@ só começa com autorização do usuário.
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
 | Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Push feito; falta o PR para `main`. Ver *Sprint 15*. |
-| Sprint 16 — SoundCloud no celular | Planejada (12/11/2026) em quatro sprints, 16.1 a 16.4, um commit cada, sem push. 16.1 concluída (OpenAPI reconferida em 12/11/2026, sem mudanças). Ver *Sprint 16*. |
+| Sprint 16 — SoundCloud no celular | Planejada (12/11/2026) em quatro sprints, 16.1 a 16.4, um commit cada, sem push. 16.1 e 16.2 concluídas (OpenAPI reconferida em 12/11/2026, sem mudanças); checkpoints manuais pendentes na tabela abaixo. Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
 

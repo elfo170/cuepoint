@@ -27,6 +27,8 @@ export async function startDaemon(config: Config & { mdns?: boolean }): Promise<
   const lan = new Lan(helper);
   // só chama a API quando o usuário pede (exportar, entrar, desconectar)
   const soundcloud = new SoundCloud(helper, { box: defaultSecretBox() });
+  // o celular pareado busca as credenciais do app só depois da liberação feita no PC
+  lan.scCredentials = soundcloud.deliver;
   const ipc = await startIpcServer(helper, config.pipe);
   await lan.listen();
   helper.portProvider = () => lan.port;

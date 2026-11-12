@@ -23,6 +23,19 @@ import type { Helper } from './helper';
 import { spkiFingerprint } from './identity';
 
 export const PAIRING_TTL_MS = 5 * 60 * 1000;
+/** Rota pela qual um celular pareado busca as credenciais do app SoundCloud (Sprint 16.2). */
+export const SC_CREDENTIALS_PATH = '/v1/sc/credentials';
+
+/**
+ * Entrega das credenciais do app SoundCloud a um par: só com liberação feita no PC (uso único).
+ * Implementada pelo `SoundCloud` e ligada no `daemon.ts`.
+ */
+export type ScCredentialProvider = (
+  peerId: string,
+) => Promise<
+  | { ok: true; client_id: string; client_secret: string }
+  | { ok: false; error: 'sc_not_configured' | 'sc_not_shared' }
+>;
 export const APPROVAL_TTL_MS = 10 * 60 * 1000;
 const MAX_BODY = 32 * 1024 * 1024;
 
@@ -57,6 +70,8 @@ export class Lan {
   /** Pedidos de aprovação pendentes (par → quando pediu). */
   readonly pendingApprovals = new Map<string, number>();
   private syncing = new Map<string, Promise<SyncResult>>();
+  /** Quem entrega as credenciais do SoundCloud (sem ele, a rota responde 404). */
+  scCredentials: ScCredentialProvider | null = null;
 
   constructor(
     private readonly helper: Helper,
@@ -161,6 +176,15 @@ export class Lan {
     if (peer.status === 'pending') throw new HttpError(403, 'pending_confirmation');
     if (peer.status === 'revoked') throw new HttpError(403, 'revoked');
     if (peer.user_id && peer.user_id !== id.userId) throw new HttpError(409, 'foreign_user');
+    if (method === 'POST' && path === SC_CREDENTIALS_PATH) {
+      // a liberação feita no PC (uso único, com prazo) já é a aprovação: não passa pela política
+      // de sync. A resposta só sai pelo TLS com o certificado fixado pelo QR.
+      const r = this.scCredentials
+        ? await this.scCredentials(peer.device_id)
+        : ({ ok: false, error: 'sc_not_configured' } as const);
+      if (!r.ok) throw new HttpError(r.error === 'sc_not_configured' ? 404 : 409, r.error);
+      return { client_id: r.client_id, client_secret: r.client_secret };
+    }
     if (!this.approved(peer)) throw new HttpError(409, 'approval_required');
 
     const payload = body ? (JSON.parse(body) as Record<string, unknown>) : {};

@@ -6,7 +6,9 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { signRequest } from '../src/auth';
 import { Helper } from '../src/helper';
-import { HttpError, Lan } from '../src/lan';
+import { HttpError, Lan, SC_CREDENTIALS_PATH } from '../src/lan';
+import { PlainBox } from '../src/secrets';
+import { SHARE_TTL_MS, SoundCloud, type ScStatus } from '../src/soundcloud/client';
 
 const USER = '00000000-0000-4000-8000-000000000001';
 const OTHER = '00000000-0000-4000-8000-000000000002';
@@ -382,5 +384,150 @@ describe('autenticação das requisições', () => {
     });
     expect(await raw(a, { ...stranger, [SIGNATURE_HEADERS.device]: ids[2]! }, body)).toBe(403);
     expect(HttpError).toBeDefined();
+  });
+});
+
+describe('credenciais do SoundCloud para o celular (POST /v1/sc/credentials)', () => {
+  const CREDS = { clientId: 'app-client-id', clientSecret: 's3cr3t-do-app' };
+
+  /** Só o endpoint de token (validação `client_credentials` ao configurar). */
+  const tokenOnly = (async () =>
+    new Response(JSON.stringify({ access_token: 'cc', expires_in: 3600 }), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    })) as typeof fetch;
+
+  async function setup(opts: { configure?: boolean } = {}) {
+    const a = await node(0);
+    const b = await node(1);
+    let clock = Date.now();
+    const sc = new SoundCloud(a.helper, {
+      box: new PlainBox(),
+      fetch: tokenOnly,
+      now: () => clock,
+    });
+    a.lan.scCredentials = sc.deliver;
+    if (opts.configure !== false) await local(a, { type: 'sc:configure', ...CREDS });
+    return { a, b, sc, advance: (ms: number) => (clock += ms) };
+  }
+
+  /** Requisição assinada pelo par `from` ao servidor de `to`. */
+  async function fetchCreds(to: Node, from: Node, fromIndex = 1) {
+    const body = '{}';
+    const headers = signRequest({
+      deviceId: ids[fromIndex]!,
+      privateKey: from.helper.keys.privateKey,
+      method: 'POST',
+      path: SC_CREDENTIALS_PATH,
+      body,
+    });
+    return new Promise<{ status: number; body: Record<string, unknown> }>((resolve, reject) => {
+      const req = request(
+        {
+          host: '127.0.0.1',
+          port: to.lan.port,
+          method: 'POST',
+          path: SC_CREDENTIALS_PATH,
+          headers: { ...headers, 'content-type': 'application/json' },
+          rejectUnauthorized: false,
+        },
+        (res) => {
+          const chunks: Buffer[] = [];
+          res.on('data', (c: Buffer) => chunks.push(c));
+          res.on('end', () =>
+            resolve({
+              status: res.statusCode ?? 0,
+              body: JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'),
+            }),
+          );
+        },
+      );
+      req.on('error', reject);
+      req.end(body);
+    });
+  }
+
+  const share = (n: Node, peerId = ids[1]!) =>
+    local(n, { type: 'sc:share', peerId }) as Promise<ScStatus>;
+
+  it('entrega uma vez, só depois da liberação no PC', async () => {
+    const { a, b } = await setup();
+    await pair(a, b);
+    expect(await fetchCreds(a, b)).toEqual({ status: 409, body: { error: 'sc_not_shared' } });
+
+    const st = await share(a);
+    const dev = st.devices.find((d) => d.peerId === ids[1]);
+    expect(dev?.expiresAt).toBeGreaterThan(Date.now());
+    expect(dev?.sharedAt).toBeNull();
+
+    expect(await fetchCreds(a, b)).toEqual({
+      status: 200,
+      body: { client_id: CREDS.clientId, client_secret: CREDS.clientSecret },
+    });
+    // uso único
+    expect(await fetchCreds(a, b)).toEqual({ status: 409, body: { error: 'sc_not_shared' } });
+    const after = (await local(a, { type: 'sc:status' })) as ScStatus;
+    const d2 = after.devices.find((d) => d.peerId === ids[1]);
+    expect(d2?.expiresAt).toBeNull();
+    expect(d2?.sharedAt).toMatch(/^\d{4}-/);
+    expect(a.helper.db.peer(ids[1]!)?.sc_shared_at).toBe(d2?.sharedAt);
+  });
+
+  it('liberação vence em 10 min e pode ser cancelada', async () => {
+    const { a, b, advance } = await setup();
+    await pair(a, b);
+    await share(a);
+    advance(SHARE_TTL_MS + 1);
+    expect((await fetchCreds(a, b)).status).toBe(409);
+
+    await share(a);
+    await local(a, { type: 'sc:share-cancel', peerId: ids[1] });
+    expect((await fetchCreds(a, b)).body).toEqual({ error: 'sc_not_shared' });
+  });
+
+  it('a política "pedir aprovação" da sync não bloqueia: a liberação já é a aprovação', async () => {
+    const { a, b } = await setup();
+    await pair(a, b);
+    await local(a, { type: 'peer:update', peerId: ids[1], policy: 'ask' });
+    await share(a);
+    expect((await fetchCreds(a, b)).status).toBe(200);
+  });
+
+  it('sem credenciais (ou sem o módulo SoundCloud) responde 404', async () => {
+    const { a, b } = await setup({ configure: false });
+    await pair(a, b);
+    await expect(share(a)).rejects.toThrow(/código e a senha do app/);
+    expect(await fetchCreds(a, b)).toEqual({ status: 404, body: { error: 'sc_not_configured' } });
+    a.lan.scCredentials = null;
+    expect((await fetchCreds(a, b)).status).toBe(404);
+  });
+
+  it('par pendente, revogado ou de outro usuário é recusado', async () => {
+    const { a, b } = await setup();
+    // pendente: b leu o código, mas o PC ainda não confirmou
+    const { uri } = (await local(a, { type: 'pairing:create' })) as { uri: string };
+    await local(b, { type: 'pairing:join', uri });
+    await expect(share(a)).rejects.toThrow(/não está pareado/);
+    expect((await fetchCreds(a, b)).body).toEqual({ error: 'pending_confirmation' });
+
+    await local(a, { type: 'peer:confirm', peerId: ids[1] });
+    await share(a);
+    a.helper.db.updatePeer(ids[1]!, { user_id: OTHER });
+    expect(await fetchCreds(a, b)).toEqual({ status: 409, body: { error: 'foreign_user' } });
+
+    a.helper.db.updatePeer(ids[1]!, { user_id: USER });
+    await local(a, { type: 'peer:revoke', peerId: ids[1] });
+    expect(await fetchCreds(a, b)).toEqual({ status: 403, body: { error: 'revoked' } });
+    const st = (await local(a, { type: 'sc:status' })) as ScStatus;
+    expect(st.devices).toEqual([]);
+  });
+
+  it('trocar o app ou remover as credenciais cancela as liberações', async () => {
+    const { a, b } = await setup();
+    await pair(a, b);
+    await share(a);
+    await local(a, { type: 'sc:forget' });
+    await local(a, { type: 'sc:configure', ...CREDS });
+    expect((await fetchCreds(a, b)).body).toEqual({ error: 'sc_not_shared' });
   });
 });

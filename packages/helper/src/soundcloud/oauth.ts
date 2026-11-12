@@ -47,6 +47,7 @@ export class ScError extends Error {
       | 'login_pending'
       | 'login_failed'
       | 'port_busy'
+      | 'not_paired'
       | 'api',
     message: string,
     readonly status?: number,

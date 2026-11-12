@@ -41,6 +41,15 @@ Cabeçalho das chamadas: `Authorization: OAuth <access_token>`. Base: `https://a
   (conta do usuário). A extensão repassa o que a pessoa digita e não guarda nada.
 - **Sincroniza** só o URN da playlist exportada (`external_playlist_id` da Playlist), para PC e
   celular atualizarem a mesma playlist. Credenciais nunca passam pela sync.
+- **Entrega ao celular** (Sprint 16): em Configurações → Exportar para o SoundCloud → *Usar no
+  celular*, **Enviar para <aparelho>** libera as credenciais do app por **10 minutos, uma única
+  vez**. No celular, **Receber do PC** faz `POST /v1/sc/credentials` ao serviço do PC:
+  - a requisição é assinada pelo aparelho e chega por HTTPS com o certificado do PC fixado pelo QR;
+  - só vale para par `paired` do mesmo usuário;
+  - sem liberação válida → 409 `sc_not_shared`; sem credenciais no PC → 404 `sc_not_configured`.
+
+  A liberação fica só na memória do serviço e é cancelada ao trocar ou remover as credenciais. Os
+  **tokens não são enviados**: o celular faz o próprio login.
 - Nada mais vindo da API é gravado (Termos: sem armazenar "User Content").
 - Desenvolvimento: `SC_CLIENT_ID`/`SC_CLIENT_SECRET` no `.env` da raiz, lidos só por
   `npm run sc:dev`. Nunca com prefixo `VITE_`; nunca no build.

@@ -7,6 +7,7 @@ import {
   scPlaylistBody,
 } from '@cuepoint/core';
 import type { Helper } from '../helper';
+import type { ScCredentialProvider } from '../lan';
 import type { SecretBox } from '../secrets';
 import { waitForCallback, type CallbackWaiter } from './callback';
 import {
@@ -30,6 +31,8 @@ const RECONNECT_KEY = 'sc:reconnect';
 export const REFRESH_MARGIN_MS = SC_REFRESH_MARGIN_MS;
 /** Esperas depois de um 429 antes de desistir. */
 export const RETRY_DELAYS_MS: readonly number[] = SC_RETRY_DELAYS_MS;
+/** Prazo da liberação das credenciais para um celular (uso único). */
+export const SHARE_TTL_MS = 10 * 60 * 1000;
 const MAX_PAGES = 100;
 const TRACK_URN = SC_TRACK_URN;
 
@@ -38,6 +41,16 @@ interface Vault extends Credentials {
 }
 
 export type ScState = 'unconfigured' | 'configured' | 'connected' | 'reconnect';
+
+/** Aparelho pareado que pode receber as credenciais do app (bloco "Usar no celular"). */
+export interface ScShareDevice {
+  peerId: string;
+  name: string;
+  /** Liberação ativa até (epoch ms), ou null. */
+  expiresAt: number | null;
+  /** Quando o aparelho buscou as credenciais pela última vez. */
+  sharedAt: string | null;
+}
 
 export interface ScStatus {
   state: ScState;
@@ -48,6 +61,8 @@ export interface ScStatus {
   loginPending: boolean;
   lastError: string | null;
   redirectUri: string;
+  /** Pares `paired` do mesmo usuário (só com credenciais configuradas). */
+  devices: ScShareDevice[];
 }
 
 /** Faixa enviada pela extensão para exportar. */
@@ -112,6 +127,8 @@ export class SoundCloud {
   private lastError: string | null = null;
   private waiter: CallbackWaiter | null = null;
   private refreshing: Promise<TokenSet> | null = null;
+  /** Liberações das credenciais por par (peerId → expira em), em memória e de uso único. */
+  private shares = new Map<string, number>();
   /** link → URN resolvidos nesta execução (evita repetir /resolve entre diff e exportação). */
   private resolved = new Map<string, string | null>();
   private readonly fetchFn: FetchLike;
@@ -127,6 +144,8 @@ export class SoundCloud {
     h.register('sc:forget', () => this.forget());
     h.register('sc:login', () => this.login());
     h.register('sc:logout', () => this.logout());
+    h.register('sc:share', (r) => this.share(String(r.peerId)));
+    h.register('sc:share-cancel', (r) => this.cancelShare(String(r.peerId)));
     h.register('sc:diff', (r) =>
       this.diff(String(r.playlistUrn), (r.tracks as ExportTrack[]) ?? []),
     );
@@ -199,8 +218,68 @@ export class SoundCloud {
       loginPending: !!this.waiter,
       lastError: this.lastError,
       redirectUri: REDIRECT_URI,
+      devices: v ? this.shareDevices() : [],
     };
   }
+
+  // ------------------------------------------------------------------ celular
+
+  private sharePeer(peerId: string) {
+    const peer = this.helper.db.peer(peerId);
+    const userId = this.helper.identity?.userId;
+    return peer && peer.status === 'paired' && (!peer.user_id || peer.user_id === userId)
+      ? peer
+      : null;
+  }
+
+  private shareDevices(): ScShareDevice[] {
+    const now = this.now();
+    return this.helper.db
+      .peers()
+      .filter((p) => this.sharePeer(p.device_id))
+      .map((p) => {
+        const until = this.shares.get(p.device_id) ?? 0;
+        return {
+          peerId: p.device_id,
+          name: p.name,
+          expiresAt: until > now ? until : null,
+          sharedAt: p.sc_shared_at ?? null,
+        };
+      });
+  }
+
+  /**
+   * Libera as credenciais do app para um aparelho pareado buscar uma vez, por `SHARE_TTL_MS`
+   * (`POST /v1/sc/credentials`). Nunca vão pela sincronização.
+   */
+  async share(peerId: string): Promise<ScStatus> {
+    if (!(await this.load()))
+      throw new ScError('not_configured', 'Informe primeiro o código e a senha do app.');
+    if (!this.sharePeer(peerId))
+      throw new ScError('not_paired', 'Esse aparelho não está pareado com este PC.');
+    this.shares.set(peerId, this.now() + SHARE_TTL_MS);
+    this.notify();
+    return this.status();
+  }
+
+  async cancelShare(peerId: string): Promise<ScStatus> {
+    this.shares.delete(peerId);
+    this.notify();
+    return this.status();
+  }
+
+  /** Entrega pedida pelo par (rota da LAN): exige liberação válida e a consome. */
+  readonly deliver: ScCredentialProvider = async (peerId) => {
+    const v = await this.load();
+    if (!v) return { ok: false, error: 'sc_not_configured' };
+    const until = this.shares.get(peerId) ?? 0;
+    this.shares.delete(peerId);
+    if (until <= this.now() || !this.sharePeer(peerId))
+      return { ok: false, error: 'sc_not_shared' };
+    this.helper.db.updatePeer(peerId, { sc_shared_at: new Date(this.now()).toISOString() });
+    this.notify();
+    return { ok: true, client_id: v.clientId, client_secret: v.clientSecret };
+  };
 
   /** Salva as credenciais do app depois de validá-las com uma troca `client_credentials`. */
   async configure(clientId: string, clientSecret: string): Promise<ScStatus> {
@@ -212,6 +291,7 @@ export class SoundCloud {
     const sameApp = current?.clientId === creds.clientId;
     await this.save({ ...creds, tokens: sameApp ? (current?.tokens ?? null) : null });
     if (!sameApp) {
+      this.shares.clear();
       this.user = null;
       this.setReconnect(false);
     }
@@ -224,6 +304,7 @@ export class SoundCloud {
   async forget(): Promise<ScStatus> {
     await this.logout().catch(() => undefined);
     await this.save(null);
+    this.shares.clear();
     this.setReconnect(false);
     this.lastError = null;
     this.notify();

@@ -38,6 +38,8 @@ export interface Peer {
   last_seen_at: string | null;
   /** O que este par já tem (vetor de versões), visto na última troca; base das pendências. */
   known_vv?: VersionVector;
+  /** Quando o par buscou as credenciais do app SoundCloud (Sprint 16.2). */
+  sc_shared_at?: string;
 }
 
 export interface SyncRun {

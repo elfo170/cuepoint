@@ -1,5 +1,5 @@
-import { Check, Copy, ExternalLink, LogIn, LogOut, Music2 } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
+import { Check, Copy, ExternalLink, LogIn, LogOut, Music2, Smartphone } from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { buttonClass, ConfirmButton, inputClass, secondaryButtonClass } from '../components';
 import {
@@ -7,6 +7,7 @@ import {
   SC_APPS_URL,
   scRequest,
   useSoundCloud,
+  type ScShareDevice,
   type ScStatus,
   type ScView,
 } from '../soundcloud';
@@ -136,8 +137,9 @@ function CredentialsForm({ status, onSaved }: { status: ScStatus; onSaved: () =>
               />
             </label>
             <p className="text-neutral-500">
-              Os dois ficam só neste PC, guardados pelo serviço do CuePoint e cifrados com a sua
-              conta do Windows. Não vão para a sincronização nem para nenhum servidor.
+              Os dois ficam neste PC, guardados pelo serviço do CuePoint e cifrados com a sua conta
+              do Windows. Você pode enviá-los uma vez a um celular pareado; nunca vão pela
+              sincronização nem para nenhum servidor.
             </p>
             {error && <p className="text-red-600">{error}</p>}
             <button
@@ -150,6 +152,110 @@ function CredentialsForm({ status, onSaved }: { status: ScStatus; onSaved: () =>
           </form>
         </li>
       </ol>
+    </div>
+  );
+}
+
+const remaining = (ms: number) => {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+
+function ShareRow({ device, reload }: { device: ScShareDevice; reload: () => Promise<void> }) {
+  const [now, setNow] = useState(() => Date.now());
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const active = device.expiresAt !== null && device.expiresAt > now;
+  useEffect(() => {
+    if (device.expiresAt === null) return;
+    const t = setInterval(() => {
+      setNow(Date.now());
+      if (Date.now() >= device.expiresAt!) void reload();
+    }, 1000);
+    return () => clearInterval(t);
+  }, [device.expiresAt, reload]);
+  const run = (type: 'sc:share' | 'sc:share-cancel') => async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await scRequest({ type, peerId: device.peerId });
+      setNow(Date.now());
+      await reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <li className="space-y-1" data-testid={`sc-share-${device.peerId}`}>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-medium">{device.name}</span>
+        {device.sharedAt && !active && (
+          <span className="text-neutral-500">
+            Enviado em {new Date(device.sharedAt).toLocaleString('pt-BR')}
+          </span>
+        )}
+        {active ? (
+          <button
+            type="button"
+            className={`${secondaryButtonClass} ml-auto`}
+            disabled={busy}
+            onClick={run('sc:share-cancel')}
+          >
+            Cancelar
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={`${secondaryButtonClass} ml-auto`}
+            disabled={busy}
+            onClick={run('sc:share')}
+          >
+            <Smartphone size={14} aria-hidden /> Enviar para {device.name}
+          </button>
+        )}
+      </div>
+      {active && (
+        <p className="text-orange-700 dark:text-orange-300">
+          Liberado por {remaining(device.expiresAt! - now)}. No celular, abra Configurações →
+          SoundCloud → <strong>Receber do PC</strong>.
+        </p>
+      )}
+      {error && <p className="text-red-600">{error}</p>}
+    </li>
+  );
+}
+
+/**
+ * "Usar no celular" (Sprint 16.2): libera as credenciais do app para um aparelho pareado buscar
+ * uma vez, em até 10 minutos. O celular faz o próprio login (tokens não são compartilhados).
+ */
+export function PhoneShare({ status, reload }: { status: ScStatus; reload: () => Promise<void> }) {
+  return (
+    <div className="space-y-2 border-t border-neutral-200 pt-3 dark:border-neutral-800">
+      <p className="font-medium">Usar no celular</p>
+      {status.devices.length ? (
+        <>
+          <p className="text-neutral-500">
+            Envie o código e a senha do app para um celular pareado, uma vez. O envio vale por 10
+            minutos e passa só pela conexão cifrada do pareamento; o celular faz o próprio login.
+          </p>
+          <ul className="space-y-2">
+            {status.devices.map((d) => (
+              <ShareRow key={d.peerId} device={d} reload={reload} />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p className="text-neutral-500">
+          Nenhum celular pareado. Pareie em{' '}
+          <Link to="/devices" className="text-orange-600 underline">
+            Dispositivos
+          </Link>{' '}
+          para exportar também pelo app Android.
+        </p>
+      )}
     </div>
   );
 }
@@ -240,6 +346,7 @@ function Connection({ status, reload }: { status: ScStatus; reload: () => Promis
     <div className="space-y-3 text-sm">
       {main}
       {(error ?? status.lastError) && <p className="text-red-600">{error ?? status.lastError}</p>}
+      <PhoneShare status={status} reload={reload} />
       <div className="flex flex-wrap items-center gap-2 border-t border-neutral-200 pt-3 text-neutral-500 dark:border-neutral-800">
         <span>App: {status.clientId}</span>
         <button
