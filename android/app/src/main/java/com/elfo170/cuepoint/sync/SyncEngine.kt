@@ -7,6 +7,7 @@ import com.elfo170.cuepoint.core.Isolation
 import com.elfo170.cuepoint.core.Merge
 import com.elfo170.cuepoint.core.Op
 import com.elfo170.cuepoint.core.Protocol
+import com.elfo170.cuepoint.core.SoundCloudProtocol
 import com.elfo170.cuepoint.data.DeviceRow
 import com.elfo170.cuepoint.data.Store
 import kotlinx.serialization.Serializable
@@ -175,6 +176,31 @@ class SyncEngine(
         val msg = lastError?.message ?: "sem endereço"
         record(SyncRun(peerId, Hlc.isoOf(System.currentTimeMillis()), "error", received, sent, msg))
         return SyncResult("error", received, sent, msg)
+    }
+
+    /**
+     * Busca no PC as credenciais do app SoundCloud (Sprint 16.3), por requisição assinada e TLS com
+     * o certificado fixado. O PC só responde depois da liberação feita na extensão (10 min, uso
+     * único); senão, `PeerHttpException` com `sc_not_shared` ou `sc_not_configured`.
+     */
+    suspend fun fetchScCredentials(peerId: String): SoundCloudProtocol.Credentials {
+        val peer = dao.device(peerId) ?: throw IllegalStateException("aparelho desconhecido")
+        if (peer.pairing_status != "paired" || peer.cert_fp == null || peer.port == null) throw PeerHttpException(403, "revoked")
+        val id = store.init()
+        val (key, _) = keys()
+        var lastError: Exception? = null
+        for (host in peer.addresses.orEmpty().split(',').filter { it.isNotBlank() }) {
+            try {
+                val res = Merge.parseObject(clientFactory(host, peer.port, peer.cert_fp, id.deviceId, key).post(SoundCloudProtocol.PC_CREDENTIALS_PATH, "{}"))
+                return SoundCloudProtocol.Credentials(res.getValue("client_id").jsonPrimitive.content, res.getValue("client_secret").jsonPrimitive.content)
+            } catch (e: PeerHttpException) {
+                if (e.code == "revoked") dao.putDevice(peer.copy(pairing_status = "revoked"))
+                throw e // o PC respondeu: outro endereço não muda a resposta
+            } catch (e: Exception) {
+                lastError = e
+            }
+        }
+        throw lastError ?: java.io.IOException("sem endereço")
     }
 
     /** Remove a confiança no PC (PRD §4.5) e avisa, se alcançável. */

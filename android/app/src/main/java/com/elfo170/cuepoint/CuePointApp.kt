@@ -13,6 +13,9 @@ import com.elfo170.cuepoint.data.TrackState
 import com.elfo170.cuepoint.media.ArtworkCache
 import com.elfo170.cuepoint.media.CurationNotification
 import com.elfo170.cuepoint.media.UrnResolver
+import com.elfo170.cuepoint.soundcloud.KeystoreBox
+import com.elfo170.cuepoint.soundcloud.SecretBox
+import com.elfo170.cuepoint.soundcloud.SoundCloudService
 import com.elfo170.cuepoint.sync.SyncEngine
 import com.elfo170.cuepoint.sync.SyncScheduler
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -36,6 +39,7 @@ class AppContainer(
     private val context: Context,
     inMemory: Boolean = false,
     private val resolver: UrnResolver = UrnResolver(),
+    secretBox: SecretBox = KeystoreBox(),
 ) {
     /** Falhas em tarefas de fundo são registradas, sem derrubar o app. */
     val scope = CoroutineScope(
@@ -54,6 +58,9 @@ class AppContainer(
     val syncEngine = SyncEngine(store, afterReceive = { curation.reconcileProvisional() })
     val sync = SyncScheduler(context, syncEngine, scope)
 
+    /** Exportação para o SoundCloud (Sprint 16): credenciais cifradas com o Android Keystore. */
+    val soundCloud = SoundCloudService(store, syncEngine, secretBox, scope)
+
     /** Capas das faixas: imagem da MediaSession (só neste aparelho) ou `artwork_url` vindo do Chrome. */
     val artwork = ArtworkCache(java.io.File(context.filesDir, "artwork"))
 
@@ -63,6 +70,9 @@ class AppContainer(
 
     /** Link/QR de pareamento recebido (cuepoint://pair?...) aguardando a tela de dispositivos. */
     val pendingPairUri = MutableStateFlow<String?>(null)
+
+    /** "Voltar ao CuePoint" na página de retorno do login (cuepoint://soundcloud). */
+    val pendingSoundCloud = MutableStateFlow(false)
 
     /** Biblioteca reativa: recalculada a cada escrita no banco. */
     val snapshot: StateFlow<Snapshot> = db.dao().observeAll()

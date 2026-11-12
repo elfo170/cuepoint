@@ -23,6 +23,8 @@ object SoundCloudProtocol {
     /** Esperas depois de um 429 antes de desistir. */
     val RETRY_DELAYS_MS = listOf(1000L, 2000L, 4000L)
     val TRACK_URN = Regex("^soundcloud:tracks:\\d+$")
+    /** Rota do serviço do PC pela qual o celular busca as credenciais do app (`lan.ts`). */
+    const val PC_CREDENTIALS_PATH = "/v1/sc/credentials"
 
     data class Credentials(val clientId: String, val clientSecret: String)
 
