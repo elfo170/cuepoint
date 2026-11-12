@@ -38,7 +38,7 @@ Na [página de releases](https://github.com/elfo170/cuepoint/releases/latest), e
 | Arquivo                         | Precisa?                                    | Requisitos                    |
 | ------------------------------- | ------------------------------------------- | ----------------------------- |
 | `cuepoint-extensao-1.0.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
-| `cuepoint-1.0.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
+| `cuepoint-1.0.1.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
 | `cuepoint-servico-pc-1.0.0.zip` | Só para sincronizar o celular com o PC      | Windows 10/11 e Node.js 22.13+ |
 
 Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os dois juntos.
@@ -99,7 +99,7 @@ aparecer. Também dá para associar à mão em **Músicas → Identificar pela U
 ## 4. Instalar o app no celular (Android)
 
 1. No celular, abra a [página de releases](https://github.com/elfo170/cuepoint/releases/latest) e
-   baixe `cuepoint-1.0.0.apk`. Também dá para copiar o arquivo do computador para o celular.
+   baixe `cuepoint-1.0.1.apk`. Também dá para copiar o arquivo do computador para o celular.
 2. Toque no arquivo baixado. O Android pede para **permitir a instalação de apps desconhecidos**
    pelo navegador ou gerenciador de arquivos: permita e volte.
 3. Se o Play Protect avisar que o app não foi verificado, toque em **Mais detalhes → Instalar mesmo
@@ -118,7 +118,8 @@ uma vez.
 
 1. Abra o app do **SoundCloud** e dê play.
 2. A **notificação do CuePoint** mostra a faixa com **✗**, **✓** e, depois de aprovar,
-   **Categorias**. Dá para classificar pela cortina de notificações sem abrir o app.
+   **Categorias**. Dá para classificar pela cortina de notificações sem abrir o app. Ela some
+   sozinha quando o SoundCloud fecha. Se você a dispensar, ela só volta quando abrir o CuePoint.
 3. A aba **Curar** do app mostra a faixa atual com capa, a pesquisa ativa, ✓ / ✗, as categorias e o
    botão **Abrir no SoundCloud**.
 4. As abas **Pesquisas**, **Músicas**, **Categorias** e **Playlists** funcionam como a biblioteca

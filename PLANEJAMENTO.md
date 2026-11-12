@@ -21,7 +21,7 @@ só começa com autorização do usuário.
 
 | Etapa | Situação |
 |---|---|
-| Issue #1 — notificação reaparece após bloquear a tela | Corrigida e validada no celular (debug); falta o commit e a próxima release. Ver *Issue #1*. |
+| Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
 | Sprint 15 — API do SoundCloud e preparação multiusuário | Pendente. Ver *Sprint 15*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
