@@ -22,7 +22,7 @@ só começa com autorização do usuário.
 | Etapa | Situação |
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
-| Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Falta abrir o PR para `main`. Ver *Sprint 15*. |
+| Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Push feito; falta o PR para `main`. Ver *Sprint 15*. |
 | Sprint 16 — SoundCloud no celular | Pendente (depende da Sprint 15). Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
@@ -583,6 +583,9 @@ aguardar decisão.
 
 ## Como retomar numa sessão nova
 
+- **Comece lendo o `prox_sessao.md`** (raiz do projeto, local e ignorado pelo Git): onde a última
+  sessão parou e os próximos passos em ordem. Ao concluir um item, registre aqui e tire de lá. Se o
+  arquivo não existir, siga a tabela *Próximas etapas*.
 - **Atualizar o serviço do PC** depois de mudar `packages/helper` ou `packages/core`:
   `npm run build -w @cuepoint/helper`, encerrar o processo `node … cuepoint-helper.mjs daemon`
   (porta 47800 ocupada impede o novo) e rodar `npm run helper:install`. Extensão: `npm run build` e

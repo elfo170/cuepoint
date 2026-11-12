@@ -28,5 +28,6 @@ release/
 *.pem
 
 roadmap.md
+prox_sessao.md
 custom-notif-layout.md
 foreground-services.md
