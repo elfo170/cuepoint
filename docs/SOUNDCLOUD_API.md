@@ -3,8 +3,8 @@
 Validação da API oficial (PRD §11.2) e de como o CuePoint a usa. Fontes: OpenAPI
 (`https://developers.soundcloud.com/docs/api/explorer/api.json`, conferida em 11/11/2026 e de novo
 em 12/11/2026, antes da Sprint 16: endpoints, parâmetros e esquemas usados sem mudança), API
-Guide, Terms of Use e Rate limits. Decisões e descobertas completas: *Sprint 15* e *Sprint 16* no
-[PLANEJAMENTO.md](../PLANEJAMENTO.md).
+Guide, Terms of Use e Rate limits. Decisões vigentes e o prompt original da integração: seção
+*SoundCloud* do [PLANEJAMENTO.md](../PLANEJAMENTO.md).
 
 A forma dos pedidos (token, login, caminhos, corpo da playlist, diferença de faixas) é definida uma
 vez em `packages/core/src/soundcloud.ts`. O app Android usa o espelho Kotlin
@@ -119,8 +119,8 @@ playlist **privada** de teste, aplica os cenários, apaga a playlist e revoga os
 | `PUT` substitui a lista (remove e reordena) | ✅ **Sim**: a lista ficou exatamente a enviada (o espelho funciona) |
 | `DELETE /playlists/{urn}` e `POST /disconnect` | ✅ |
 | Faixa de outro artista na playlist (link resolvido por `/resolve`) | ✅ aceita e aparece na playlist |
-| Faixa `blocked` na playlist | Pendente |
-| `you/apps` no navegador do celular | Não testado (opcional) |
+| Faixa `blocked` na playlist | Não será testado (decisão de 12/11/2026) |
+| `you/apps` no navegador do celular | Não será testado (decisão de 12/11/2026); o caminho principal é criar o app no PC |
 | Credenciais recebidas do PC pelo celular (liberação de uso único) | ✅ 12/11/2026 |
 | Login no celular com retorno em `127.0.0.1:47801` | ✅ 12/11/2026 (Redmi Note 14 Pro 5G, HyperOS 2) |
 | Exportar e atualizar pelo celular com o PC desligado | ✅ 12/11/2026 (PC e celular atualizam a mesma playlist) |

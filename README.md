@@ -26,8 +26,7 @@ filtra o que aprovou, monta playlists e exporta.
 6. [Sincronizar celular e PC](#6-sincronizar-celular-e-pc)
 7. [Backup](#7-backup)
 8. [Problemas comuns](#8-problemas-comuns)
-9. [Roadmap](#9-roadmap)
-10. [Para desenvolvedores](#10-para-desenvolvedores)
+9. [Para desenvolvedores](#9-para-desenvolvedores)
 
 ---
 
@@ -240,15 +239,7 @@ celular antigo.
 | Pareamento recusado: "os aparelhos são de usuários diferentes" | O aparelho novo já tem a biblioteca de outra pessoa (ou outra biblioteca sua). Apague a biblioteca dele ou restaure nele um backup do PC e pareie de novo. |
 | A exportação pede para **Reconectar**                         | O acesso ao SoundCloud caiu (Artist Pro vencido, senha do app trocada ou autorização revogada). Clique em **Reconectar**; se falhar, confira as credenciais do app. |
 
-## 9. Roadmap
-
-- **Exportar para o SoundCloud também pelo celular**, sem o PC ligado (no PC já funciona, com
-  Artist Pro).
-- Sincronização direta entre dois celulares.
-- Compartilhamento de bibliotecas por convite.
-- Múltiplos dispositivos.
-
-## 10. Para desenvolvedores
+## 9. Para desenvolvedores
 
 Monorepo com a extensão (TypeScript, React, Vite), o serviço do PC (Node 22) e o app Android
 (Kotlin, Compose, Room). Um contrato comum em `spec/` garante que o Chrome e o Android mesclam os
