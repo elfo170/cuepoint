@@ -8,8 +8,10 @@ import {
   Smartphone,
   Trash2,
 } from 'lucide-react';
+import { FOREIGN_USER_MESSAGE } from '@cuepoint/core';
 import QRCode from 'qrcode';
 import { useCallback, useEffect, useState } from 'react';
+import { store } from '../api';
 import { CHANGED_MESSAGE, send } from '../../shared/messages';
 import {
   buttonClass,
@@ -50,10 +52,20 @@ const RUN_STATUS: Record<string, string> = {
   approval_required: 'aguardando aprovação',
 };
 
+/** Erros conhecidos da sync, em linguagem simples. */
+const RUN_ERRORS: Record<string, string> = {
+  foreign_user: FOREIGN_USER_MESSAGE,
+  pending_confirmation: 'confirme o pareamento no outro aparelho',
+  revoked: 'aparelho revogado',
+};
+
 /** "Última execução: concluída · 3 recebidas, 2 enviadas" (ou o erro). */
 export function describeRun(run: NonNullable<PeerView['last_run']>): string {
   const status = RUN_STATUS[run.status] ?? run.status;
-  if (run.status === 'error') return `${status}${run.error ? ` (${run.error})` : ''}`;
+  if (run.status === 'error') {
+    const error = run.error ? (RUN_ERRORS[run.error] ?? run.error) : '';
+    return `${status}${error ? ` (${error})` : ''}`;
+  }
   return `${status} · ${run.received} recebida(s), ${run.sent} enviada(s)`;
 }
 
@@ -159,7 +171,11 @@ function AddDevice({ onDone }: { onDone: () => void }) {
 /** Parear com outro computador colando o código dele (PCs não têm câmera). */
 function JoinDevice({ onDone }: { onDone: () => void }) {
   const [uri, setUri] = useState('');
-  const [result, setResult] = useState<{ name: string; sas: string } | null>(null);
+  const [result, setResult] = useState<{
+    name: string;
+    sas: string;
+    adoptedUserId?: string | null;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   return (
     <form
@@ -167,12 +183,17 @@ function JoinDevice({ onDone }: { onDone: () => void }) {
       onSubmit={async (e) => {
         e.preventDefault();
         try {
-          setResult(
-            await helperRequest<{ name: string; sas: string }>({
-              type: 'pairing:join',
-              uri: uri.trim(),
-            }),
-          );
+          const res = await helperRequest<{
+            name: string;
+            sas: string;
+            adoptedUserId?: string | null;
+          }>({
+            type: 'pairing:join',
+            uri: uri.trim(),
+          });
+          // a página tem a própria cópia da identidade: relê depois da adoção
+          if (res.adoptedUserId) store.resetIdentity();
+          setResult(res);
           setError(null);
         } catch (err) {
           setError((err as Error).message);
@@ -187,6 +208,11 @@ function JoinDevice({ onDone }: { onDone: () => void }) {
           Pareado com <strong>{result.name}</strong>. Código de verificação:{' '}
           <strong className="font-mono text-lg">{result.sas}</strong> — confirme no outro
           computador.
+          {result.adoptedUserId && (
+            <span className="mt-1 block text-neutral-500">
+              Este PC estava vazio e passou a usar a mesma biblioteca de {result.name}.
+            </span>
+          )}
         </p>
       ) : (
         <div className="flex gap-2">

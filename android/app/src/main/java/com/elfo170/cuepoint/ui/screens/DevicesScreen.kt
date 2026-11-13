@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elfo170.cuepoint.core.FOREIGN_USER_MESSAGE
 import com.elfo170.cuepoint.container
 import com.elfo170.cuepoint.sync.SyncEngine
 import com.elfo170.cuepoint.sync.SyncRun
@@ -130,7 +131,8 @@ fun DevicesScreen() {
                             "pending_confirmation" -> "Confirme o pareamento no PC"
                             "revoked" -> "Este aparelho foi revogado no PC"
                             "skipped" -> "Sem endereço conhecido do PC"
-                            else -> "Falhou: ${err ?: "erro"} (o PC está ligado e na mesma rede?)"
+                            else -> if (err == "foreign_user") FOREIGN_USER_MESSAGE
+                            else "Falhou: ${err ?: "erro"} (o PC está ligado e na mesma rede?)"
                         }
                         val when_ = state.second?.at?.let { " (${fmt(it)})" }.orEmpty()
                         Text(

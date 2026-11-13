@@ -1,6 +1,7 @@
 package com.elfo170.cuepoint.data
 
 import com.elfo170.cuepoint.core.EntityType
+import com.elfo170.cuepoint.core.Isolation
 import com.elfo170.cuepoint.core.Merge
 import java.text.Collator
 import java.util.Locale
@@ -20,10 +21,11 @@ data class Snapshot(
 
         val EMPTY = Snapshot(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
-        fun of(rows: List<EntityRow>): Snapshot {
+        /** Dados vivos do usuário [userId] (nulo = sem filtro). */
+        fun of(rows: List<EntityRow>, userId: String? = null): Snapshot {
             val byType = rows.filter { !it.deleted }.groupBy { it.type }
             fun <T> list(type: EntityType, f: (kotlinx.serialization.json.JsonObject) -> T) =
-                byType[type.key].orEmpty().map { f(Merge.parseObject(it.json)) }
+                byType[type.key].orEmpty().map { Merge.parseObject(it.json) }.filter { Isolation.owned(it, userId) }.map(f)
             return Snapshot(
                 tracks = list(EntityType.TRACK, Track::of).filter { it.mergedInto == null },
                 researches = list(EntityType.RESEARCH, Research::of).sortedWith(compareBy(collator) { it.name }),

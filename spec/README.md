@@ -11,7 +11,9 @@ ao mesmo resultado.
 | `vectors/ids.json`            | Ids determinísticos (UUIDv5) e formato textual do HLC           |
 | `vectors/merge.json`          | Cenários de mesclagem: operações de entrada e estado esperado   |
 | `vectors/backup.json`         | Backup `cuepoint-backup` v1 válido e variantes inválidas        |
+| `vectors/isolation.json`      | Isolamento por usuário: operações aceitas/recusadas e pareamento |
 | `vectors/backup-android.json` | Backup gerado pelo app Android (pela suíte Kotlin)              |
+| `vectors/soundcloud.json`     | API do SoundCloud: pedidos de token (Basic só em `client_credentials`), URL de login, PKCE, caminhos, corpo da playlist e diferença de faixas |
 
 Regenerar após uma mudança intencional no modelo ou no motor de mesclagem:
 

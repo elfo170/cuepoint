@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "description": "Isolamento por usuário. `ops`: a réplica do usuário `user` aceita a operação? `pairing`: decisão do pareamento.",
+  "ops": [
+    {
+      "name": "mesmo usuário",
+      "user": "00000000-0000-4000-8000-000000000001",
+      "op": {
+        "op_id": "76a841aa-2a7e-5f76-af63-d7de7b1b63be",
+        "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+        "seq": 1,
+        "hlc": "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+        "user_id": "00000000-0000-4000-8000-000000000001",
+        "entity_type": "research",
+        "entity_id": "20000000-0000-4000-8000-000000000001",
+        "operation": "create",
+        "fields": {
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "name": "Techno",
+          "description": "",
+          "archived": false,
+          "deleted_at": null
+        },
+        "base": {
+          "user_id": [],
+          "name": [],
+          "description": [],
+          "archived": [],
+          "deleted_at": []
+        }
+      },
+      "accepted": true
+    },
+    {
+      "name": "mesmo usuário, sem campo user_id",
+      "user": "00000000-0000-4000-8000-000000000001",
+      "op": {
+        "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+        "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+        "seq": 2,
+        "hlc": "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+        "user_id": "00000000-0000-4000-8000-000000000001",
+        "entity_type": "research",
+        "entity_id": "20000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "fields": {
+          "name": "Techno 2",
+          "deleted_at": null
+        },
+        "base": {
+          "name": [
+            "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+          ],
+          "deleted_at": [
+            "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+          ]
+        }
+      },
+      "accepted": true
+    },
+    {
+      "name": "autor de outro usuário",
+      "user": "00000000-0000-4000-8000-000000000001",
+      "op": {
+        "op_id": "76a841aa-2a7e-5f76-af63-d7de7b1b63be",
+        "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+        "seq": 1,
+        "hlc": "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+        "user_id": "00000000-0000-4000-8000-000000000002",
+        "entity_type": "research",
+        "entity_id": "20000000-0000-4000-8000-000000000001",
+        "operation": "create",
+        "fields": {
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "name": "Techno",
+          "description": "",
+          "archived": false,
+          "deleted_at": null
+        },
+        "base": {
+          "user_id": [],
+          "name": [],
+          "description": [],
+          "archived": [],
+          "deleted_at": []
+        }
+      },
+      "accepted": false
+    },
+    {
+      "name": "grava user_id de outro usuário",
+      "user": "00000000-0000-4000-8000-000000000001",
+      "op": {
+        "op_id": "4f05db80-6c89-562d-b89d-62925827196b",
+        "origin": "aaaaaaaa-0000-4000-8000-00000000000a",
+        "seq": 2,
+        "hlc": "001767225602000:000000:aaaaaaaa-0000-4000-8000-00000000000a",
+        "user_id": "00000000-0000-4000-8000-000000000001",
+        "entity_type": "research",
+        "entity_id": "20000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "fields": {
+          "user_id": "00000000-0000-4000-8000-000000000002"
+        },
+        "base": {
+          "name": [
+            "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+          ],
+          "deleted_at": [
+            "001767225601000:000000:aaaaaaaa-0000-4000-8000-00000000000a"
+          ]
+        }
+      },
+      "accepted": false
+    }
+  ],
+  "pairing": [
+    {
+      "name": "mesmo usuário",
+      "host": "00000000-0000-4000-8000-000000000001",
+      "joiner": "00000000-0000-4000-8000-000000000001",
+      "can_adopt": false,
+      "expected": "same"
+    },
+    {
+      "name": "cliente antigo",
+      "host": "00000000-0000-4000-8000-000000000001",
+      "joiner": null,
+      "can_adopt": false,
+      "expected": "same"
+    },
+    {
+      "name": "vazio adota",
+      "host": "00000000-0000-4000-8000-000000000001",
+      "joiner": "00000000-0000-4000-8000-000000000002",
+      "can_adopt": true,
+      "expected": "adopt"
+    },
+    {
+      "name": "biblioteca de outro usuário",
+      "host": "00000000-0000-4000-8000-000000000001",
+      "joiner": "00000000-0000-4000-8000-000000000002",
+      "can_adopt": false,
+      "expected": "foreign"
+    }
+  ]
+}

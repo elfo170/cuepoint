@@ -10,6 +10,7 @@ import {
   type Track,
   type TrackCategory,
 } from '@cuepoint/core';
+import { localUserId, ownedBy } from './queries';
 import type { Store } from './store';
 
 /** Dados mínimos para identificar uma faixa (vindos do widget, do Android ou manuais). */
@@ -43,9 +44,12 @@ export class Curation {
   // ---------- Pesquisas ----------
 
   async listResearches(includeArchived = false): Promise<Research[]> {
+    // só leitura (pode rodar dentro de liveQuery): o usuário vem da identidade gravada
+    const userId = await localUserId(this.db);
     const all = await this.db.researches.toArray();
     return all
       .filter((r) => alive(r) && (includeArchived || !r.archived))
+      .filter(ownedBy(userId))
       .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }
 
@@ -85,8 +89,13 @@ export class Curation {
   // ---------- Categorias (globais, PRD §7.3) ----------
 
   async listCategories(): Promise<Category[]> {
+    // só leitura (pode rodar dentro de liveQuery): o usuário vem da identidade gravada
+    const userId = await localUserId(this.db);
     const all = await this.db.categories.toArray();
-    return all.filter(alive).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    return all
+      .filter(alive)
+      .filter(ownedBy(userId))
+      .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }
 
   /** Cria a categoria; se já existir uma com o mesmo nome (sem diferenciar maiúsculas), reutiliza. */

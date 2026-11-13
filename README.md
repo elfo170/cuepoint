@@ -26,8 +26,7 @@ filtra o que aprovou, monta playlists e exporta.
 6. [Sincronizar celular e PC](#6-sincronizar-celular-e-pc)
 7. [Backup](#7-backup)
 8. [Problemas comuns](#8-problemas-comuns)
-9. [Roadmap](#9-roadmap)
-10. [Para desenvolvedores](#10-para-desenvolvedores)
+9. [Para desenvolvedores](#9-para-desenvolvedores)
 
 ---
 
@@ -37,9 +36,9 @@ Na [página de releases](https://github.com/elfo170/cuepoint/releases/latest), e
 
 | Arquivo                         | Precisa?                                    | Requisitos                    |
 | ------------------------------- | ------------------------------------------- | ----------------------------- |
-| `cuepoint-extensao-1.0.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
-| `cuepoint-1.0.1.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
-| `cuepoint-servico-pc-1.0.0.zip` | Só para sincronizar o celular com o PC      | Windows 10/11 e Node.js 22.13+ |
+| `cuepoint-extensao-1.1.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
+| `cuepoint-1.1.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
+| `cuepoint-servico-pc-1.1.0.zip` | Para sincronizar o celular com o PC e para exportar para o SoundCloud pelo PC | Windows 10/11 e Node.js 22.13+ |
 
 Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os dois juntos.
 
@@ -47,7 +46,7 @@ Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os 
 
 A extensão não está na Chrome Web Store. Ela é instalada a partir da pasta baixada:
 
-1. Baixe `cuepoint-extensao-1.0.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
+1. Baixe `cuepoint-extensao-1.1.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
    fixo, por exemplo `Documentos\CuePoint`. Vai aparecer a pasta `CuePoint-extensao`.
    **Não apague essa pasta:** o Chrome carrega a extensão a partir dela.
 2. No Chrome, abra o endereço `chrome://extensions`.
@@ -88,9 +87,51 @@ no widget. Nela você:
   categorias;
 - gerencia as **categorias**;
 - monta **playlists**: à mão ou a partir de uma pesquisa ou categoria. Dá para reordenar e exportar
-  como lista de links, CSV ou JSON;
+  como lista de links, CSV ou JSON, ou direto para o SoundCloud (requer Artist Pro, veja abaixo);
 - faz e restaura **backups** (seção 7);
 - pareia o celular em **Dispositivos** (seção 6).
+
+### Exportar para o SoundCloud (requer Artist Pro)
+
+O CuePoint cria e atualiza playlists na sua conta do SoundCloud, pelo PC ou pelo celular.
+
+> ⚠️ **Só para quem tem Artist Pro, por uma limitação do SoundCloud.** Criar playlists pela API
+> exige um app registrado no SoundCloud, e só contas **Artist Pro** podem registrar apps. Como o
+> CuePoint não tem servidor, cada pessoa registra o **próprio** app; os termos do SoundCloud não
+> permitem distribuir um app único com a senha embutida. Sem Artist Pro, exporte a playlist como
+> lista de links, CSV ou JSON e monte-a no SoundCloud a partir deles. **Uma alternativa para quem
+> não tem Artist Pro está sendo planejada.**
+
+No PC, a exportação usa o serviço do PC (seção 6.1), que guarda as credenciais cifradas com a sua
+conta do Windows.
+
+1. Em **Configurações → Exportar para o SoundCloud**, responda que tem Artist Pro.
+2. Clique em **Abrir soundcloud.com/you/apps** e registre um app com os valores mostrados (cada um
+   tem um botão **Copiar**). O endereço de retorno é `http://127.0.0.1:47801/callback`.
+3. Cole o **Client ID** e o **Client Secret** e clique em **Salvar e conferir**.
+4. Clique em **Entrar com SoundCloud** e autorize na aba que abrir. Ao final aparece "Conectado
+   como @…".
+5. Na página de uma playlist, use **Exportar para o SoundCloud** (privada por padrão). Depois,
+   **Atualizar no SoundCloud** mostra o que entra, o que sai e se a ordem muda; a playlist no
+   SoundCloud fica igual à do CuePoint depois da confirmação.
+
+Faixas sem link do SoundCloud ficam de fora e aparecem listadas. **Desconectar** revoga o acesso;
+**Remover credenciais** apaga também o código e a senha do app. Detalhes:
+[docs/SOUNDCLOUD_API.md](docs/SOUNDCLOUD_API.md) · [privacidade](docs/PRIVACIDADE.md).
+
+#### Usar no celular
+
+O app Android também exporta e atualiza playlists, **sem o PC ligado**, depois de configurado:
+
+1. No PC, em **Configurações → Exportar para o SoundCloud → Usar no celular**, clique em
+   **Enviar para <celular>**. O envio fica liberado por 10 minutos e vale uma vez só.
+2. No celular, em **Configurações → Exportar para o SoundCloud**, toque em **Receber de <PC>**. O
+   código e a senha do app chegam pela conexão cifrada do pareamento e ficam cifrados pelo Android
+   (Keystore). Sem o PC, use **Digitar código e senha do app**.
+3. Toque em **Entrar com SoundCloud**, autorize no navegador e toque em **Voltar ao CuePoint**. O
+   celular tem o próprio acesso; desconectar um aparelho não afeta o outro.
+4. Na página de uma playlist, o cartão **Exportar para o SoundCloud** funciona como no PC. O vínculo
+   com a playlist publicada sincroniza: PC e celular atualizam a mesma.
 
 **Faixa "provisória":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
 internet). Ela entra como provisória e é associada sozinha à definitiva assim que o identificador
@@ -203,16 +244,10 @@ celular antigo.
 | A notificação do CuePoint sumiu e não volta                   | Ela foi dispensada ou o SoundCloud foi fechado. Abra o CuePoint (e o SoundCloud) para ela voltar.                                                                                 |
 | A notificação some da tela bloqueada                          | Limitação de alguns sistemas, como o HyperOS: ela some quando chega outra notificação. Continua disponível na cortina.                                                             |
 | Uma faixa aparece como "provisória"                           | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
+| Pareamento recusado: "os aparelhos são de usuários diferentes" | O aparelho novo já tem a biblioteca de outra pessoa (ou outra biblioteca sua). Apague a biblioteca dele ou restaure nele um backup do PC e pareie de novo. |
+| A exportação pede para **Reconectar**                         | O acesso ao SoundCloud caiu (Artist Pro vencido, senha do app trocada ou autorização revogada). Clique em **Reconectar**; se falhar, confira as credenciais do app. |
 
-## 9. Roadmap
-
-- **Integração com o SoundCloud para criar e atualizar playlists**: enviar as playlists do
-  CuePoint direto para a sua conta e mantê-las atualizadas.
-- Sincronização direta entre dois celulares.
-- Compartilhamento de bibliotecas por convite.
-- Múltiplos dispositivos.
-
-## 10. Para desenvolvedores
+## 9. Para desenvolvedores
 
 Monorepo com a extensão (TypeScript, React, Vite), o serviço do PC (Node 22) e o app Android
 (Kotlin, Compose, Room). Um contrato comum em `spec/` garante que o Chrome e o Android mesclam os
@@ -238,8 +273,10 @@ npm run lint             # ESLint + Prettier
 npm run e2e              # Playwright: widget, biblioteca, backup e critérios de aceite
 npm run android:check    # testes + APK de debug do Android
 npm run helper:install   # instala o serviço do PC a partir do repositório
+npm run sc:dev           # valida a API do SoundCloud com o .env (SC_CLIENT_ID/SC_CLIENT_SECRET)
 npm run release:package  # monta os arquivos da release em release\<tag>\
 ```
 
 Mais contexto: [PRD](CuePoint_PRD_v1.0.md) · [planejamento e status](PLANEJAMENTO.md) ·
-[contrato TS ⇄ Kotlin](spec/README.md).
+[contrato TS ⇄ Kotlin](spec/README.md) · [API do SoundCloud](docs/SOUNDCLOUD_API.md) ·
+[multiusuário](docs/MULTIUSUARIO.md).

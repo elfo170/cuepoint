@@ -34,9 +34,24 @@ export interface Snapshot {
   trackCategories: TrackCategory[];
 }
 
-/** Lê os dados vivos (sem tombstones) usados pela biblioteca. */
+/**
+ * Isolamento por usuário (PRD §16): só registros do usuário local. Faixas e vínculos não têm
+ * `user_id` (a faixa é a mesma para todos, `uuidv5(urn)`) e seguem o registro pai.
+ */
+export const ownedBy =
+  (userId: string | undefined) =>
+  <T extends { user_id: string }>(r: T): boolean =>
+    !userId || r.user_id === userId;
+
+/** Usuário local gravado na identidade (ausente antes da primeira execução). */
+export async function localUserId(db: CuePointDB): Promise<string | undefined> {
+  return ((await db.meta.get('identity'))?.value as { userId?: string } | undefined)?.userId;
+}
+
+/** Lê os dados vivos (sem tombstones) do usuário local, usados pela biblioteca. */
 export async function loadSnapshot(db: CuePointDB): Promise<Snapshot> {
-  const [tracks, researches, decisions, categories, trackCategories] = await Promise.all([
+  const [userId, tracks, researches, decisions, categories, trackCategories] = await Promise.all([
+    localUserId(db),
     db.tracks.toArray(),
     db.researches.toArray(),
     db.decisions.toArray(),
@@ -45,9 +60,9 @@ export async function loadSnapshot(db: CuePointDB): Promise<Snapshot> {
   ]);
   return {
     tracks: tracks.filter((t) => alive(t) && !t.merged_into),
-    researches: researches.filter(alive),
-    decisions: decisions.filter(alive),
-    categories: categories.filter(alive),
+    researches: researches.filter(alive).filter(ownedBy(userId)),
+    decisions: decisions.filter(alive).filter(ownedBy(userId)),
+    categories: categories.filter(alive).filter(ownedBy(userId)),
     trackCategories: trackCategories.filter(alive),
   };
 }

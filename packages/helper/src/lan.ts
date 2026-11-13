@@ -1,7 +1,10 @@
 import {
+  FOREIGN_USER_MESSAGE,
+  ForeignUserError,
   mergeVersionVectors,
   formatPairingUri,
   pairingCode,
+  pairingUserDecision,
   parsePairingUri,
   PROTOCOL_VERSION,
   PULL_LIMIT,
@@ -20,6 +23,19 @@ import type { Helper } from './helper';
 import { spkiFingerprint } from './identity';
 
 export const PAIRING_TTL_MS = 5 * 60 * 1000;
+/** Rota pela qual um celular pareado busca as credenciais do app SoundCloud (Sprint 16.2). */
+export const SC_CREDENTIALS_PATH = '/v1/sc/credentials';
+
+/**
+ * Entrega das credenciais do app SoundCloud a um par: só com liberação feita no PC (uso único).
+ * Implementada pelo `SoundCloud` e ligada no `daemon.ts`.
+ */
+export type ScCredentialProvider = (
+  peerId: string,
+) => Promise<
+  | { ok: true; client_id: string; client_secret: string }
+  | { ok: false; error: 'sc_not_configured' | 'sc_not_shared' }
+>;
 export const APPROVAL_TTL_MS = 10 * 60 * 1000;
 const MAX_BODY = 32 * 1024 * 1024;
 
@@ -54,6 +70,8 @@ export class Lan {
   /** Pedidos de aprovação pendentes (par → quando pediu). */
   readonly pendingApprovals = new Map<string, number>();
   private syncing = new Map<string, Promise<SyncResult>>();
+  /** Quem entrega as credenciais do SoundCloud (sem ele, a rota responde 404). */
+  scCredentials: ScCredentialProvider | null = null;
 
   constructor(
     private readonly helper: Helper,
@@ -61,7 +79,7 @@ export class Lan {
   ) {
     const h = helper;
     h.register('pairing:create', () => this.createPairing());
-    h.register('pairing:join', (r) => this.joinPairing(String(r.uri)));
+    h.register('pairing:join', (r) => this.joinPairing(String(r.uri), r.canAdopt === true));
     h.register('peers:list', () => this.listPeers());
     h.register('peer:confirm', (r) => this.confirmPeer(String(r.peerId)));
     h.register('peer:update', (r) => this.updatePeer(String(r.peerId), r as never));
@@ -157,6 +175,16 @@ export class Lan {
     }
     if (peer.status === 'pending') throw new HttpError(403, 'pending_confirmation');
     if (peer.status === 'revoked') throw new HttpError(403, 'revoked');
+    if (peer.user_id && peer.user_id !== id.userId) throw new HttpError(409, 'foreign_user');
+    if (method === 'POST' && path === SC_CREDENTIALS_PATH) {
+      // a liberação feita no PC (uso único, com prazo) já é a aprovação: não passa pela política
+      // de sync. A resposta só sai pelo TLS com o certificado fixado pelo QR.
+      const r = this.scCredentials
+        ? await this.scCredentials(peer.device_id)
+        : ({ ok: false, error: 'sc_not_configured' } as const);
+      if (!r.ok) throw new HttpError(r.error === 'sc_not_configured' ? 404 : 409, r.error);
+      return { client_id: r.client_id, client_secret: r.client_secret };
+    }
     if (!this.approved(peer)) throw new HttpError(409, 'approval_required');
 
     const payload = body ? (JSON.parse(body) as Record<string, unknown>) : {};
@@ -174,7 +202,13 @@ export class Lan {
     }
     if (method === 'POST' && path === '/v1/sync/push') {
       const pushed = (payload.ops as unknown[]) ?? [];
-      const inserted = this.helper.db.insertOps(pushed);
+      let inserted: Op[];
+      try {
+        inserted = this.helper.insertOps(pushed);
+      } catch (e) {
+        if (e instanceof ForeignUserError) throw new HttpError(409, 'foreign_user');
+        throw e;
+      }
       // quem enviou tem, no mínimo, o que enviou (validado por insertOps)
       this.helper.db.noteKnown(peer.device_id, vvOf(pushed as Op[]));
       if (inserted.length) {
@@ -247,14 +281,22 @@ export class Lan {
       cert_fp?: string | null;
       addresses?: string[];
       port?: number | null;
+      /** Usuário de quem entra (ausente em clientes antigos). */
+      user_id?: string;
+      /** Quem entra está vazio e pode adotar o usuário deste aparelho. */
+      can_adopt?: boolean;
     };
     if (!r.token || !r.device_id || !r.public_key || !r.name)
       throw new HttpError(400, 'bad_request');
+    // Antes de consumir o token: o usuário pode apagar a biblioteca do outro aparelho e repetir.
+    if (pairingUserDecision(id.userId, r.user_id, r.can_adopt === true) === 'foreign')
+      throw new HttpError(409, 'foreign_user');
     if (!this.helper.db.consumeToken(r.token, this.helper.now()))
       throw new HttpError(403, 'invalid_token');
     const sas = await pairingCode(r.token, this.helper.keys.publicKeyB64, r.public_key);
     this.helper.db.savePeer({
       device_id: r.device_id,
+      user_id: id.userId,
       name: r.name,
       public_key: r.public_key,
       cert_fp: r.cert_fp ?? null,
@@ -277,10 +319,15 @@ export class Lan {
     };
   }
 
-  /** Este PC escaneou/colou o código de outro aparelho (ex.: outro PC). */
-  async joinPairing(uri: string) {
+  /**
+   * Este PC escaneou/colou o código de outro aparelho (ex.: outro PC). Com `extensionEmpty`
+   * (a extensão confirmou que não tem nada registrado) e o serviço também vazio, este PC pode
+   * adotar o usuário do outro: devolve `adoptedUserId` para a extensão adotar também.
+   */
+  async joinPairing(uri: string, extensionEmpty = false) {
     const id = this.requireIdentity();
     const p = parsePairingUri(uri);
+    const canAdopt = extensionEmpty && this.helper.db.count() === 0;
     const body = JSON.stringify({
       token: p.token,
       device_id: id.deviceId,
@@ -289,6 +336,9 @@ export class Lan {
       cert_fp: this.helper.keys.certFp,
       addresses: this.addresses(),
       port: this.port,
+      user_id: id.userId,
+      // o usuário do PC pertence à extensão: só adota se a extensão e o serviço estão vazios
+      can_adopt: canAdopt,
     });
     let lastError: unknown;
     for (const address of p.addresses) {
@@ -303,11 +353,22 @@ export class Lan {
           false,
         )) as {
           device_id: string;
+          user_id?: string;
           sas: string;
         };
         if (res.device_id !== p.deviceId) throw new Error('aparelho inesperado');
+        const decision = res.user_id
+          ? pairingUserDecision(res.user_id, id.userId, canAdopt)
+          : 'same';
+        if (decision === 'foreign') throw new ForeignUserError();
+        const userId = decision === 'adopt' ? res.user_id! : id.userId;
+        if (decision === 'adopt') {
+          // a extensão adota o mesmo usuário ao receber `adoptedUserId` (hello confere depois)
+          this.helper.db.setMeta('identity', JSON.stringify({ ...id, userId }));
+        }
         this.helper.db.savePeer({
           device_id: p.deviceId,
+          user_id: userId,
           name: p.name,
           public_key: p.publicKey,
           cert_fp: p.certFp,
@@ -321,8 +382,16 @@ export class Lan {
           last_seen_at: new Date().toISOString(),
         });
         this.helper.emit('peers');
-        return { peerId: p.deviceId, name: p.name, sas: res.sas };
+        return {
+          peerId: p.deviceId,
+          name: p.name,
+          sas: res.sas,
+          adoptedUserId: decision === 'adopt' ? userId : null,
+        };
       } catch (e) {
+        if (e instanceof ForeignUserError) throw e;
+        if (e instanceof HttpError && e.code === 'foreign_user')
+          throw new ForeignUserError(FOREIGN_USER_MESSAGE);
         lastError = e;
       }
     }
@@ -482,7 +551,7 @@ export class Lan {
           '/v1/sync/pull',
           JSON.stringify({ vv: this.helper.db.versionVector(), limit: PULL_LIMIT }),
         )) as { ops: Op[]; more: boolean; vv: VersionVector };
-        received += this.helper.db.insertOps(page.ops).length;
+        received += this.helper.insertOps(page.ops).length;
         remoteVv = page.vv;
         if (!page.more || !page.ops.length) break;
       }
@@ -504,7 +573,8 @@ export class Lan {
       this.helper.emit('peers');
       return { status: 'ok', received, sent };
     } catch (e) {
-      const code = e instanceof HttpError ? e.code : (e as Error).message;
+      const code =
+        e instanceof HttpError || e instanceof ForeignUserError ? e.code : (e as Error).message;
       this.helper.db.finishRun(run, {
         received,
         sent,

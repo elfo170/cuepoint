@@ -13,6 +13,7 @@ import { Curation, type TrackInput } from '../src/data/curation';
 import { CuePointDB } from '../src/data/db';
 import { exportPlaylist, Playlists } from '../src/data/playlists';
 import { Store } from '../src/data/store';
+import { exportTracks } from '../src/library/soundcloud';
 
 let n = 0;
 function setup() {
@@ -97,6 +98,32 @@ describe('playlists', () => {
       '1,Faixa 1,Artista 1,https://soundcloud.com/a/faixa-1,soundcloud:tracks:1',
     );
     expect(JSON.parse(exportPlaylist(p, items, 'json').content).tracks).toHaveLength(2);
+  });
+
+  it('guarda o URN da playlist exportada para o SoundCloud e monta as faixas na ordem', async () => {
+    const { db, playlists, latin } = await seeded();
+    const p = await playlists.create({ name: 'Latin', researchId: latin.id });
+    expect(exportTracks(await playlists.items(p.id))).toEqual([
+      {
+        urn: 'soundcloud:tracks:1',
+        url: 'https://soundcloud.com/a/faixa-1',
+        title: 'Faixa 1',
+        artist: 'Artista 1',
+      },
+      {
+        urn: 'soundcloud:tracks:2',
+        url: 'https://soundcloud.com/a/faixa-2',
+        title: 'Faixa 2',
+        artist: 'Artista 2',
+      },
+    ]);
+    await playlists.update(p.id, { external_playlist_id: 'soundcloud:playlists:42' });
+    expect((await db.playlists.get(p.id))?.external_playlist_id).toBe('soundcloud:playlists:42');
+    const op = (await db.sync_events.orderBy('[origin+seq]').last())!;
+    expect(op).toMatchObject({
+      entity_type: 'playlist',
+      fields: { external_playlist_id: 'soundcloud:playlists:42' },
+    });
   });
 });
 

@@ -129,7 +129,7 @@ private fun CreatePlaylistDialog(onDismiss: () -> Unit, onCreate: (String, Strin
 }
 
 @Composable
-fun PlaylistDetailScreen(playlistId: String, onBack: () -> Unit) {
+fun PlaylistDetailScreen(playlistId: String, onBack: () -> Unit, onSoundCloud: () -> Unit = {}) {
     val context = LocalContext.current
     val app = context.container
     val scope = rememberCoroutineScope()
@@ -168,6 +168,7 @@ fun PlaylistDetailScreen(playlistId: String, onBack: () -> Unit) {
                 IconButton(onClick = { deleting = true }) { Icon(Icons.Filled.Delete, contentDescription = "Excluir playlist") }
             }
             notice?.let { Text(it, modifier = Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.bodySmall) }
+            SoundCloudExportCard(playlist, items, onSettings = onSoundCloud)
         }
         if (items.isEmpty()) item { EmptyState("Playlist vazia.") }
         itemsIndexed(items, key = { _, it -> it.first.id }) { index, (item, track) ->

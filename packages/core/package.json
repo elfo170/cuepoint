@@ -1,6 +1,6 @@
 {
   "name": "@cuepoint/core",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
@@ -11,7 +11,7 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "vectors": "vitest run -u test/vectors.test.ts test/backup-vectors.test.ts"
+    "vectors": "vitest run -u test/vectors.test.ts test/backup-vectors.test.ts test/soundcloud.test.ts"
   },
   "dependencies": {
     "uuid": "^14.0.3",

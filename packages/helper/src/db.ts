@@ -1,4 +1,5 @@
 import {
+  assertSameUser,
   mergeVersionVectors,
   opsMissingFrom,
   validateOp,
@@ -22,6 +23,8 @@ export interface Peer {
   name: string;
   /** Chave pública de assinatura (SPKI DER base64). */
   public_key: string;
+  /** Usuário do par, conferido no pareamento (ausente em pares antigos). */
+  user_id?: string;
   /** Fingerprint do certificado TLS do par (se ele também for servidor). */
   cert_fp: string | null;
   addresses: string[];
@@ -35,6 +38,8 @@ export interface Peer {
   last_seen_at: string | null;
   /** O que este par já tem (vetor de versões), visto na última troca; base das pendências. */
   known_vv?: VersionVector;
+  /** Quando o par buscou as credenciais do app SoundCloud (Sprint 16.2). */
+  sc_shared_at?: string;
 }
 
 export interface SyncRun {
@@ -94,6 +99,10 @@ export class HelperDb {
       .run(key, value);
   }
 
+  deleteMeta(key: string): void {
+    this.db.prepare('DELETE FROM meta WHERE key = ?').run(key);
+  }
+
   // ---------------------------------------------------------------- log
 
   versionVector(): VersionVector {
@@ -141,10 +150,12 @@ export class HelperDb {
 
   /**
    * Insere operações recebidas (idempotente, exige entrega causal por origem).
+   * Com `userId`, recusa o lote inteiro se houver operação de outro usuário (ForeignUserError).
    * Retorna as operações efetivamente novas.
    */
-  insertOps(input: unknown[]): Op[] {
+  insertOps(input: unknown[], userId?: string): Op[] {
     const ops = input.map(validateOp).sort((a, b) => (a.hlc < b.hlc ? -1 : 1));
+    if (userId) assertSameUser(ops, userId);
     const vv = this.versionVector();
     const inserted: Op[] = [];
     const stmt = this.db.prepare(

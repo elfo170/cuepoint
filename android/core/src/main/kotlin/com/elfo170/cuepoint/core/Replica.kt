@@ -36,6 +36,7 @@ class Replica(val deviceId: String, val userId: String, now: () -> Long = System
 
     /** Recebe operações remotas: idempotente, exige entrega causal. Retorna quantas aplicou. */
     fun receive(ops: List<Op>): Int {
+        Isolation.assertSameUser(ops, userId)
         var applied = 0
         for (op in ops.sortedBy { it.hlc }) {
             val have = vv[op.origin] ?: 0

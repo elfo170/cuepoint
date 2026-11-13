@@ -62,6 +62,34 @@ export function validateOp(value: unknown): Op {
   return op;
 }
 
+/** Mensagem única (TS e Kotlin) para bibliotecas de usuários diferentes. */
+export const FOREIGN_USER_MESSAGE =
+  'Os aparelhos são de usuários diferentes. Para parear, apague a biblioteca do aparelho novo ou restaure nele um backup deste aparelho.';
+
+/** Operação (ou pareamento) de outro usuário: recusada inteira, nada é aplicado. */
+export class ForeignUserError extends Error {
+  readonly code = 'foreign_user';
+  constructor(message = FOREIGN_USER_MESSAGE) {
+    super(message);
+    this.name = 'ForeignUserError';
+  }
+}
+
+/**
+ * Isolamento por usuário (PRD §16): a operação pertence a `userId`. Confere o autor (`user_id`
+ * da operação) e, se a operação escreve o campo `user_id` do registro, o valor escrito.
+ */
+export function isSameUser(op: Pick<Op, 'user_id' | 'fields'>, userId: string): boolean {
+  if (op.user_id !== userId) return false;
+  const written = op.fields.user_id;
+  return written === undefined || written === userId;
+}
+
+/** Recusa o lote inteiro se alguma operação for de outro usuário. */
+export function assertSameUser(ops: readonly Pick<Op, 'user_id' | 'fields'>[], userId: string) {
+  if (ops.some((op) => !isSameUser(op, userId))) throw new ForeignUserError();
+}
+
 /** Vetor de versões: maior `seq` aplicado de cada origem. */
 export type VersionVector = Record<string, number>;
 

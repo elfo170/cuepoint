@@ -59,6 +59,7 @@ import com.elfo170.cuepoint.ui.screens.PlaylistDetailScreen
 import com.elfo170.cuepoint.ui.screens.PlaylistsScreen
 import com.elfo170.cuepoint.ui.screens.ResearchDetailScreen
 import com.elfo170.cuepoint.ui.screens.ResearchesScreen
+import com.elfo170.cuepoint.ui.screens.SoundCloudScreen
 import com.elfo170.cuepoint.ui.screens.TracksScreen
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -85,6 +86,14 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
     val dao = LocalContext.current.container.db.dao()
     val conflicts by remember { dao.observeConflicts().map { it.size } }.collectAsStateWithLifecycle(0)
     LaunchedEffect(pendingPair) { if (pendingPair != null && route != "devices") nav.navigate("devices") }
+    val app = LocalContext.current.container
+    val pendingSc by app.pendingSoundCloud.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingSc) {
+        if (pendingSc) {
+            app.pendingSoundCloud.value = false
+            if (route != "soundcloud") nav.navigate("soundcloud") { launchSingleTop = true }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -138,15 +147,19 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
             composable("tracks") { TracksScreen() }
             composable("categories") { CategoriesScreen() }
             composable("playlists") { PlaylistsScreen(onOpen = { nav.navigate("playlist/$it") }) }
-            composable("playlist/{id}") { PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }) }
+            composable("playlist/{id}") {
+                PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }, onSoundCloud = { nav.navigate("soundcloud") })
+            }
             composable("settings") {
                 SettingsScreen(
                     onDevices = { nav.navigate("devices") },
                     onConflicts = { nav.navigate("conflicts") },
                     onBackup = { nav.navigate("backup") },
+                    onSoundCloud = { nav.navigate("soundcloud") },
                 )
             }
             composable("backup") { BackupScreen() }
+            composable("soundcloud") { SoundCloudScreen() }
             composable("devices") { DevicesScreen() }
             composable("conflicts") { ConflictsScreen() }
         }
@@ -154,7 +167,7 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
 }
 
 @Composable
-fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onBackup: () -> Unit = {}) {
+fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onBackup: () -> Unit = {}, onSoundCloud: () -> Unit = {}) {
     val app = LocalContext.current.container
     val scope = rememberCoroutineScope()
     val ops by app.db.dao().observeEventCount().collectAsStateWithLifecycle(0)
@@ -175,6 +188,7 @@ fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onB
             Text(if (conflicts == 0) "Conflitos: nenhum" else "Resolver conflitos ($conflicts)")
         }
         OutlinedButton(onClick = onBackup, modifier = Modifier.fillMaxWidth()) { Text("Backup e restauração") }
+        OutlinedButton(onClick = onSoundCloud, modifier = Modifier.fillMaxWidth()) { Text("Exportar para o SoundCloud") }
         OutlinedTextField(name, { name = it; saved = false }, label = { Text("Nome do aparelho") }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Button(onClick = { scope.launch { app.store.renameDevice(name); saved = true } }, enabled = name.isNotBlank()) { Text("Salvar") }
         if (saved) Text("Nome salvo.")

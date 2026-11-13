@@ -47,6 +47,7 @@ export function startIpcServer(helper: Helper, pipe: string): Promise<Server> {
   helper.on('changed', () => broadcast({ event: 'changed' }));
   helper.on('peers', () => broadcast({ event: 'peers' }));
   helper.on('approval', (peer) => broadcast({ event: 'approval', data: peer }));
+  helper.on('sc', (status) => broadcast({ event: 'sc', data: status }));
 
   const server = createServer((socket) => {
     clients.add(socket);

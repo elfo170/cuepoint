@@ -36,6 +36,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="cuepoint" android:host="pair" />
             </intent-filter>
+            <!-- "Voltar ao CuePoint" na página de retorno do login do SoundCloud (Sprint 16) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="cuepoint" android:host="soundcloud" />
+            </intent-filter>
         </activity>
 
         <activity

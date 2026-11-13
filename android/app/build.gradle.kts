@@ -16,8 +16,8 @@ android {
         applicationId = "com.elfo170.cuepoint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.1"
+        versionCode = 4
+        versionName = "1.1.0"
     }
 
     // Chave local de release: android/keystore.properties + .keystore (fora do git). Sem o arquivo,
@@ -58,7 +58,12 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
         // vetores compartilhados com o TypeScript (spec/ na raiz do repositório)
-        unitTests.all { it.systemProperty("cuepoint.spec", rootProject.file("../spec").absolutePath) }
+        unitTests.all {
+            it.systemProperty("cuepoint.spec", rootProject.file("../spec").absolutePath)
+            // testes de tela usam a ComponentActivity de teste, que só existe no manifesto debug
+            // (ui-test-manifest é debugImplementation: nada de activity de teste no release)
+            if (it.name.contains("Release")) it.filter.excludeTestsMatching("com.elfo170.cuepoint.ui.*PanelTest")
+        }
     }
 }
 
@@ -88,10 +93,14 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.kotlinx.coroutines.android)
     debugImplementation(libs.androidx.ui.tooling)
+    // testes de tela (Compose + Robolectric): ComponentActivity de teste registrada no manifesto debug
+    debugImplementation(libs.androidx.ui.test.manifest)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.ui.test.junit4)
 }

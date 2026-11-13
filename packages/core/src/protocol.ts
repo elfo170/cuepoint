@@ -104,6 +104,25 @@ export async function pairingCode(token: string, keyA: string, keyB: string): Pr
   return String(n % 1_000_000).padStart(6, '0');
 }
 
+/**
+ * Decisão de usuário no pareamento (isolamento por usuário):
+ * - `same`: os dois aparelhos já são do mesmo usuário;
+ * - `adopt`: o aparelho que entra está vazio e adota o usuário de quem mostrou o código;
+ * - `foreign`: usuários diferentes e o aparelho que entra não pode adotar → pareamento recusado.
+ * `joinerUser` ausente = cliente antigo (sem isolamento no pareamento): tratado como `same`, e a
+ * sync recusa operações de outro usuário de qualquer forma.
+ */
+export type PairingUserDecision = 'same' | 'adopt' | 'foreign';
+
+export function pairingUserDecision(
+  hostUser: string,
+  joinerUser: string | undefined,
+  joinerCanAdopt: boolean,
+): PairingUserDecision {
+  if (joinerUser === undefined || joinerUser === hostUser) return 'same';
+  return joinerCanAdopt ? 'adopt' : 'foreign';
+}
+
 /** Corpo de /v1/sync/pull e /v1/sync/push. */
 export interface PullRequest {
   vv: Record<string, number>;

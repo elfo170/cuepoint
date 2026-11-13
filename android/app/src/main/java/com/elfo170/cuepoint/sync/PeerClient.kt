@@ -35,8 +35,8 @@ class PinnedTrustManager(private val certFp: String) : X509TrustManager {
     override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
 }
 
-/** Cliente HTTPS para o serviço do PC (certificado fixado + requisições assinadas). */
-class PeerClient(
+/** Cliente HTTPS para o serviço do PC (certificado fixado + requisições assinadas). Aberto para testes. */
+open class PeerClient(
     private val host: String,
     private val port: Int,
     certFp: String,
@@ -54,7 +54,7 @@ class PeerClient(
             .build()
     }
 
-    suspend fun post(path: String, body: String, signed: Boolean = true): String = withContext(Dispatchers.IO) {
+    open suspend fun post(path: String, body: String, signed: Boolean = true): String = withContext(Dispatchers.IO) {
         val builder = Request.Builder()
             .url("https://$host:$port$path")
             .post(body.toRequestBody("application/json".toMediaType()))
