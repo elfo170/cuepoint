@@ -25,9 +25,9 @@ as próximas etapas.
 
 | Etapa | Situação |
 |---|---|
+| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Planejada: Sprints 17–20.** A Sprint 17 (PoC) aguarda autorização. Ver *Nova feat: exportação via Soundiiz*. |
 | Testar à mão o pareamento entre dois PCs | Pendente. Precisa de um segundo PC com o CuePoint recém-instalado (extensão e serviço vazios). Roteiro no `prox_sessao.md`. |
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
-| Alternativa de exportação para quem não tem Artist Pro | **A planejar** (anunciada no README da 1.1.0). Respeitar as decisões vigentes: não automatizar o site do SoundCloud e não embutir o secret de um app do autor (ver *SoundCloud*). |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
 
 **Decidido não fazer** (não retomar): publicação nas lojas (Chrome Web Store e Play Store) e
@@ -178,12 +178,192 @@ Rules:
   - Atualizar **espelha** o CuePoint (mesma lista e ordem), com prévia e confirmação.
   - Playlist nova é privada por padrão.
 - **Não** automatizar o site do SoundCloud para quem não tem Pro. Para essas pessoas, ficam os
-  exports locais.
+  exports locais e, depois das Sprints 17–20, a exportação via Soundiiz.
+  - É uma API pública e documentada, sem automação de site.
+  - Quem revisa e transfere no Soundiiz é o próprio usuário.
+  - Ver *Nova feat: exportação via Soundiiz*.
 - **Não** usar o fluxo de pareamento do `sc-api-auth.mjs` (rotas não documentadas).
 - **Paridade TS ⇄ Kotlin:** a forma dos pedidos é definida uma vez e conferida por
   `spec/vectors/soundcloud.json`:
   - TS: `packages/core/src/soundcloud.ts`;
   - Kotlin: `SoundCloudProtocol`.
+
+## Nova feat: exportação via Soundiiz (Issue #4)
+
+Pedido do usuário (Issue #4, `enhancement` + `poc`): exportar playlists para o SoundCloud **sem
+Artist Pro**, pela API pública de importação do Soundiiz. Planejado em 13/11/2026. Nada foi
+implementado ainda.
+
+### Contrato da API
+
+- **Fonte:** artigo
+  [[API] Let your users import any tracklist to Soundiiz](https://support.soundiiz.com/hc/en-us/articles/36613501259922--API-Let-your-users-import-any-tracklist-to-Soundiiz),
+  atualizado em 04/11/2026.
+  - A página devolve 403 para acesso automatizado.
+  - Para ler o texto, usar a API pública do Zendesk:
+    `https://support.soundiiz.com/api/v2/help_center/en-us/articles/36613501259922.json`.
+- **Pedido:** `POST https://soundiiz.com/go/import-playlist`, `Content-Type: application/json`.
+  Não exige API key nem assinatura.
+- **Campos obrigatórios:**
+  - `title`;
+  - `tracklist`, com 1 a 200 faixas, cada uma com `title`.
+- **Campos opcionais:**
+  - da playlist: `sourceName`, `sourceLogo`, `description` e `destination`;
+  - da faixa: `artists` (string ou lista), `album` e `isrc`.
+  - O artigo pede para omitir o que não se sabe, sem chutar.
+- **Destino:** a corename do SoundCloud é `soundcloud`.
+  - Quando `destination` vem preenchido, o Soundiiz pula a escolha do destino.
+  - Um valor inválido dá HTTP 400 e **não** cai na escolha manual.
+- **Sucesso:** `{status:"success", nbTracks, shareUrl, expiresAt}`. O link vale 24 h.
+- **Erro:** HTTP 400 com `{status:"error", message}`. Exemplos de mensagem: JSON inválido, sem
+  `title`, `tracklist` vazia, faixa sem título no índice N, mais de 200 faixas, destino inválido.
+- **O endpoint não cria a playlist na conta.**
+  - Ele gera uma página temporária em que o usuário revisa as faixas e conclui a transferência.
+  - Os limites do plano do Soundiiz continuam valendo.
+- **CORS:** o preflight responde 200 **sem** `Access-Control-Allow-*`.
+  - A extensão precisa de `host_permissions` para `https://soundiiz.com/*`.
+  - O Android (OkHttp) não sofre essa restrição.
+
+### Decisões (13/11/2026)
+
+- **Onde roda:** no PC (extensão) e no celular, com a mesma forma de pedido.
+  - A forma é definida no core e conferida por `spec/vectors/soundiiz.json` (TS ⇄ Kotlin).
+- **Sem servidor do CuePoint (PRD §15):**
+  - cada aparelho chama o Soundiiz diretamente, e só quando o usuário clica;
+  - na extensão, sem passar pelo serviço do PC.
+- **Interface:** dois cartões **sempre visíveis** na página da playlist.
+  - O cartão Artist Pro continua igual.
+  - O cartão novo, "SoundCloud sem Artist Pro (via Soundiiz)", fica logo abaixo dele.
+  - Os botões URLs, CSV e JSON não mudam.
+- **Acima de 200 faixas:** o envio é **bloqueado com aviso**. Não há divisão em partes nem
+  corte.
+- **Payload:**
+  - `sourceName: "CuePoint"` e `destination: "soundcloud"`;
+  - `title` = nome da playlist;
+  - `description` = descrição da playlist, ou "Playlist exportada do CuePoint" quando vazia;
+  - cada faixa vai como `{title, artists:[artist]}`, na ordem da playlist, sem `artists` quando
+    o artista está vazio.
+- **Fica fora do payload:**
+  - `album` e `isrc`, que o CuePoint não tem;
+  - URN e link da faixa, porque a API não aceita IDs do SoundCloud;
+  - `sourceLogo`, porque não há URL pública estável do logo.
+- **Falsos positivos não são corrigidos no código.**
+  - A interface avisa que a correspondência pode errar e que as faixas devem ser revisadas no
+    Soundiiz antes da transferência.
+  - Não há novas tentativas automáticas.
+- **PoC:** pode usar playlists reais da biblioteca e criar playlists de teste, desde que informe
+  quais são. Nada é apagado.
+
+### Sprints
+
+Branch `feat/soundiiz`, a partir de `main`. Um commit por sprint. **Cada sprint só começa com
+autorização do usuário.**
+
+**Sprint 17 — PoC (Fase 1 da issue).** É um portão: a Sprint 18 só começa depois que o usuário
+aprovar o resultado.
+- **Core** (`packages/core/src/soundiiz.ts`, só funções puras, exportado em `src/index.ts`):
+  - Constantes: endpoint, `SOUNDIIZ_MAX_TRACKS = 200` e o destino `soundcloud`.
+  - `soundiizImportRequest({name, description, tracks})` → `{url, headers, body}`, com a ordem
+    preservada.
+  - `soundiizParseResponse(status, json)` → `{ok, shareUrl, nbTracks, expiresAt}` ou um erro
+    tipado (`invalid`, `too_many`, `empty`, `http`, `unavailable`).
+  - Testes em `packages/core/test/soundiiz.test.ts`. Eles geram `spec/vectors/soundiiz.json`
+    (`toMatchFileSnapshot`, `npm run vectors`), que ganha uma linha no `spec/README.md`.
+- **Script de desenvolvimento** `packages/helper/scripts/soundiiz-poc.mjs`, no estilo do
+  `sc-dev.mjs`:
+  - Lê o JSON exportado pelo botão JSON da extensão (`{name, description, tracks}`).
+  - Opcionalmente, lê o `helper.db` só para leitura (`node:sqlite` com `readOnly: true`).
+  - Monta o pedido pelo core, faz o POST e imprime `shareUrl`, `nbTracks` e `expiresAt`.
+  - `--dry-run` mostra o payload sem enviar.
+- **Roteiro com o usuário:**
+  - Playlists: de 3 a 5 reais, de tamanhos e gêneros variados, mais fixtures de borda (1 faixa,
+    200, 201, artista vazio, caracteres especiais).
+  - Playlists de teste novas, se forem necessárias, levam o prefixo `[Teste Soundiiz]` e são
+    listadas no relatório.
+  - O usuário abre cada link e confere:
+    - título correto e SoundCloud pré-selecionado;
+    - faixas encontradas certas, erradas e não encontradas;
+    - transferência concluída numa conta SoundCloud **gratuita**.
+  - Comparação opcional: título bruto contra a divisão "Artista - Música" do título do
+    SoundCloud. Só vale se ganhar com folga, e adotar é decisão do usuário.
+- **CORS:** um POST real a partir de uma página da extensão de desenvolvimento, com e sem a
+  `host_permissions` (sem ela, deve falhar).
+- **Registro** em `docs/SOUNDIIZ_API.md`: contrato e fonte, tabela de resultados por playlist e
+  limitações (precisão, 24 h, 200 faixas e plano do Soundiiz).
+- Commit: `feat: prova de conceito da exportação via soundiiz`.
+
+**Sprint 18 — Extensão (PC).**
+- **Permissão:** `https://soundiiz.com/*` em `host_permissions` (`src/manifest.json`), com o
+  `test/manifest.test.ts` ajustado.
+- **Serviço** `packages/extension/src/library/soundiiz.ts` (`soundiizExport(playlist, items)`):
+  - usa o core;
+  - faz um `fetch` direto da página da biblioteca, com timeout por `AbortController`.
+- **Cartão** `SoundiizExport.tsx`, em `PlaylistDetail.tsx`, logo abaixo de `<SoundCloudExport>`:
+  - Título "SoundCloud sem Artist Pro (via Soundiiz)" e selo "Gratuito".
+  - Aviso curto:
+    - título e artista vão para o Soundiiz;
+    - a correspondência pode errar;
+    - é preciso revisar antes de transferir;
+    - o link vale 24 h.
+  - **Abrir no Soundiiz** envia o pedido e abre o `shareUrl` com `chrome.tabs.create`. O link
+    fica no cartão, com a hora em que expira.
+  - Estados:
+    - playlist vazia: botão desabilitado;
+    - mais de 200 faixas: bloqueado, com "O Soundiiz aceita até 200 faixas por envio; esta
+      playlist tem N";
+    - erros legíveis: rede ou timeout; 400 com a mensagem do Soundiiz; 429 e 5xx como
+      "indisponível, tente mais tarde".
+- **Textos de "sem Artist Pro":** citar a opção do Soundiiz em `SoundCloudExport.tsx` (estado sem
+  configuração) e em `WithoutPro` (`SoundCloudSettings.tsx`).
+- **Testes:**
+  - Unitário `test/soundiiz-export.test.tsx`, com `fetch` simulado. Casos: sucesso abre a aba,
+    ordem preservada, erro 400, erro de rede, playlist vazia e 201 faixas.
+  - e2e `e2e/soundiiz-export.spec.ts`: intercepta o Soundiiz com `context.route` e confere o
+    payload e a aba aberta.
+  - O e2e de CSV continua passando.
+- **Docs:** seção "O que é enviado ao Soundiiz" em `docs/PRIVACIDADE.md` e trecho no README.
+- **Validação real:** o usuário exporta uma playlist pelo PC e conclui a transferência.
+- Commit: `feat: exporta playlists para o soundcloud via soundiiz pelo pc`.
+
+**Sprint 19 — Celular (Android).**
+- **Core Kotlin:**
+  - `android/core/.../SoundiizProtocol.kt`, gêmeo do core TS;
+  - `SoundiizVectorsTest.kt`, que lê `spec/vectors/soundiiz.json`.
+- **Cliente** `app/.../soundiiz/SoundiizClient.kt`: POST com OkHttp, no padrão do `ScApi.kt`.
+- **Cartão** `ui/screens/SoundiizExportCard.kt`, com um painel sem estado e um invólucro com
+  estado, como o `SoundCloudExportCard`.
+  - Fica em `PlaylistDetailScreen`, logo abaixo do cartão Artist Pro.
+  - Abre o link com `openInBrowser()` (`SoundCloudScreen.kt`).
+  - Tem os mesmos estados e textos do PC.
+- **Configurações do SoundCloud:** citar a opção do Soundiiz.
+- **Testes:**
+  - `SoundiizClientTest`, com MockWebServer;
+  - `SoundiizExportPanelTest` (Compose + Robolectric), que roda só no debug: o nome cai na
+    exclusão `ui.*PanelTest` do release.
+- **Validação real no Redmi:** APK de release instalado com `adb install -r`, com autorização.
+- Commit: `feat: exporta playlists para o soundcloud via soundiiz pelo celular`.
+
+**Sprint 20 — Fechamento e release v1.2.0.**
+- Registrar a validação real neste documento.
+- Notas em `docs/releases/v1.2.0.md`, no formato da 1.1.0, com o aviso sobre a correspondência e
+  a revisão no Soundiiz.
+- Subir a versão, abrir o PR de `feat/soundiiz` para `main` e publicar a release, tudo com
+  autorização do usuário.
+- Pedir ao usuário para fechar ou comentar a Issue #4.
+
+### Riscos específicos
+
+- **A API do Soundiiz muda ou sai do ar.** É um serviço de terceiros, sem contrato com o
+  CuePoint. Os exports locais continuam disponíveis.
+- **Falsos positivos:** o Soundiiz casa as faixas por título e artista, e pode escolher outra
+  versão ou outra faixa.
+  - No SoundCloud é comum o título vir como "Artista - Música" e o uploader ser um selo ou canal.
+    Isso piora a correspondência, e a PoC mede o tamanho do problema.
+- **Dados vão para um terceiro:** nome e descrição da playlist, mais título e artista das faixas.
+  É só por ação do usuário e precisa estar no `docs/PRIVACIDADE.md`.
+- **Limites do plano gratuito do Soundiiz:** podem mudar sem aviso, e a transferência pode exigir
+  uma conta no Soundiiz.
+- **Link de 24 h:** gerar de novo é só clicar outra vez. Nada é guardado.
 
 ## Nova feat: tags no Rekordbox (a planejar)
 
@@ -313,6 +493,9 @@ aparelho.
   bloqueia a curadoria local (PRD §11.3).
 - **Pro do usuário vence:** comportamento das credenciais não documentado; tratado como
   "credenciais inválidas" (Reconectar).
+- **Exportação via Soundiiz depende de um serviço de terceiros:** a API pode mudar ou sair do ar,
+  e a correspondência das faixas pode errar. Os exports locais continuam disponíveis. Ver
+  *Nova feat: exportação via Soundiiz*.
 - **Termos da API mudam ou o SoundCloud revoga o acesso:** o SoundCloud pode revogar a seu critério,
   e os limites de requisição são "sujeitos a mudança". Os exports locais continuam disponíveis.
 - **Android mata o processo ou restringe segundo plano:** o listener é mantido pelo sistema, há
