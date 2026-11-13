@@ -27,6 +27,7 @@ as próximas etapas.
 |---|---|
 | Testar à mão o pareamento entre dois PCs | Pendente. Precisa de um segundo PC com o CuePoint recém-instalado (extensão e serviço vazios). Roteiro no `prox_sessao.md`. |
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
+| Alternativa de exportação para quem não tem Artist Pro | **A planejar** (anunciada no README da 1.1.0). Respeitar as decisões vigentes: não automatizar o site do SoundCloud e não embutir o secret de um app do autor (ver *SoundCloud*). |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
 
 **Decidido não fazer** (não retomar): publicação nas lojas (Chrome Web Store e Play Store) e

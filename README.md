@@ -36,9 +36,9 @@ Na [página de releases](https://github.com/elfo170/cuepoint/releases/latest), e
 
 | Arquivo                         | Precisa?                                    | Requisitos                    |
 | ------------------------------- | ------------------------------------------- | ----------------------------- |
-| `cuepoint-extensao-1.0.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
-| `cuepoint-1.0.1.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
-| `cuepoint-servico-pc-1.0.0.zip` | Só para sincronizar o celular com o PC      | Windows 10/11 e Node.js 22.13+ |
+| `cuepoint-extensao-1.1.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
+| `cuepoint-1.1.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
+| `cuepoint-servico-pc-1.1.0.zip` | Para sincronizar o celular com o PC e para exportar para o SoundCloud pelo PC | Windows 10/11 e Node.js 22.13+ |
 
 Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os dois juntos.
 
@@ -46,7 +46,7 @@ Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os 
 
 A extensão não está na Chrome Web Store. Ela é instalada a partir da pasta baixada:
 
-1. Baixe `cuepoint-extensao-1.0.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
+1. Baixe `cuepoint-extensao-1.1.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
    fixo, por exemplo `Documentos\CuePoint`. Vai aparecer a pasta `CuePoint-extensao`.
    **Não apague essa pasta:** o Chrome carrega a extensão a partir dela.
 2. No Chrome, abra o endereço `chrome://extensions`.
@@ -93,9 +93,17 @@ no widget. Nela você:
 
 ### Exportar para o SoundCloud (requer Artist Pro)
 
-O CuePoint cria e atualiza playlists na sua conta do SoundCloud. Para isso, **você** registra um
-app na API do SoundCloud, e o registro exige uma assinatura **Artist Pro**. Também é preciso o
-serviço do PC (seção 6.1), que guarda as credenciais cifradas com a sua conta do Windows.
+O CuePoint cria e atualiza playlists na sua conta do SoundCloud, pelo PC ou pelo celular.
+
+> ⚠️ **Só para quem tem Artist Pro, por uma limitação do SoundCloud.** Criar playlists pela API
+> exige um app registrado no SoundCloud, e só contas **Artist Pro** podem registrar apps. Como o
+> CuePoint não tem servidor, cada pessoa registra o **próprio** app; os termos do SoundCloud não
+> permitem distribuir um app único com a senha embutida. Sem Artist Pro, exporte a playlist como
+> lista de links, CSV ou JSON e monte-a no SoundCloud a partir deles. **Uma alternativa para quem
+> não tem Artist Pro está sendo planejada.**
+
+No PC, a exportação usa o serviço do PC (seção 6.1), que guarda as credenciais cifradas com a sua
+conta do Windows.
 
 1. Em **Configurações → Exportar para o SoundCloud**, responda que tem Artist Pro.
 2. Clique em **Abrir soundcloud.com/you/apps** e registre um app com os valores mostrados (cada um

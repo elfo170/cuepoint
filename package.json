@@ -1,7 +1,7 @@
 {
   "name": "cuepoint",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CuePoint — curadoria musical sobre o SoundCloud",
   "type": "module",
   "workspaces": [
