@@ -23,7 +23,7 @@ só começa com autorização do usuário.
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
 | Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Push feito; falta o PR para `main`. Ver *Sprint 15*. |
-| Sprint 16 — SoundCloud no celular | Código concluído (12/11/2026): 16.1 a 16.4, um commit cada no `feat/api-sc`, **sem push**, com testes automáticos verdes. OpenAPI reconferida, sem mudanças. Faltam os checkpoints manuais (serviço do PC reinstalado, APK no Redmi), na tabela *Checkpoints manuais*. Ver *Sprint 16*. |
+| Sprint 16 — SoundCloud no celular | Código concluído (12/11/2026): 16.1 a 16.4, um commit cada no `feat/api-sc`, **sem push**, com testes automáticos verdes. OpenAPI reconferida, sem mudanças. Validada no uso real em 12/11/2026: serviço do PC reinstalado, APK de release no Redmi e fluxo completo conferido pelo usuário. Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
 
@@ -744,9 +744,9 @@ aguardar decisão.
 | 15 | ~~Rodar `npm run sc:dev`~~ ✅ 11/11/2026 (login, criar, `PUT` substitui, faixa de outro artista aceita). `blocked`: não testado (opcional) |
 | 15 | ~~Prints do `you/apps` para o assistente~~ dispensados: só texto (11/11/2026) |
 | 15 | Pro vencido: não testável; tratado como "credenciais inválidas" |
-| 16.2 | Conferir no PC o bloco "Usar no celular" (Enviar, contagem, Cancelar) |
-| 16.3 | No Redmi: Receber do PC, login com retorno em `127.0.0.1:47801`, Desconectar/Reconectar |
-| 16.4 | No Redmi, com o PC parado: exportar e atualizar uma playlist de teste; depois o PC espelha a mesma |
+| 16.2 | ~~Conferir no PC o bloco "Usar no celular" (Enviar, contagem, Cancelar)~~ ✅ 12/11/2026 |
+| 16.3 | ~~No Redmi: Receber do PC, login com retorno em `127.0.0.1:47801`, Desconectar/Reconectar~~ ✅ 12/11/2026 (entrega registrada no PC às 21:12) |
+| 16.4 | ~~No Redmi, com o PC parado: exportar e atualizar uma playlist de teste; depois o PC espelha a mesma~~ ✅ 12/11/2026 (o celular atualizou a playlist vinculada no PC na Sprint 15, e depois o PC atualizou a mesma) |
 | 16.4 | Opcional: `soundcloud.com/you/apps` no navegador do celular |
 
 ## Verificação

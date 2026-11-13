@@ -120,8 +120,8 @@ playlist **privada** de teste, aplica os cenários, apaga a playlist e revoga os
 | `DELETE /playlists/{urn}` e `POST /disconnect` | ✅ |
 | Faixa de outro artista na playlist (link resolvido por `/resolve`) | ✅ aceita e aparece na playlist |
 | Faixa `blocked` na playlist | Pendente |
-| `you/apps` no navegador do celular | Pendente (checkpoint manual da Sprint 16) |
-| Credenciais recebidas do PC pelo celular (liberação de uso único) | Pendente (checkpoint manual da Sprint 16; coberto por testes) |
-| Login no celular com retorno em `127.0.0.1:47801` | Pendente (checkpoint manual da Sprint 16; coberto por testes) |
-| Exportar e atualizar pelo celular com o PC desligado | Pendente (checkpoint manual da Sprint 16) |
+| `you/apps` no navegador do celular | Não testado (opcional) |
+| Credenciais recebidas do PC pelo celular (liberação de uso único) | ✅ 12/11/2026 |
+| Login no celular com retorno em `127.0.0.1:47801` | ✅ 12/11/2026 (Redmi Note 14 Pro 5G, HyperOS 2) |
+| Exportar e atualizar pelo celular com o PC desligado | ✅ 12/11/2026 (PC e celular atualizam a mesma playlist) |
 | Credenciais com Artist Pro vencido | Não testável; tratado como "Reconectar" |
