@@ -190,4 +190,75 @@ class SoundCloudServiceTest {
         assertFalse(backup.contains("sc.vault"))
         assertFalse(backup.contains("at1"))
     }
+
+    // ------------------------------------------------------------------ exportar (Sprint 16.4)
+
+    private fun urn(n: Int) = "soundcloud:tracks:$n"
+    private fun t(n: Int) = ExportTrack(urn(n), null, "T$n", "A")
+
+    @Test
+    fun createsPrivatePlaylistResolvingLinksAndListingSkipped() = runBlocking {
+        configure()
+        connect()
+        val tracks = listOf(
+            t(1),
+            ExportTrack(null, "https://soundcloud.com/a/sem-urn", "Resolvida", "B"),
+            ExportTrack(null, "https://soundcloud.com/a/inexistente", "Sumiu", "C"),
+            ExportTrack(null, null, "Sem link", "D"),
+            t(1), // repetida
+        )
+        val r = service.export(null, " Techno ", "Seleção", "private", tracks)
+        assertEquals("soundcloud:playlists:1", r.urn)
+        assertEquals(listOf(urn(1), urn(77)), fake.playlists.getValue(r.urn))
+        assertEquals("private", fake.sharing[r.urn])
+        assertEquals(2, r.trackCount)
+        assertTrue(r.verified)
+        assertEquals(listOf("nao_encontrada", "sem_link"), r.skipped.map { it.reason })
+
+        // a comparação reaproveita o /resolve já feito
+        val resolves = fake.apiCalls.count { it.startsWith("GET /resolve") }
+        val d = service.diff(r.urn, tracks)
+        assertTrue(d.unchanged)
+        assertEquals(resolves, fake.apiCalls.count { it.startsWith("GET /resolve") })
+
+        val pub = service.export(null, "Pública", "", "public", listOf(t(2)))
+        assertEquals("public", fake.sharing[pub.urn])
+    }
+
+    @Test
+    fun diffShowsChangesAndPutMirrorsPaginatedPlaylist() = runBlocking {
+        configure()
+        connect()
+        val created = service.export(null, "Lista", "", "private", (1..5).map(::t))
+        assertEquals(5, fake.playlists.getValue(created.urn).size) // 3 páginas de 2
+        val local = listOf(t(5), t(1), t(2), t(6))
+        val d = service.diff(created.urn, local)
+        assertTrue(d.exists)
+        assertEquals(listOf(urn(6)), d.add.map { it.urn })
+        assertEquals(listOf(urn(3), urn(4)), d.remove.map { it.urn })
+        assertTrue(d.reordered)
+        assertEquals(5, d.remoteCount)
+        assertEquals("nada gravado na comparação", (1..5).map(::urn), fake.playlists.getValue(created.urn))
+
+        val r = service.export(created.urn, "Lista", "", "public", local)
+        assertEquals(local.map { it.urn }, fake.playlists.getValue(created.urn))
+        assertTrue(r.verified)
+        assertEquals("o PUT não muda a visibilidade", "private", fake.sharing[created.urn])
+    }
+
+    @Test
+    fun deletedPlaylistIsReportedAndExportNeedsConnection() = runBlocking {
+        val notConfigured = runCatching { service.export(null, "X", "", "private", listOf(t(1))) }.exceptionOrNull() as ScException
+        assertEquals("not_configured", notConfigured.code)
+        configure()
+        val notConnected = runCatching { service.export(null, "X", "", "private", listOf(t(1))) }.exceptionOrNull() as ScException
+        assertEquals("not_connected", notConnected.code)
+        connect()
+        val d = service.diff("soundcloud:playlists:999", listOf(t(1)))
+        assertFalse(d.exists)
+        val put = runCatching { service.export("soundcloud:playlists:999", "X", "", "private", listOf(t(1))) }.exceptionOrNull() as ScException
+        assertEquals("not_found", put.code)
+        val unnamed = runCatching { service.export(null, "  ", "", "private", listOf(t(1))) }.exceptionOrNull() as ScException
+        assertTrue(unnamed.message!!.contains("nome"))
+    }
 }

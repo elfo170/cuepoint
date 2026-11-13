@@ -149,4 +149,21 @@ class CurationTest {
         other.receive(store.opsSince(other.vv))
         assertEquals("android", other.get(EntityType.RESEARCH, research.id)?.get("description")?.let { (it as JsonPrimitive).content })
     }
+
+    /** Sprint 16.4: o URN da playlist exportada sincroniza (PC e celular atualizam a mesma). */
+    @Test
+    fun externalPlaylistIdIsSyncedAndCanBeUnlinked() = runTest {
+        val p = curation.createPlaylist("Set", null, null)
+        val other = Replica("bbbbbbbb-0000-4000-8000-00000000000b", store.init().userId)
+        other.receive(store.opsSince(emptyMap()))
+        curation.setExternalPlaylistId(p.id, "soundcloud:playlists:42")
+        assertEquals("soundcloud:playlists:42", store.get(EntityType.PLAYLIST, p.id)?.let(Playlist::of)?.externalPlaylistId)
+        other.receive(store.opsSince(other.vv))
+        assertEquals("soundcloud:playlists:42", (other.get(EntityType.PLAYLIST, p.id)?.get("external_playlist_id") as JsonPrimitive).content)
+
+        curation.setExternalPlaylistId(p.id, null)
+        assertEquals(null, store.get(EntityType.PLAYLIST, p.id)?.let(Playlist::of)?.externalPlaylistId)
+        other.receive(store.opsSince(other.vv))
+        assertEquals(kotlinx.serialization.json.JsonNull, other.get(EntityType.PLAYLIST, p.id)?.get("external_playlist_id"))
+    }
 }

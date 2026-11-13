@@ -59,9 +59,16 @@ data class TrackCategory(val id: String, val trackId: String, val researchId: St
     }
 }
 
-data class Playlist(val id: String, val name: String, val description: String, val researchId: String?, val categoryId: String?, val deleted: Boolean) {
+data class Playlist(
+    val id: String, val name: String, val description: String, val researchId: String?, val categoryId: String?, val deleted: Boolean,
+    /** URN da playlist exportada para o SoundCloud (sincroniza; Sprint 15/16). */
+    val externalPlaylistId: String? = null,
+) {
     companion object {
-        fun of(o: JsonObject) = Playlist(o.s("id")!!, o.s("name") ?: "", o.s("description") ?: "", o.s("research_id"), o.s("category_id"), !o.alive())
+        fun of(o: JsonObject) = Playlist(
+            o.s("id")!!, o.s("name") ?: "", o.s("description") ?: "", o.s("research_id"), o.s("category_id"), !o.alive(),
+            o.s("external_playlist_id"),
+        )
     }
 }
 

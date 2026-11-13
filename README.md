@@ -112,6 +112,20 @@ Faixas sem link do SoundCloud ficam de fora e aparecem listadas. **Desconectar**
 **Remover credenciais** apaga também o código e a senha do app. Detalhes:
 [docs/SOUNDCLOUD_API.md](docs/SOUNDCLOUD_API.md) · [privacidade](docs/PRIVACIDADE.md).
 
+#### Usar no celular
+
+O app Android também exporta e atualiza playlists, **sem o PC ligado**, depois de configurado:
+
+1. No PC, em **Configurações → Exportar para o SoundCloud → Usar no celular**, clique em
+   **Enviar para <celular>**. O envio fica liberado por 10 minutos e vale uma vez só.
+2. No celular, em **Configurações → Exportar para o SoundCloud**, toque em **Receber de <PC>**. O
+   código e a senha do app chegam pela conexão cifrada do pareamento e ficam cifrados pelo Android
+   (Keystore). Sem o PC, use **Digitar código e senha do app**.
+3. Toque em **Entrar com SoundCloud**, autorize no navegador e toque em **Voltar ao CuePoint**. O
+   celular tem o próprio acesso; desconectar um aparelho não afeta o outro.
+4. Na página de uma playlist, o cartão **Exportar para o SoundCloud** funciona como no PC. O vínculo
+   com a playlist publicada sincroniza: PC e celular atualizam a mesma.
+
 **Faixa "provisória":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
 internet). Ela entra como provisória e é associada sozinha à definitiva assim que o identificador
 aparecer. Também dá para associar à mão em **Músicas → Identificar pela URL**.

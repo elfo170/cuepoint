@@ -36,9 +36,10 @@ Cabeçalho das chamadas: `Authorization: OAuth <access_token>`. Base: `https://a
 
 ## Onde cada coisa fica
 
-- **Credenciais do app** (`client_id`, `client_secret`) e **tokens**: só no serviço do PC
+- **Credenciais do app** (`client_id`, `client_secret`) e **tokens** no PC: no serviço do PC
   (`%LOCALAPPDATA%\CuePoint\helper.db`, chave `sc:secrets`), cifrados com o **DPAPI** do Windows
-  (conta do usuário). A extensão repassa o que a pessoa digita e não guarda nada.
+  (conta do usuário). A extensão repassa o que a pessoa digita e não guarda nada. No celular:
+  Android Keystore (ver *No celular*). Cada aparelho tem os próprios tokens.
 - **Sincroniza** só o URN da playlist exportada (`external_playlist_id` da Playlist), para PC e
   celular atualizarem a mesma playlist. Credenciais nunca passam pela sync.
 - **Entrega ao celular** (Sprint 16): em Configurações → Exportar para o SoundCloud → *Usar no
@@ -50,6 +51,25 @@ Cabeçalho das chamadas: `Authorization: OAuth <access_token>`. Base: `https://a
 
   A liberação fica só na memória do serviço e é cancelada ao trocar ou remover as credenciais. Os
   **tokens não são enviados**: o celular faz o próprio login.
+
+## No celular (Sprint 16)
+
+O app Android exporta e atualiza playlists sem o PC ligado, com os mesmos endpoints, regras e
+mensagens do serviço do PC (`soundcloud/` no app):
+
+- **Credenciais:** recebidas do PC (acima) ou digitadas. São validadas uma vez com
+  `client_credentials` (Basic) e guardadas cifradas com o **Android Keystore**: AES-256-GCM, chave
+  `cuepoint.sc` que não sai do aparelho. Ficam no `meta` do banco (`sc.vault`), fora do backup e
+  da sincronização; o app tem `allowBackup="false"`.
+- **Login:** PKCE S256 + `state`, com retorno no mesmo endereço do PC
+  (`http://127.0.0.1:47801/callback`). Um servidor local do app atende só durante o login (até
+  5 min) e só em 127.0.0.1. A página de retorno tem **Voltar ao CuePoint** (`cuepoint://soundcloud`).
+- **Tokens deste aparelho:** renovação em execução única, Reconectar sem repetir em loop,
+  Desconectar (`POST /disconnect` + apagar) e Remover credenciais, como no PC.
+- **Exportar:** o cartão da playlist cria (privada por padrão) ou espelha com prévia do que entra e
+  do que sai. O URN (`external_playlist_id`) sincroniza com o PC.
+- **Paridade:** pedidos de token, URL de login, caminhos, corpo e diferença vêm de
+  `SoundCloudProtocol`, conferido por `spec/vectors/soundcloud.json`.
 - Nada mais vindo da API é gravado (Termos: sem armazenar "User Content").
 - Desenvolvimento: `SC_CLIENT_ID`/`SC_CLIENT_SECRET` no `.env` da raiz, lidos só por
   `npm run sc:dev`. Nunca com prefixo `VITE_`; nunca no build.
@@ -100,5 +120,8 @@ playlist **privada** de teste, aplica os cenários, apaga a playlist e revoga os
 | `DELETE /playlists/{urn}` e `POST /disconnect` | ✅ |
 | Faixa de outro artista na playlist (link resolvido por `/resolve`) | ✅ aceita e aparece na playlist |
 | Faixa `blocked` na playlist | Pendente |
-| `you/apps` no navegador do celular | Pendente (Sprint 16) |
+| `you/apps` no navegador do celular | Pendente (checkpoint manual da Sprint 16) |
+| Credenciais recebidas do PC pelo celular (liberação de uso único) | Pendente (checkpoint manual da Sprint 16; coberto por testes) |
+| Login no celular com retorno em `127.0.0.1:47801` | Pendente (checkpoint manual da Sprint 16; coberto por testes) |
+| Exportar e atualizar pelo celular com o PC desligado | Pendente (checkpoint manual da Sprint 16) |
 | Credenciais com Artist Pro vencido | Não testável; tratado como "Reconectar" |

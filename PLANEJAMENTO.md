@@ -23,7 +23,7 @@ só começa com autorização do usuário.
 |---|---|
 | Issue #1 — notificação reaparece após bloquear a tela | Concluída: PR #2 e release v1.0.1 (só o APK; notas em `docs/releases/v1.0.1.md`). Ver *Issue #1*. |
 | Sprint 15 — Exportação para o SoundCloud pelo PC e isolamento por usuário | Concluída (11/11/2026): commit no branch `feat/api-sc`, validada com a API real e no PC do usuário. Push feito; falta o PR para `main`. Ver *Sprint 15*. |
-| Sprint 16 — SoundCloud no celular | Planejada (12/11/2026) em quatro sprints, 16.1 a 16.4, um commit cada, sem push. 16.1, 16.2 e 16.3 concluídas (OpenAPI reconferida em 12/11/2026, sem mudanças); checkpoints manuais pendentes na tabela abaixo. Ver *Sprint 16*. |
+| Sprint 16 — SoundCloud no celular | Código concluído (12/11/2026): 16.1 a 16.4, um commit cada no `feat/api-sc`, **sem push**, com testes automáticos verdes. OpenAPI reconferida, sem mudanças. Faltam os checkpoints manuais (serviço do PC reinstalado, APK no Redmi), na tabela *Checkpoints manuais*. Ver *Sprint 16*. |
 | Análise de notificações em foco (HyperOS) | Adiada. Ver *Notificação do Android*. |
 | Publicação nas lojas (lembrete) | Mapear: extensão na Chrome Web Store e APK na Play Store. Viabilidade ainda não analisada. |
 
@@ -560,6 +560,22 @@ Novo pacote `android/app/src/main/java/com/elfo170/cuepoint/soundcloud/`.
   - exportar e atualizar pelo celular com o serviço do PC parado, conferindo no SoundCloud;
   - religar o PC: o URN chega pela sync e o PC espelha a mesma playlist.
 - Commit: `feat: exporta playlists para o soundcloud pelo celular`
+
+### Execução (12/11/2026)
+
+Commits: `bac0cc9` (16.1), `ef2b6f0` (16.2), `b954487` (16.3) e o da 16.4. Diferenças em relação ao
+plano:
+- **Aprovação de sync:** a rota `/v1/sc/credentials` dispensa a política "pedir aprovação". A
+  liberação feita no PC já é a aprovação.
+- **`PeerClient`:** virou `open`, para os testes simularem o PC.
+- **Testes do `sc:share`:** a recusa (par pendente, sem credenciais) ficou no `lan.test.ts`.
+- **Cartão da playlist no Android:** separado em `SoundCloudExportCard` (liga os dados) e
+  `SoundCloudExportPanel` (sem estado), testado com Compose + Robolectric.
+  - `ui-test-junit4` entrou como dependência de teste e `ui-test-manifest` só no debug.
+  - O teste de tela é excluído do `testReleaseUnitTest`, para o release não levar a activity de
+    teste.
+- **"Usar no celular" na extensão:** lista todos os pares `paired` do mesmo usuário (inclusive
+  outros PCs). Só o app Android busca as credenciais.
 
 ### Riscos da Sprint 16
 

@@ -147,7 +147,9 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
             composable("tracks") { TracksScreen() }
             composable("categories") { CategoriesScreen() }
             composable("playlists") { PlaylistsScreen(onOpen = { nav.navigate("playlist/$it") }) }
-            composable("playlist/{id}") { PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }) }
+            composable("playlist/{id}") {
+                PlaylistDetailScreen(it.arguments?.getString("id")!!, onBack = { nav.popBackStack() }, onSoundCloud = { nav.navigate("soundcloud") })
+            }
             composable("settings") {
                 SettingsScreen(
                     onDevices = { nav.navigate("devices") },

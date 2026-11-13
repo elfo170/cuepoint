@@ -360,6 +360,11 @@ class Curation(val store: Store) {
         store.put(EntityType.PLAYLIST_TRACK, itemId, mapOf("position" to p(Fractional.keyBetween(before, after))))
     }
 
+    /** URN da playlist publicada no SoundCloud (`null` desvincula). Sincroniza com o PC. */
+    suspend fun setExternalPlaylistId(playlistId: String, urn: String?) {
+        store.put(EntityType.PLAYLIST, playlistId, mapOf("external_playlist_id" to p(urn)))
+    }
+
     suspend fun refreshPlaylistFromSource(playlistId: String): Int {
         val pl = store.get(EntityType.PLAYLIST, playlistId)?.let(Playlist::of)?.takeIf { !it.deleted } ?: return 0
         return sourceTrackIds(pl.researchId, pl.categoryId).count { addToPlaylist(playlistId, it) }

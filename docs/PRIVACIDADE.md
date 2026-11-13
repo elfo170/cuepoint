@@ -1,6 +1,6 @@
 # Política de privacidade do CuePoint
 
-Última atualização: 11/11/2026.
+Última atualização: 12/11/2026.
 
 O CuePoint é um programa de curadoria musical que roda nos seus aparelhos (extensão do Chrome,
 serviço do PC no Windows e app Android). Não existe servidor do CuePoint: nenhum dado seu vai para
@@ -16,6 +16,8 @@ o autor do programa.
   **você** registrou no SoundCloud e os tokens de acesso ficam no serviço do PC, cifrados com a sua
   conta do Windows. Não entram na sincronização. Se você usar **Enviar para o celular**, o código e
   a senha do app vão uma única vez para o seu celular pareado, pela conexão cifrada do pareamento.
+  No celular, eles e os tokens de acesso do próprio celular ficam cifrados pelo Android (Keystore),
+  fora do backup.
 
 ## O que é enviado ao SoundCloud
 
@@ -36,8 +38,9 @@ ser para os seus aparelhos pareados.
 
 ## Seus controles
 
-- **Desconectar** (Configurações → Exportar para o SoundCloud) revoga o acesso no SoundCloud e
-  apaga os tokens na hora. **Remover credenciais** apaga também o código e a senha do app.
+- **Desconectar** (Configurações → Exportar para o SoundCloud, na extensão ou no app Android)
+  revoga o acesso daquele aparelho no SoundCloud e apaga os tokens na hora. **Remover
+  credenciais** apaga também o código e a senha do app daquele aparelho.
 - Você também pode revogar o acesso em soundcloud.com, nas configurações de apps conectados.
 - Desinstalar a extensão, o serviço do PC ou o app apaga os dados locais de cada um
   (`%LOCALAPPDATA%\CuePoint` guarda os do serviço do PC).

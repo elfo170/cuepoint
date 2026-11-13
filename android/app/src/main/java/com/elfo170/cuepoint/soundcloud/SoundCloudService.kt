@@ -15,6 +15,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import java.security.SecureRandom
@@ -32,6 +34,36 @@ data class ScStatus(
     val user: ScUser? = null,
     val loginPending: Boolean = false,
     val lastError: String? = null,
+)
+
+/** Faixa da playlist na ordem do CuePoint, no formato que se exporta. */
+data class ExportTrack(val urn: String?, val url: String?, val title: String, val artist: String)
+
+data class SkippedTrack(val title: String, val artist: String, val reason: String) {
+    val reasonText get() = if (reason == "sem_link") "sem link do SoundCloud" else "não encontrada no SoundCloud"
+}
+
+data class DiffTrack(val urn: String, val title: String, val artist: String)
+
+data class ScDiff(
+    val exists: Boolean,
+    val add: List<DiffTrack>,
+    val remove: List<DiffTrack>,
+    /** Mesmas faixas, ordem diferente. */
+    val reordered: Boolean,
+    val remoteCount: Int,
+    val skipped: List<SkippedTrack>,
+) {
+    val unchanged get() = exists && add.isEmpty() && remove.isEmpty() && !reordered
+}
+
+data class ScExportResult(
+    val urn: String,
+    val permalinkUrl: String?,
+    val trackCount: Int,
+    val skipped: List<SkippedTrack>,
+    /** A lista no SoundCloud ficou igual à enviada (conferida depois de gravar). */
+    val verified: Boolean,
 )
 
 /** Cofre cifrado deste celular: credenciais do app (do usuário) + tokens deste aparelho. */
@@ -67,6 +99,9 @@ class SoundCloudService(
     private var lastError: String? = null
     private var waiter: CallbackServer? = null
     private var refreshing: Deferred<ScTokens>? = null
+    /** link → URN resolvidos nesta execução (evita repetir /resolve entre diff e exportação). */
+    private val resolved = java.util.concurrent.ConcurrentHashMap<String, String>()
+    private val unresolved = java.util.Collections.synchronizedSet(mutableSetOf<String>())
 
     // ------------------------------------------------------------------ cofre
 
@@ -280,7 +315,99 @@ class SoundCloudService(
         )
     }
 
+    // ------------------------------------------------------------------ exportar
+
+    /** Link de página → URN da faixa (`GET /resolve`, que responde 302 para o recurso). */
+    private suspend fun resolveUrn(link: String): String? {
+        resolved[link]?.let { return it }
+        if (link in unresolved) return null
+        var urn: String? = null
+        try {
+            val first = call("GET", SoundCloudProtocol.Paths.resolve(link))
+            var data = runCatching { first.json() }.getOrDefault(JsonObject(emptyMap()))
+            val location = first.location ?: data.str("location")
+            if (first.status in 300..399 && location != null) data = call("GET", location).json()
+            val found = data.str("urn")
+            urn = if (data.str("kind") == "track" && found != null && SoundCloudProtocol.TRACK_URN.matches(found)) found else null
+        } catch (e: ScException) {
+            if (e.code != "not_found") throw e
+        }
+        if (urn != null) resolved[link] = urn else unresolved += link
+        return urn
+    }
+
+    /** URNs na ordem do CuePoint; faixas sem URN são resolvidas pelo link ou puladas. */
+    private suspend fun prepare(tracks: List<ExportTrack>): Pair<List<DiffTrack>, List<SkippedTrack>> {
+        val out = mutableListOf<DiffTrack>()
+        val skipped = mutableListOf<SkippedTrack>()
+        val seen = mutableSetOf<String>()
+        for (t in tracks) {
+            var urn = t.urn?.takeIf { SoundCloudProtocol.TRACK_URN.matches(it) }
+            if (urn == null && t.url != null) urn = resolveUrn(t.url)
+            if (urn == null) {
+                skipped += SkippedTrack(t.title, t.artist, if (t.url != null) "nao_encontrada" else "sem_link")
+                continue
+            }
+            if (seen.add(urn)) out += DiffTrack(urn, t.title, t.artist)
+        }
+        return out to skipped
+    }
+
+    /** Faixas da playlist no SoundCloud, inclusive bloqueadas, seguindo `next_href`. */
+    private suspend fun remoteTracks(playlistUrn: String): List<DiffTrack> {
+        val out = mutableListOf<DiffTrack>()
+        var next: String? = SoundCloudProtocol.Paths.playlistTracks(playlistUrn)
+        var page = 0
+        while (next != null && page++ < MAX_PAGES) {
+            val data = call("GET", next).json()
+            (data["collection"] as? JsonArray)?.forEach { item ->
+                val t = item as? JsonObject ?: return@forEach
+                val urn = t.str("urn") ?: return@forEach
+                out += DiffTrack(urn, t.str("title").orEmpty(), (t["user"] as? JsonObject)?.str("username").orEmpty())
+            }
+            next = data.str("next_href")
+        }
+        return out
+    }
+
+    /** O que muda no SoundCloud ao espelhar a playlist (nada é gravado). */
+    suspend fun diff(playlistUrn: String, tracks: List<ExportTrack>): ScDiff {
+        val (local, skipped) = prepare(tracks)
+        val remote = try {
+            remoteTracks(playlistUrn)
+        } catch (e: ScException) {
+            if (e.code == "not_found") return ScDiff(false, emptyList(), emptyList(), false, 0, skipped)
+            throw e
+        }
+        val d = SoundCloudProtocol.diffTracks(local, remote) { it.urn }
+        return ScDiff(true, d.add, d.remove, d.reordered, remote.size, skipped)
+    }
+
+    /**
+     * Cria a playlist (`POST /playlists`, com `sharing`) ou espelha a existente
+     * (`PUT /playlists/{urn}`, sem `sharing`): a lista no SoundCloud passa a ser exatamente a do
+     * CuePoint, na mesma ordem. Confere depois de gravar.
+     */
+    suspend fun export(playlistUrn: String?, title: String, description: String, sharing: String, tracks: List<ExportTrack>): ScExportResult {
+        val name = title.trim()
+        if (name.isEmpty()) throw ScException("api", "A playlist precisa de um nome.")
+        val (local, skipped) = prepare(tracks)
+        val urns = local.map { it.urn }
+        val saved = if (playlistUrn != null) {
+            call("PUT", SoundCloudProtocol.Paths.playlist(playlistUrn), SoundCloudProtocol.playlistBody(name, description, urns)).json()
+        } else {
+            val visibility = if (sharing == "public") "public" else "private"
+            call("POST", SoundCloudProtocol.Paths.PLAYLISTS, SoundCloudProtocol.playlistBody(name, description, urns, visibility)).json()
+        }
+        val urn = saved.str("urn") ?: playlistUrn ?: throw ScException("api", "O SoundCloud não devolveu o identificador da playlist.")
+        val remote = runCatching { remoteTracks(urn) }.getOrNull()
+        return ScExportResult(urn, saved.str("permalink_url"), local.size, skipped, remote?.map { it.urn } == urns)
+    }
+
+    private fun JsonObject.str(k: String) = (this[k] as? JsonPrimitive)?.contentOrNull
+
     companion object {
+        private const val MAX_PAGES = 100
         const val KEY_VAULT = "sc.vault"
         const val KEY_RECONNECT = "sc.reconnect"
         private val rng = SecureRandom()
