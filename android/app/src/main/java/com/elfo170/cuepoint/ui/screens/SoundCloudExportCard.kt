@@ -145,7 +145,7 @@ fun SoundCloudExportCard(playlist: Playlist, items: List<Pair<PlaylistTrack, Tra
     if (unlinking) {
         ConfirmDialog(
             "Desvincular do SoundCloud?",
-            "A playlist continua no SoundCloud; o CuePoint só deixa de atualizá-la (vale também para o PC).",
+            "A playlist continua no SoundCloud, mas deixa de ser atualizada.",
             confirm = "Desvincular",
             onDismiss = { unlinking = false },
         ) {
@@ -181,8 +181,7 @@ fun SoundCloudExportPanel(
             when {
                 status.state == ScState.UNCONFIGURED -> {
                     Text(
-                        "Para criar esta playlist na sua conta do SoundCloud, configure a exportação (exige Artist Pro). " +
-                            "Sem isso, use o botão de compartilhar a lista de links.",
+                        "Exporte direto para a sua conta.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     OutlinedButton(onClick = actions.onSettings) { Text("Configurar exportação") }
@@ -210,7 +209,7 @@ fun SoundCloudExportPanel(
                     Button(onClick = { actions.onExport(null) }, enabled = busy == null && hasTracks) { Text("Exportar para o SoundCloud") }
                 }
                 else -> {
-                    Text("Publicada no SoundCloud ($linked)", style = MaterialTheme.typography.bodySmall)
+                    Text("Publicada no SoundCloud", style = MaterialTheme.typography.bodySmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = actions.onPreview, enabled = busy == null) { Text("Atualizar no SoundCloud") }
                         OutlinedButton(onClick = actions.onUnlink, enabled = busy == null) { Text("Desvincular") }
@@ -239,7 +238,7 @@ fun SoundCloudExportPanel(
             }
             result?.let { r ->
                 Text("Pronto: ${r.trackCount} faixa(s) no SoundCloud.", fontWeight = FontWeight.SemiBold)
-                if (!r.verified) Text("A lista no SoundCloud ficou diferente da enviada; confira lá.", color = WARNING)
+                if (!r.verified) Text("Algumas músicas podem não ter entrado. Confira no SoundCloud.", color = WARNING)
                 r.permalinkUrl?.let { url -> TextButton(onClick = { actions.onOpen(url) }) { Text("Abrir no SoundCloud") } }
                 Skipped(r.skipped)
             }

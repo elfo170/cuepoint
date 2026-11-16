@@ -35,40 +35,39 @@ export function useHelperStatus(): [HelperStatus | null, () => Promise<void>] {
   return [status, load];
 }
 
+/** Guia de instalação do serviço do PC (README, seção 6.1). */
+const INSTALL_GUIDE =
+  'https://github.com/elfo170/cuepoint#61-instalar-o-servi%C3%A7o-do-pc-uma-vez';
+
 function HelperCard({ status, onSync }: { status: HelperStatus | null; onSync: () => void }) {
   if (!status) return null;
   const ok = status.state === 'connected';
   let body: ReactNode;
   if (ok) {
     body = (
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-        <dt className="text-neutral-500">Operações na réplica</dt>
-        <dd data-testid="helper-ops">{status.info?.ops ?? 0}</dd>
-        <dt className="text-neutral-500">Porta na rede local</dt>
-        <dd>{status.info?.port}</dd>
-        <dt className="text-neutral-500">Última sincronização local</dt>
-        <dd>{status.lastSyncAt ? new Date(status.lastSyncAt).toLocaleString('pt-BR') : '—'}</dd>
-        <dt className="text-neutral-500">Dados</dt>
-        <dd className="truncate">{status.info?.dataDir}</dd>
-      </dl>
+      <p className="text-sm">
+        <span className="text-neutral-500">Última sincronização:</span>{' '}
+        {status.lastSyncAt ? new Date(status.lastSyncAt).toLocaleString('pt-BR') : '—'}
+      </p>
     );
   } else if (status.state === 'absent') {
     body = (
-      <div className="space-y-2 text-sm">
-        <p>
-          O serviço auxiliar não está instalado. Sem ele o CuePoint funciona normalmente neste
-          computador, mas não sincroniza com o celular ou outros aparelhos.
-        </p>
-        <p>
-          Para instalar, rode no PowerShell, na pasta do projeto:{' '}
-          <code className="rounded bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
-            npm run helper:install
-          </code>
-        </p>
-      </div>
+      <p className="text-sm">
+        Instale o serviço do PC para sincronizar com o celular.{' '}
+        <a
+          href={INSTALL_GUIDE}
+          target="_blank"
+          rel="noreferrer"
+          className="text-orange-600 underline"
+        >
+          Como instalar
+        </a>
+      </p>
     );
+  } else if (status.state === 'connecting') {
+    body = <p className="text-sm text-neutral-500">Conectando…</p>;
   } else {
-    body = <p className="text-sm text-red-600">{status.error ?? 'Conectando…'}</p>;
+    body = <p className="text-sm text-red-600">Não foi possível falar com o serviço do PC.</p>;
   }
   return (
     <section
@@ -77,7 +76,7 @@ function HelperCard({ status, onSync }: { status: HelperStatus | null; onSync: (
     >
       <div className="mb-3 flex items-center gap-2">
         <Server size={16} aria-hidden />
-        <h2 className="font-semibold">Serviço auxiliar</h2>
+        <h2 className="font-semibold">Serviço de sincronização</h2>
         <span
           data-testid="helper-state"
           className={`ml-2 inline-flex items-center gap-1 text-sm ${ok ? 'text-emerald-600' : 'text-amber-600'}`}
@@ -106,10 +105,7 @@ export function DevicesPage(props: { children?: ReactNode }) {
   const [status, reload] = useHelperStatus();
   return (
     <>
-      <PageHeader
-        title="Dispositivos"
-        subtitle="Sincronização direta pela rede Wi-Fi local, sem servidor externo."
-      />
+      <PageHeader title="Dispositivos" subtitle="Sincronização via Wi-Fi." />
       <HelperCard status={status} onSync={() => void send({ type: 'helper:sync' }).then(reload)} />
       {status?.state === 'connected' && props.children}
     </>

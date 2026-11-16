@@ -1,4 +1,4 @@
-import { FolderSearch, Music2, Plus } from 'lucide-react';
+import { FolderSearch, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { send, type WidgetState } from '../shared/messages';
@@ -20,9 +20,7 @@ function Popup() {
   return (
     <main className="w-72 space-y-3 p-4 font-sans text-sm text-neutral-900">
       <header className="flex items-center gap-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-white">
-          <Music2 size={14} aria-hidden />
-        </span>
+        <img src="icons/icon48.png" alt="" className="h-7 w-7 rounded-md" />
         <h1 className="text-base font-semibold">CuePoint</h1>
       </header>
 

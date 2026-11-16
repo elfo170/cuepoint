@@ -84,7 +84,7 @@ object CurationNotification {
             .setSmallIcon(R.drawable.ic_stat_cuepoint)
             .setContentTitle(track.title)
             .setContentText("$sub — $decision")
-            .setSubText(if (track.urn == null) "provisória" else null)
+            .setSubText(if (track.urn == null) "não identificada" else null)
             .setContentIntent(open)
             // No Android 14+ o usuário pode dispensar notificações contínuas: o app precisa saber
             // para não republicá-la (issue #1). Só dispara na dispensa do usuário, não no cancel().

@@ -38,6 +38,7 @@ function New-Zip([string]$folder, [string]$zip) {
 # Extensão: a pasta extraída é a que o Chrome carrega (o ID é fixo pelo "key" do manifesto)
 $ext = Join-Path $stage 'CuePoint-extensao'
 Copy-Item (Join-Path $root 'packages\extension\dist') $ext -Recurse
+Copy-Item (Join-Path $root 'LICENSE') $ext
 $manifestVersion = (Get-Content (Join-Path $ext 'manifest.json') -Raw | ConvertFrom-Json).version
 if ($manifestVersion -ne $version) { throw "manifest.json está na versão $manifestVersion (esperado $version)" }
 New-Zip $ext (Join-Path $out "cuepoint-extensao-$version.zip")
@@ -48,6 +49,7 @@ New-Item -ItemType Directory -Force $svc | Out-Null
 Copy-Item (Join-Path $root 'packages\helper\dist\cuepoint-helper.mjs') $svc
 Copy-Item (Join-Path $root 'scripts\install-helper.ps1') $svc
 Copy-Item (Join-Path $root 'scripts\uninstall-helper.ps1') $svc
+Copy-Item (Join-Path $root 'LICENSE') $svc
 Set-Content -Path (Join-Path $svc 'Instalar.cmd') -Encoding ascii -Value @(
     '@echo off',
     'powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0install-helper.ps1" %*',

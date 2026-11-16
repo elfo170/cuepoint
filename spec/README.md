@@ -14,6 +14,7 @@ ao mesmo resultado.
 | `vectors/isolation.json`      | Isolamento por usuário: operações aceitas/recusadas e pareamento |
 | `vectors/backup-android.json` | Backup gerado pelo app Android (pela suíte Kotlin)              |
 | `vectors/soundcloud.json`     | API do SoundCloud: pedidos de token (Basic só em `client_credentials`), URL de login, PKCE, caminhos, corpo da playlist e diferença de faixas |
+| `vectors/soundiiz.json`       | Exportação via Soundiiz: pedido de importação (ordem, artista omitido quando vazio), limite de 1 a 200 faixas e leitura das respostas |
 
 Regenerar após uma mudança intencional no modelo ou no motor de mesclagem:
 

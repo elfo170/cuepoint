@@ -117,7 +117,7 @@ test('pareamento pela biblioteca: QR, código de verificação, confirmação e 
     await lib.getByRole('link', { name: 'Dispositivos' }).click();
     await lib.getByRole('button', { name: 'Adicionar dispositivo' }).click();
     await expect(lib.getByAltText('QR Code de pareamento')).toBeVisible();
-    const uri = (await lib.getByTestId('pairing-uri').inputValue()).replace(
+    const uri = ((await lib.getByTestId('pairing-uri').getAttribute('data-uri')) ?? '').replace(
       /a=[^&]+/,
       'a=127.0.0.1',
     );
@@ -145,7 +145,7 @@ test('pareamento pela biblioteca: QR, código de verificação, confirmação e 
     })) as { status: string; received: number };
     expect(res.status).toBe('ok');
     expect(res.received).toBeGreaterThan(0);
-    await expect(lib.getByTestId('peer-row')).toContainText('Última sync:');
+    await expect(lib.getByTestId('peer-sync-state')).toContainText('Sincronizado em');
   } finally {
     await otherLan.close();
     other.close();
@@ -179,7 +179,7 @@ test('PC vazio pareia com outro PC e passa a usar a mesma biblioteca (adota o us
     await lib.getByRole('button', { name: 'Parear com outro PC' }).click();
     await lib.getByLabel('Código do outro computador').fill(uri);
     await lib.getByRole('button', { name: 'Parear', exact: true }).click();
-    await expect(lib.getByText('passou a usar a mesma biblioteca de PC principal')).toBeVisible();
+    await expect(lib.getByText('Este PC agora usa a biblioteca de PC principal')).toBeVisible();
     expect(JSON.parse(helperCli(['status', '--pipe', pipe])).identity.userId).toBe(otherUser);
 
     // o que este PC cria agora é do mesmo usuário e chega ao serviço sem ser recusado
@@ -191,8 +191,7 @@ test('PC vazio pareia com outro PC e passa a usar a mesma biblioteca (adota o us
         timeout: 15_000,
       })
       .toBeGreaterThan(0);
-    await lib.getByRole('link', { name: 'Configurações' }).click();
-    await expect(lib.getByText(otherUser)).toBeVisible();
+    // (o id do usuário não aparece mais na tela; a adoção é conferida pelo serviço acima)
   } finally {
     await otherLan.close();
     other.close();

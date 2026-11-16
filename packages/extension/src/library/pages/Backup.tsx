@@ -1,4 +1,4 @@
-import { BackupError, parseBackup, type Backup } from '@cuepoint/core';
+import { parseBackup, type Backup } from '@cuepoint/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { HardDriveDownload, ShieldCheck, Upload } from 'lucide-react';
 import { useState } from 'react';
@@ -28,8 +28,16 @@ const LABELS: Record<string, string> = {
   track_category: 'classificações',
   playlist: 'playlists',
   playlist_track: 'itens de playlist',
-  ops: 'operações',
 };
+
+/** Mensagem do erro de leitura do backup: o detalhe técnico fica só no console. */
+export function backupErrorText(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (msg === 'Não é um backup do CuePoint.' || msg.startsWith('Versão de backup não suportada'))
+    return msg;
+  console.warn('CuePoint: backup recusado', msg);
+  return 'Arquivo de backup inválido ou corrompido.';
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('pt-BR');
@@ -57,8 +65,8 @@ export function BackupPage() {
   const backupNow = async () => {
     setBusy(true);
     try {
-      const record = await send<BackupRecord | null>({ type: 'backup:run', reason: 'manual' });
-      setMessage({ kind: 'ok', text: `Backup salvo em Downloads/${record?.filename ?? ''}` });
+      await send<BackupRecord | null>({ type: 'backup:run', reason: 'manual' });
+      setMessage({ kind: 'ok', text: 'Backup salvo.' });
     } catch (e) {
       setMessage({ kind: 'error', text: (e as Error).message });
     } finally {
@@ -68,10 +76,7 @@ export function BackupPage() {
 
   return (
     <>
-      <PageHeader
-        title="Backup"
-        subtitle="Backups automáticos em arquivos locais (pasta Downloads/CuePoint/backups). Nenhum backup antigo é apagado."
-      />
+      <PageHeader title="Backup" subtitle="Backups armazenados no próprio dispositivo." />
 
       <section className="mb-8 grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
@@ -93,7 +98,7 @@ export function BackupPage() {
           </label>
           <label className="block text-sm">
             <span className="mb-1 block text-neutral-500">
-              Também após N alterações (0 = desligado)
+              Também a cada N alterações (0 desliga)
             </span>
             <input
               aria-label="Backup após alterações"
@@ -136,13 +141,7 @@ export function BackupPage() {
                     setPending(await parseBackup(await file.text()));
                   } catch (err) {
                     setPending(null);
-                    setMessage({
-                      kind: 'error',
-                      text:
-                        err instanceof BackupError
-                          ? err.message
-                          : `Falha ao ler: ${(err as Error).message}`,
-                    });
+                    setMessage({ kind: 'error', text: backupErrorText(err) });
                   }
                 }}
               />
@@ -167,18 +166,17 @@ export function BackupPage() {
         >
           <h2 className="mb-1 flex items-center gap-2 font-semibold">
             <ShieldCheck size={16} className="text-emerald-600" aria-hidden /> Backup válido
-            (checksum conferido)
           </h2>
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Criado em {formatDate(pending.created_at)} ·{' '}
             {Object.entries(pending.counts)
-              .filter(([, n]) => n > 0)
+              .filter(([k, n]) => n > 0 && k in LABELS)
               .map(([k, n]) => `${n} ${LABELS[k] ?? k}`)
               .join(' · ')}
           </p>
           <p className="mt-2 text-sm">
-            Restaurar <strong>substitui</strong> a biblioteca atual. Antes disso é feito um backup
-            de segurança do estado atual.
+            Restaurar <strong>substitui</strong> a biblioteca atual (antes é feito um backup de
+            segurança).
           </p>
           <div className="mt-3 flex gap-2">
             <button
@@ -230,11 +228,7 @@ export function BackupPage() {
                       ? 'manual'
                       : 'antes de restaurar'}
                 </span>
-                <span className="min-w-0 flex-1 truncate text-neutral-500">{h.filename}</span>
-                <span className="text-neutral-500">{(h.bytes / 1024).toFixed(1)} KB</span>
-                <code className="text-xs text-neutral-400" title={h.sha256}>
-                  {h.sha256.slice(0, 12)}
-                </code>
+                <span className="ml-auto text-neutral-500">{(h.bytes / 1024).toFixed(1)} KB</span>
               </li>
             ))}
           </ul>

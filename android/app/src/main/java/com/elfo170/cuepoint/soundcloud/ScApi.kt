@@ -75,7 +75,7 @@ class ScApi(
                 status,
             )
             "reconnect" -> ScException("reconnect", RECONNECT_MESSAGE, status)
-            else -> ScException("api", "O SoundCloud recusou o pedido ($status${if (error.isNotEmpty()) ": $error" else ""}).", status)
+            else -> ScException("api", API_REJECTED, status)
         }
     }
 
@@ -116,11 +116,7 @@ class ScApi(
                 }
                 res.status == 401 -> throw ScException("reconnect", "O SoundCloud recusou o acesso. Toque em Reconectar.", 401)
                 res.status == 404 -> throw ScException("not_found", "Não encontrado no SoundCloud.", 404)
-                res.status >= 400 -> throw ScException(
-                    "api",
-                    "O SoundCloud recusou o pedido (${res.status}). ${res.body.take(200)}".trim(),
-                    res.status,
-                )
+                res.status >= 400 -> throw ScException("api", API_REJECTED, res.status)
                 else -> return res
             }
         }
@@ -136,5 +132,6 @@ class ScApi(
 
     companion object {
         const val RECONNECT_MESSAGE = "O acesso ao SoundCloud expirou. Toque em Reconectar."
+        const val API_REJECTED = "O SoundCloud recusou o pedido. Tente de novo."
     }
 }

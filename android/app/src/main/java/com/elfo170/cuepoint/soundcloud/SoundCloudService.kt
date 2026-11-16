@@ -173,12 +173,12 @@ class SoundCloudService(
             throw ScException(
                 e.code,
                 when (e.code) {
-                    "sc_not_shared" -> "O PC não liberou o envio. No PC, abra Configurações → Exportar para o SoundCloud → Usar no celular → Enviar para este celular, e toque de novo em Receber do PC em até 10 minutos."
+                    "sc_not_shared" -> "Libere o envio no PC e tente de novo."
                     "sc_not_configured" -> "O PC ainda não tem o código e a senha do app. Configure a exportação no PC primeiro, ou digite os dois aqui."
                     "revoked" -> "Este celular não está mais pareado com o PC."
                     "pending_confirmation" -> "Confirme o pareamento no PC antes de receber as credenciais."
                     "foreign_user" -> "O PC é de outro usuário."
-                    else -> "O PC recusou o pedido (${e.code})."
+                    else -> "O PC recusou o pedido. Tente de novo."
                 },
                 e.status,
             )

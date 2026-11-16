@@ -64,7 +64,7 @@ export function validateOp(value: unknown): Op {
 
 /** Mensagem única (TS e Kotlin) para bibliotecas de usuários diferentes. */
 export const FOREIGN_USER_MESSAGE =
-  'Os aparelhos são de usuários diferentes. Para parear, apague a biblioteca do aparelho novo ou restaure nele um backup deste aparelho.';
+  'Os aparelhos têm bibliotecas diferentes. Apague a do aparelho novo para parear.';
 
 /** Operação (ou pareamento) de outro usuário: recusada inteira, nada é aplicado. */
 export class ForeignUserError extends Error {

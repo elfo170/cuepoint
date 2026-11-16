@@ -126,6 +126,12 @@ class ScApiTest {
         server.enqueue(MockResponse().setResponseCode(422).setBody("tracks inválidas"))
         assertEquals("api", code { api().call("PUT", "/playlists/x", token = { "t" }) })
 
+        // mensagem amigável, sem o corpo da resposta; o status continua na exceção
+        server.enqueue(MockResponse().setResponseCode(422).setBody("tracks inválidas"))
+        val e = runCatching { api().call("PUT", "/playlists/x", token = { "t" }) }.exceptionOrNull() as ScException
+        assertEquals(ScApi.API_REJECTED, e.message)
+        assertEquals(422, e.status)
+
         val dead = ScApi(tokenUrl = "http://127.0.0.1:1/oauth/token", apiBase = "http://127.0.0.1:1")
         assertThrows(ScException::class.java) { runBlocking { dead.call("GET", "/me", token = { "t" }) } }
         assertEquals("network", code { dead.requestToken(creds, mapOf("grant_type" to "client_credentials")) })

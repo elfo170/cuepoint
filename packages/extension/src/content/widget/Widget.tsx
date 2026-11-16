@@ -158,7 +158,7 @@ export function Widget(props: WidgetProps) {
           </p>
           {track && !track.urn && (
             <p className="mt-0.5 text-[11px] text-amber-400" data-testid="cuepoint-provisional">
-              Identificação provisória
+              Faixa não identificada
             </p>
           )}
         </div>

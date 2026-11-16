@@ -112,11 +112,10 @@ export function SoundCloudExport({
   if (view.kind === 'no-helper' || view.status.state === 'unconfigured') {
     body = (
       <p>
-        Para criar esta playlist na sua conta do SoundCloud,{' '}
+        Exporte direto para a sua conta.{' '}
         <Link to="/settings" className="text-orange-600 underline">
-          configure a exportação
-        </Link>{' '}
-        (exige Artist Pro). Sem isso, use os botões de exportar links, CSV ou JSON.
+          Configurar
+        </Link>
       </p>
     );
   } else if (view.status.state !== 'connected') {
@@ -167,9 +166,7 @@ export function SoundCloudExport({
     body = (
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-neutral-500">
-            Publicada no SoundCloud (<code className="text-xs">{linked}</code>)
-          </span>
+          <span className="text-neutral-500">Publicada no SoundCloud</span>
           <button
             type="button"
             className={`${buttonClass} ml-auto`}
@@ -209,10 +206,8 @@ export function SoundCloudExport({
         {diff?.exists && (
           <div className="space-y-2 rounded-lg bg-neutral-50 p-3 dark:bg-neutral-900">
             <p>
-              A playlist no SoundCloud ({diff.remoteCount} música(s)) vai ficar igual à do CuePoint
-              ({items.length - diff.skipped.length} música(s)), na mesma ordem.
+              {nothing ? 'Já está atualizada.' : 'O SoundCloud vai ficar igual a esta playlist.'}
             </p>
-            {nothing && <p className="text-neutral-500">Nada muda: as duas já estão iguais.</p>}
             <TrackList title={`Entram (${diff.add.length}):`} tracks={diff.add} />
             <TrackList title={`Saem do SoundCloud (${diff.remove.length}):`} tracks={diff.remove} />
             {diff.reordered && <p>A ordem das músicas muda.</p>}
@@ -266,8 +261,7 @@ export function SoundCloudExport({
           </p>
           {!result.verified && (
             <p className="text-amber-700">
-              Atenção: a lista conferida no SoundCloud ficou diferente da enviada. Abra a playlist e
-              confira.
+              Algumas músicas podem não ter entrado. Confira no SoundCloud.
             </p>
           )}
           <Skipped tracks={result.skipped} />

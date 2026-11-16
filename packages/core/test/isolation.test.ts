@@ -97,6 +97,6 @@ describe('isolamento por usuário', () => {
     expect(r.records.size).toBe(0);
     expect(r.vv).toEqual({});
     expect(r.receive(own)).toBe(2);
-    expect(() => assertSameUser([own[0]!, reassign], IDS.user)).toThrow(/usuários diferentes/);
+    expect(() => assertSameUser([own[0]!, reassign], IDS.user)).toThrow(/bibliotecas diferentes/);
   });
 });

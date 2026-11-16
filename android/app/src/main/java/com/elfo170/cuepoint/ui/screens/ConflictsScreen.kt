@@ -58,17 +58,20 @@ fun ConflictsScreen() {
         item {
             Text("Conflitos", style = MaterialTheme.typography.headlineSmall)
             Text(
-                "O mesmo dado mudou em dois aparelhos antes de sincronizar. Até você escolher, vale o mais recente.",
+                "Escolha qual versão manter.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
         val list = conflicts ?: return@LazyColumn
-        if (list.isEmpty()) item { EmptyState("Nenhum conflito. Tudo o que foi alterado nos aparelhos combinou sem divergência.") }
+        if (list.isEmpty()) item { EmptyState("Nenhum conflito.") }
         items(list, key = { it.id }) { c ->
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("${c.kind} · ${c.fieldLabel}", style = MaterialTheme.typography.labelMedium)
                     Text(c.subject, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        if (c.subject == c.kind) c.fieldLabel else "${c.kind} · ${c.fieldLabel}",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
                     c.options.forEach { o ->
                         Card(
                             colors = CardDefaults.cardColors(
@@ -78,9 +81,9 @@ fun ConflictsScreen() {
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                Text(o.label, style = MaterialTheme.typography.bodyLarge)
+                                Text(Conflicts.optionText(o, names), style = MaterialTheme.typography.bodyLarge)
                                 Text(
-                                    o.origins.joinToString { names[it] ?: "aparelho ${it.take(8)}" } +
+                                    o.origins.joinToString { Conflicts.originName(it, names) } +
                                         " · ${fmt(o.at)}" + if (o.current) " · exibido agora" else "",
                                     style = MaterialTheme.typography.bodySmall,
                                 )

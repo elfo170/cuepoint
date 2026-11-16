@@ -1,6 +1,16 @@
+<div align="center">
+
 # CuePoint
 
 **Curadoria de músicas enquanto você ouve o SoundCloud.**
+
+[![PolyForm Noncommercial](https://img.shields.io/badge/PolyForm%20Noncommercial-2b2b2b)](LICENSE)
+[![Source Available](https://img.shields.io/badge/Source%20Available-15803d)](#10-license)
+[![Chrome](https://img.shields.io/badge/Chrome-2b2b2b)](#2-instalar-a-extensão-do-chrome)
+[![Android](https://img.shields.io/badge/Android-2b2b2b)](#4-instalar-o-app-no-celular-android)
+[![Windows](https://img.shields.io/badge/Windows-2b2b2b)](#61-instalar-o-serviço-do-pc-uma-vez)
+
+</div>
 
 Você abre uma playlist no SoundCloud e, a cada faixa, toca em **✓ aprovar** ou **✗ rejeitar**. As
 aprovadas ganham **categorias** ("Vocal", "Para abrir o set"…), e tudo fica guardado numa
@@ -11,6 +21,8 @@ filtra o que aprovou, monta playlists e exporta.
   casa.
 - **Sem conta e sem servidor:** os dados ficam no seu computador e no seu celular.
 - O SoundCloud continua sendo o player. O CuePoint só observa o que está tocando.
+- **Código-fonte disponível (source-available)** sob a PolyForm Noncommercial 1.0.0, com permissão
+  de uso profissional para DJs ([licença](#10-license)).
 
 **[⬇ Baixar a versão mais recente](https://github.com/elfo170/cuepoint/releases/latest)**
 
@@ -27,6 +39,7 @@ filtra o que aprovou, monta playlists e exporta.
 7. [Backup](#7-backup)
 8. [Problemas comuns](#8-problemas-comuns)
 9. [Para desenvolvedores](#9-para-desenvolvedores)
+10. [License](#10-license)
 
 ---
 
@@ -36,9 +49,9 @@ Na [página de releases](https://github.com/elfo170/cuepoint/releases/latest), e
 
 | Arquivo                         | Precisa?                                    | Requisitos                    |
 | ------------------------------- | ------------------------------------------- | ----------------------------- |
-| `cuepoint-extensao-1.1.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
-| `cuepoint-1.1.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
-| `cuepoint-servico-pc-1.1.0.zip` | Para sincronizar o celular com o PC e para exportar para o SoundCloud pelo PC | Windows 10/11 e Node.js 22.13+ |
+| `cuepoint-extensao-1.2.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
+| `cuepoint-1.2.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
+| `cuepoint-servico-pc-1.2.0.zip` | Para sincronizar o celular com o PC e para exportar para o SoundCloud pelo PC | Windows 10/11 e Node.js 22.13+ |
 
 Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os dois juntos.
 
@@ -46,7 +59,7 @@ Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os 
 
 A extensão não está na Chrome Web Store. Ela é instalada a partir da pasta baixada:
 
-1. Baixe `cuepoint-extensao-1.1.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
+1. Baixe `cuepoint-extensao-1.2.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
    fixo, por exemplo `Documentos\CuePoint`. Vai aparecer a pasta `CuePoint-extensao`.
    **Não apague essa pasta:** o Chrome carrega a extensão a partir dela.
 2. No Chrome, abra o endereço `chrome://extensions`.
@@ -87,7 +100,8 @@ no widget. Nela você:
   categorias;
 - gerencia as **categorias**;
 - monta **playlists**: à mão ou a partir de uma pesquisa ou categoria. Dá para reordenar e exportar
-  como lista de links, CSV ou JSON, ou direto para o SoundCloud (requer Artist Pro, veja abaixo);
+  como lista de links, CSV ou JSON, ou para o SoundCloud: direto (requer Artist Pro) ou pelo
+  Soundiiz (sem Artist Pro), veja abaixo;
 - faz e restaura **backups** (seção 7);
 - pareia o celular em **Dispositivos** (seção 6).
 
@@ -99,8 +113,7 @@ O CuePoint cria e atualiza playlists na sua conta do SoundCloud, pelo PC ou pelo
 > exige um app registrado no SoundCloud, e só contas **Artist Pro** podem registrar apps. Como o
 > CuePoint não tem servidor, cada pessoa registra o **próprio** app; os termos do SoundCloud não
 > permitem distribuir um app único com a senha embutida. Sem Artist Pro, exporte a playlist como
-> lista de links, CSV ou JSON e monte-a no SoundCloud a partir deles. **Uma alternativa para quem
-> não tem Artist Pro está sendo planejada.**
+> lista de links, CSV ou JSON, ou use a [exportação via Soundiiz](#exportar-para-o-soundcloud-sem-artist-pro-via-soundiiz).
 
 No PC, a exportação usa o serviço do PC (seção 6.1), que guarda as credenciais cifradas com a sua
 conta do Windows.
@@ -133,9 +146,26 @@ O app Android também exporta e atualiza playlists, **sem o PC ligado**, depois 
 4. Na página de uma playlist, o cartão **Exportar para o SoundCloud** funciona como no PC. O vínculo
    com a playlist publicada sincroniza: PC e celular atualizam a mesma.
 
-**Faixa "provisória":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
-internet). Ela entra como provisória e é associada sozinha à definitiva assim que o identificador
+**Faixa "não identificada":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
+internet). Ela entra assim e é associada sozinha à faixa certa assim que o identificador
 aparecer. Também dá para associar à mão em **Músicas → Identificar pela URL**.
+
+### Exportar para o SoundCloud sem Artist Pro (via Soundiiz)
+
+Na página de uma playlist, o cartão **SoundCloud via Soundiiz** envia a lista ao
+[Soundiiz](https://soundiiz.com), um serviço de transferência de playlists. Funciona igual no PC
+e no celular, sem configuração e sem o serviço do PC.
+
+1. Clique em **Abrir no Soundiiz**. O link de importação abre numa aba nova e vale 24 horas.
+2. No Soundiiz, **revise as músicas encontradas** e conclua a transferência para o SoundCloud.
+
+> ⚠️ **A correspondência pode errar.** O Soundiiz procura cada música pelo título e pelo artista,
+> e pode escolher outra versão ou outro remix. Confira a lista antes de transferir. A
+> transferência segue as regras e os limites da conta do Soundiiz.
+
+- Até **200 músicas** por envio. Playlists maiores precisam ser divididas.
+- O Soundiiz recebe o nome e a descrição da playlist e o título e o artista de cada música
+  ([privacidade](docs/PRIVACIDADE.md)). Detalhes: [docs/SOUNDIIZ_API.md](docs/SOUNDIIZ_API.md).
 
 ## 4. Instalar o app no celular (Android)
 
@@ -237,13 +267,13 @@ celular antigo.
 | Sintoma                                                       | O que fazer                                                                                                                                                                      |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | O widget não aparece no SoundCloud                            | Recarregue a aba do SoundCloud (F5). Confira em `chrome://extensions` se o CuePoint está ligado.                                                                                 |
-| **Dispositivos** mostra o serviço auxiliar como "não instalado" | Normal se você não instalou o serviço do PC (seção 6.1). Se instalou, clique em ↻ no CuePoint em `chrome://extensions`.                                                          |
+| **Dispositivos** mostra o serviço de sincronização como "não instalado" | Normal se você não instalou o serviço do PC (seção 6.1). Se instalou, clique em ↻ no CuePoint em `chrome://extensions`.                                                          |
 | `Instalar.cmd` diz que o Node.js não foi encontrado ou é antigo | Instale o Node.js LTS em [nodejs.org](https://nodejs.org), feche a janela e rode `Instalar.cmd` de novo.                                                                         |
 | O celular não encontra o PC                                   | Os dois precisam estar na mesma rede (rede de convidados isola os aparelhos). Permita o Node.js no Firewall do Windows em redes privadas. Abra o app do CuePoint para forçar uma tentativa. |
 | A notificação do CuePoint não aparece no celular              | Confira o cartão de configuração no app: acesso às notificações, permissão de notificações e, em Xiaomi, início automático e bateria sem restrições. Depois abra o app uma vez. |
 | A notificação do CuePoint sumiu e não volta                   | Ela foi dispensada ou o SoundCloud foi fechado. Abra o CuePoint (e o SoundCloud) para ela voltar.                                                                                 |
 | A notificação some da tela bloqueada                          | Limitação de alguns sistemas, como o HyperOS: ela some quando chega outra notificação. Continua disponível na cortina.                                                             |
-| Uma faixa aparece como "provisória"                           | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
+| Uma faixa aparece como "não identificada"                     | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
 | Pareamento recusado: "os aparelhos são de usuários diferentes" | O aparelho novo já tem a biblioteca de outra pessoa (ou outra biblioteca sua). Apague a biblioteca dele ou restaure nele um backup do PC e pareie de novo. |
 | A exportação pede para **Reconectar**                         | O acesso ao SoundCloud caiu (Artist Pro vencido, senha do app trocada ou autorização revogada). Clique em **Reconectar**; se falhar, confira as credenciais do app. |
 
@@ -280,3 +310,28 @@ npm run release:package  # monta os arquivos da release em release\<tag>\
 Mais contexto: [PRD](CuePoint_PRD_v1.0.md) · [planejamento e status](PLANEJAMENTO.md) ·
 [contrato TS ⇄ Kotlin](spec/README.md) · [API do SoundCloud](docs/SOUNDCLOUD_API.md) ·
 [multiusuário](docs/MULTIUSUARIO.md).
+
+## 10. License
+
+CuePoint is **source-available**: the source code is public, but it is not open source, because
+commercial use is restricted. It is licensed under the
+[PolyForm Noncommercial License 1.0.0](LICENSE).
+
+- **Permitted:** personal use, study, hobby projects, research and use by noncommercial
+  organizations, including modifying and redistributing the software for these purposes, as long
+  as the [LICENSE](LICENSE) file and its `Required Notice` line are included.
+- **DJs:** may use the software professionally under the additional permission below.
+- **Other commercial use:** requires permission from the author. Contact:
+  bookings.maci@gmail.com.
+
+**Additional permission for DJs:**
+
+> Commercial use of the software by DJs is permitted solely for personal professional activities,
+> including music research, curation, organization, preparation, rehearsal and performance of DJ
+> sets, whether paid or unpaid.
+>
+> This permission does not authorize the sale, licensing, sublicensing, hosting, distribution for
+> commercial consideration, or incorporation of the software into commercial products or services.
+
+Copyright 2026 Leonardo Rodrigues Macieira - Maci. The project's dependencies remain under their own
+licenses.

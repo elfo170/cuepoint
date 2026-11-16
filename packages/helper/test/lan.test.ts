@@ -221,7 +221,7 @@ describe('isolamento por usuário', () => {
     const b = await node(1, OTHER);
     const c = await node(2);
     const { uri } = (await local(a, { type: 'pairing:create' })) as { uri: string };
-    await expect(local(b, { type: 'pairing:join', uri })).rejects.toThrow(/usuários diferentes/);
+    await expect(local(b, { type: 'pairing:join', uri })).rejects.toThrow(/bibliotecas diferentes/);
     expect(a.helper.db.peer(ids[1]!)).toBeUndefined();
     expect(b.helper.db.peer(ids[0]!)).toBeUndefined();
     await local(c, { type: 'pairing:join', uri });
@@ -256,7 +256,7 @@ describe('isolamento por usuário', () => {
     const fresh = (await local(a, { type: 'pairing:create' })) as { uri: string };
     await expect(
       local(c, { type: 'pairing:join', uri: fresh.uri, canAdopt: true }),
-    ).rejects.toThrow(/usuários diferentes/);
+    ).rejects.toThrow(/bibliotecas diferentes/);
     expect(c.helper.identity?.userId).toBe(OTHER);
   });
 
@@ -317,7 +317,7 @@ describe('isolamento por usuário', () => {
     await local(a, { ...hello, userId: USER });
     edit(a, { name: 'R' });
     await expect(local(a, { ...hello, userId: OTHER })).rejects.toThrow(/outro usuário/);
-    expect(() => a.helper.insertOps([foreignOp(ids[1]!)])).toThrow(/usuários diferentes/);
+    expect(() => a.helper.insertOps([foreignOp(ids[1]!)])).toThrow(/bibliotecas diferentes/);
   });
 });
 

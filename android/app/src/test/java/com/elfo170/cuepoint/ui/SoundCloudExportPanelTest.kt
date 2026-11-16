@@ -71,6 +71,7 @@ class SoundCloudExportPanelTest {
     fun withoutConfigurationPointsToSettings() {
         show(status = ScStatus(ScState.UNCONFIGURED))
         compose.onNodeWithText("Requer Artist Pro").assertExists()
+        compose.onNodeWithText("Exporte direto para a sua conta.").assertExists()
         compose.onNodeWithText("Configurar exportação").performClick()
         assertEquals(listOf("settings"), events)
     }
@@ -110,7 +111,8 @@ class SoundCloudExportPanelTest {
             skipped = listOf(SkippedTrack("Sem link", "D", "sem_link")),
         )
         show(link = linked, diff = diff)
-        compose.onNodeWithText("Publicada no SoundCloud ($linked)").assertExists()
+        compose.onNodeWithText("Publicada no SoundCloud").assertExists()
+        compose.onNodeWithText(linked, substring = true).assertDoesNotExist()
         compose.onNodeWithText("Entram (1):").assertExists()
         compose.onNodeWithText("• Nova — A").assertExists()
         compose.onNodeWithText("Saem (1):").assertExists()
@@ -135,7 +137,7 @@ class SoundCloudExportPanelTest {
     fun resultShowsCountWarningAndLink() {
         show(link = linked, result = ScExportResult(linked, "https://soundcloud.com/x/sets/7", 3, emptyList(), verified = false))
         compose.onNodeWithText("Pronto: 3 faixa(s) no SoundCloud.").assertExists()
-        compose.onNodeWithText("A lista no SoundCloud ficou diferente da enviada; confira lá.").assertExists()
+        compose.onNodeWithText("Algumas músicas podem não ter entrado. Confira no SoundCloud.").assertExists()
         compose.onNodeWithText("Abrir no SoundCloud").performClick()
         assertEquals(listOf("open:https://soundcloud.com/x/sets/7"), events)
     }

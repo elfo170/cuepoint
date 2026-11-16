@@ -7,4 +7,11 @@ describe('manifest', () => {
     expect(manifest.key.length).toBeGreaterThan(100);
     expect(manifest.host_permissions).toContain('https://soundcloud.com/*');
   });
+
+  it('libera só a API do Soundiiz além do SoundCloud (CORS da exportação via Soundiiz)', () => {
+    expect(manifest.host_permissions).toEqual([
+      'https://soundcloud.com/*',
+      'https://soundiiz.com/*',
+    ]);
+  });
 });

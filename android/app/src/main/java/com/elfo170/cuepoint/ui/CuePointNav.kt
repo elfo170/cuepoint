@@ -1,6 +1,7 @@
 package com.elfo170.cuepoint.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,6 +51,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.elfo170.cuepoint.BuildConfig
 import com.elfo170.cuepoint.container
 import com.elfo170.cuepoint.ui.screens.BackupScreen
 import com.elfo170.cuepoint.ui.screens.CategoriesScreen
@@ -170,15 +173,11 @@ fun CuePointNav(curateTop: @Composable () -> Unit = {}) {
 fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onBackup: () -> Unit = {}, onSoundCloud: () -> Unit = {}) {
     val app = LocalContext.current.container
     val scope = rememberCoroutineScope()
-    val ops by app.db.dao().observeEventCount().collectAsStateWithLifecycle(0)
-    val pending by app.db.dao().observePendingCount().collectAsStateWithLifecycle(0)
     val conflicts by remember { app.db.dao().observeConflicts().map { it.size } }.collectAsStateWithLifecycle(0)
     var name by remember { mutableStateOf("") }
-    var deviceId by remember { mutableStateOf("") }
     var saved by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         val id = app.store.init()
-        deviceId = id.deviceId
         name = app.db.dao().observeDevice(id.deviceId).first()?.device_name ?: id.deviceName
     }
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -192,16 +191,30 @@ fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onB
         OutlinedTextField(name, { name = it; saved = false }, label = { Text("Nome do aparelho") }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Button(onClick = { scope.launch { app.store.renameDevice(name); saved = true } }, enabled = name.isNotBlank()) { Text("Salvar") }
         if (saved) Text("Nome salvo.")
-        Text("Id do aparelho: $deviceId", style = MaterialTheme.typography.bodySmall)
-        Text("Operações registradas: $ops · ainda não sincronizadas: $pending", style = MaterialTheme.typography.bodySmall)
-        var anyPlayer by remember { mutableStateOf(app.acceptAnyPlayer) }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("Ler outros players")
-                Text("Além do app do SoundCloud (ex.: variantes do app ou testes).", style = MaterialTheme.typography.bodySmall)
+        // opção de teste: só nos builds de depuração
+        if (BuildConfig.DEBUG) {
+            var anyPlayer by remember { mutableStateOf(app.acceptAnyPlayer) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Ler outros players")
+                    Text("Além do app do SoundCloud (ex.: variantes do app ou testes).", style = MaterialTheme.typography.bodySmall)
+                }
+                Switch(anyPlayer, { v -> anyPlayer = v; scope.launch { app.setAcceptAnyPlayer(v) } })
             }
-            Switch(anyPlayer, { v -> anyPlayer = v; scope.launch { app.setAcceptAnyPlayer(v) } })
         }
         DebugTools.Section()
+        Credits()
+    }
+}
+
+/** Créditos do autor, no fim das Configurações. */
+@Composable
+private fun Credits() {
+    HorizontalDivider(Modifier.padding(top = 12.dp))
+    SelectionContainer {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text("Criado por Maci - @maci.mp3", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Apoie o projeto - Pix: bookings.maci@gmail.com", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }

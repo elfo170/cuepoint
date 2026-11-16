@@ -5,7 +5,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 /** Mensagem única (TS e Kotlin) para bibliotecas de usuários diferentes. */
 const val FOREIGN_USER_MESSAGE =
-    "Os aparelhos são de usuários diferentes. Para parear, apague a biblioteca do aparelho novo ou restaure nele um backup deste aparelho."
+    "Os aparelhos têm bibliotecas diferentes. Apague a do aparelho novo para parear."
 
 /** Operação (ou pareamento) de outro usuário: recusada inteira, nada é aplicado. */
 class ForeignUserException(message: String = FOREIGN_USER_MESSAGE) : IllegalStateException(message) {

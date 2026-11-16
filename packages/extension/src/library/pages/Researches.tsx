@@ -21,7 +21,7 @@ export function ResearchesPage() {
     <>
       <PageHeader
         title="Pesquisas"
-        subtitle="Cada pesquisa guarda suas próprias decisões: uma faixa pode ser aprovada numa e rejeitada noutra."
+        subtitle="Cada pesquisa guarda suas próprias músicas de forma independente."
       />
 
       <form
@@ -37,7 +37,7 @@ export function ResearchesPage() {
       >
         <input
           aria-label="Nome da pesquisa"
-          placeholder="Nome (ex.: Latin Bass)"
+          placeholder="Nome da pesquisa"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className={inputClass}
@@ -66,9 +66,7 @@ export function ResearchesPage() {
       )}
 
       {summaries.length === 0 ? (
-        <EmptyState>
-          Nenhuma pesquisa ainda. Crie a primeira acima ou direto no widget do SoundCloud.
-        </EmptyState>
+        <EmptyState>Nenhuma pesquisa ainda.</EmptyState>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-testid="research-list">
           {summaries.map(({ research, approved, rejected, pending }) => (

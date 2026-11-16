@@ -89,13 +89,13 @@ class CallbackServer private constructor(
         }
         if (query["state"] != state) {
             // não encerra: pode ser uma aba antiga; o login certo ainda pode chegar
-            send(400, "Login inválido", "Este retorno não corresponde ao login em andamento.")
+            send(400, "Login inválido", INVALID_PAGE)
             return
         }
         val received = query["code"]
         if (received.isNullOrEmpty()) {
-            send(400, "Login inválido", "O SoundCloud não enviou o código de autorização.", back = true)
-            finish(ScException("login_failed", "O SoundCloud não enviou o código de autorização."))
+            send(400, "Login inválido", INVALID_PAGE, back = true)
+            finish(ScException("login_failed", "O login no SoundCloud não foi concluído."))
             return
         }
         send(200, "Conectado", "O CuePoint recebeu a autorização do SoundCloud.", back = true)
@@ -119,6 +119,8 @@ class CallbackServer private constructor(
     }
 
     companion object {
+        const val INVALID_PAGE = "Login inválido. Volte ao app e tente de novo."
+
         const val LOGIN_TIMEOUT_MS = 5 * 60 * 1000L
 
         /** Abre o servidor. Porta ocupada → `ScException("port_busy")`. */
@@ -136,7 +138,7 @@ class CallbackServer private constructor(
                     s
                 } catch (e: BindException) {
                     s.close()
-                    throw ScException("port_busy", "A porta $port do celular está ocupada por outro app. Feche-o e tente de novo.")
+                    throw ScException("port_busy", "Outro app está bloqueando o login. Feche-o e tente de novo.")
                 }
             }
             return CallbackServer(socket, state).also { it.start(scope, timeoutMs) }

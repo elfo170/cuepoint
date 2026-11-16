@@ -84,7 +84,7 @@ fun ResearchesScreen(onOpen: (String) -> Unit) {
                 }
             }
         }
-        if (summaries.isEmpty()) item { EmptyState("Nenhuma pesquisa ainda. Crie a primeira pelo +.") }
+        if (summaries.isEmpty()) item { EmptyState("Nenhuma pesquisa ainda.") }
         items(summaries, key = { it.research.id }) { s ->
             Card(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clickable { onOpen(s.research.id) }) {
                 Column(Modifier.padding(16.dp)) {
@@ -190,7 +190,7 @@ fun ResearchDetailScreen(researchId: String, onBack: () -> Unit) {
         }
     }
     if (deleting) {
-        ConfirmDialog("Excluir pesquisa?", "As decisões desta pesquisa deixam de aparecer. A exclusão é propagada aos outros aparelhos.", onDismiss = { deleting = false }) {
+        ConfirmDialog("Excluir pesquisa?", "Ela será excluída também nos outros aparelhos.", onDismiss = { deleting = false }) {
             deleting = false
             scope.launch { app.curation.deleteResearch(researchId); onBack() }
         }
@@ -221,7 +221,7 @@ fun TracksScreen() {
                 }
             }
         }
-        if (rows.isEmpty()) item { EmptyState("Nenhuma música. As faixas entram na biblioteca ao serem avaliadas.") }
+        if (rows.isEmpty()) item { EmptyState("Nenhuma música avaliada ainda.") }
         items(rows, key = { it.track.id }) { row ->
             Column(Modifier.fillMaxWidth().clickable { expanded = if (expanded == row.track.id) null else row.track.id }.padding(horizontal = 16.dp, vertical = 10.dp)) {
                 TrackLine(row.track)
@@ -277,8 +277,7 @@ fun CategoriesScreen() {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Categorias com o mesmo nome", style = MaterialTheme.typography.titleSmall)
                     Text(
-                        "Provavelmente criadas em aparelhos diferentes. Juntar move todas as classificações " +
-                            "para a mais antiga e exclui as outras.",
+                        "Juntar mantém a mais antiga com todas as classificações.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     duplicates.forEach { g ->

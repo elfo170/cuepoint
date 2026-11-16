@@ -1,5 +1,4 @@
 import {
-  canonicalJson,
   hlcToIso,
   valuesEquivalent,
   type Candidate,
@@ -65,6 +64,15 @@ const FIELD: Record<string, string> = {
   user_id: 'Usuário',
 };
 
+/** Rótulo de um valor técnico (a tela mostra "Versão de <aparelho>"). */
+export const TECHNICAL_LABEL = '(valor técnico)';
+
+/** Campos cujo valor não diz nada ao usuário (ids, URNs, posição fracionária). */
+const TECHNICAL_FIELDS = new Set(['soundcloud_urn', 'external_playlist_id', 'user_id', 'position']);
+/** UUID ou URN do SoundCloud. */
+const TECHNICAL_VALUE =
+  /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|soundcloud:\S+)$/i;
+
 type Lookup = (
   type: EntityType,
   id: string | null | undefined,
@@ -76,7 +84,7 @@ async function describe(
   get: Lookup,
 ): Promise<string> {
   const r = rec as unknown as Record<string, string | null> | undefined;
-  if (!r) return '(registro desconhecido)';
+  if (!r) return 'Registro';
   const title = async (trackId: string | null) => {
     const t = (await get('track', trackId)) as unknown as Record<string, string> | undefined;
     return t ? `${t.title}${t.artist ? ` — ${t.artist}` : ''}` : 'faixa desconhecida';
@@ -122,10 +130,16 @@ async function valueLabel(
     const r = (await get(refs[field]!, String(value))) as unknown as { name?: string } | undefined;
     return r?.name ?? 'Desconhecida';
   }
+  if (field === 'track_id') {
+    const t = (await get('track', String(value))) as unknown as Record<string, string> | undefined;
+    return t?.title ?? 'Outra faixa';
+  }
   if (typeof value === 'boolean') return value ? 'Sim' : 'Não';
   if (value === null) return '(vazio)';
-  if (typeof value === 'string') return value.trim() ? value : '(vazio)';
-  return canonicalJson(value);
+  // Identificadores e chaves internas nunca aparecem crus
+  if (TECHNICAL_FIELDS.has(field) || typeof value !== 'string' || TECHNICAL_VALUE.test(value))
+    return TECHNICAL_LABEL;
+  return value.trim() ? value : '(vazio)';
 }
 
 /** Agrupa candidatos de mesmo valor; o último (maior HLC) é o vencedor provisório. */
@@ -188,9 +202,9 @@ export async function loadConflicts(db: CuePointDB): Promise<ConflictView[]> {
       entityType: type,
       entityId: row.entity_id,
       field: row.field,
-      kind: KIND[type] ?? type,
+      kind: KIND[type] ?? 'Registro',
       subject: await describe(rec, type, get),
-      fieldLabel: FIELD[row.field] ?? row.field,
+      fieldLabel: FIELD[row.field] ?? 'Outro dado',
       options,
       createdAt: row.created_at,
     });

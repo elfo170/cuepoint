@@ -96,10 +96,7 @@ fun SoundCloudScreen() {
             editing || pro == true -> Setup(onDone = { editing = false }, onCancel = if (editing) ({ editing = false }) else null)
             pro == false -> WithoutPro(onBack = { pro = null })
             else -> {
-                Text(
-                    "O CuePoint pode criar e atualizar playlists na sua conta do SoundCloud. Para isso, você registra " +
-                        "o seu próprio app na API do SoundCloud, o que exige Artist Pro.",
-                )
+                Text("Crie e atualize playlists na sua conta do SoundCloud.")
                 Text("Você tem Artist Pro?", fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = { pro = true }) { Text("Tenho Artist Pro") }
@@ -112,11 +109,7 @@ fun SoundCloudScreen() {
 
 @Composable
 private fun WithoutPro(onBack: () -> Unit) {
-    Text(
-        "Para exportar direto para o SoundCloud, cada pessoa registra o próprio app na API do SoundCloud, " +
-            "e o registro exige uma assinatura Artist Pro. Sem ela, o CuePoint não consegue criar playlists na sua conta.",
-    )
-    Text("Você continua podendo compartilhar qualquer playlist como lista de links, na página da playlist.")
+    Text("Sem Artist Pro, use o cartão \"SoundCloud via Soundiiz\" na página da playlist.")
     OutlinedButton(onClick = onBack) { Text("Voltar") }
 }
 
@@ -153,8 +146,7 @@ private fun Setup(onDone: () -> Unit, onCancel: (() -> Unit)?) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Receber do PC", style = MaterialTheme.typography.titleMedium)
             Text(
-                "No PC, abra Configurações → Exportar para o SoundCloud → Usar no celular e toque em " +
-                    "Enviar para este celular. Depois, em até 10 minutos:",
+                "Libere o envio no PC (Configurações → SoundCloud → Usar no celular) e toque abaixo em até 10 minutos.",
                 style = MaterialTheme.typography.bodySmall,
             )
             if (pcs.isEmpty()) {
@@ -166,8 +158,7 @@ private fun Setup(onDone: () -> Unit, onCancel: (() -> Unit)?) {
                 }
             }
             Text(
-                "O código e a senha chegam pela conexão cifrada do pareamento e ficam só neste celular, cifrados pelo Android. " +
-                    "Nunca vão pela sincronização.",
+                "Ficam guardados só neste celular, protegidos.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -252,11 +243,7 @@ private fun Connection(status: ScStatus, onEdit: () -> Unit) {
     } else {
         val reconnect = status.state == ScState.RECONNECT
         if (reconnect) {
-            Text(
-                "O acesso ao SoundCloud caiu (senha do app trocada, Artist Pro vencido ou autorização revogada). " +
-                    "Entre de novo; se continuar falhando, receba ou digite as credenciais outra vez.",
-                color = Color(0xFFB45309),
-            )
+            Text("O acesso ao SoundCloud expirou. Entre de novo.", color = Color(0xFFB45309))
         }
         if (status.loginPending) {
             Text("Aguardando você autorizar o CuePoint no navegador… Depois, toque em Voltar ao CuePoint.")
@@ -275,7 +262,6 @@ private fun Connection(status: ScStatus, onEdit: () -> Unit) {
     }
     (error ?: status.lastError)?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     HorizontalDivider()
-    Text("App: ${status.clientId ?: ""}", style = MaterialTheme.typography.bodySmall)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(onClick = onEdit, enabled = !busy) { Text("Trocar credenciais") }
         OutlinedButton(onClick = { forgetting = true }, enabled = !busy) { Text("Remover credenciais") }
@@ -283,7 +269,7 @@ private fun Connection(status: ScStatus, onEdit: () -> Unit) {
     if (forgetting) {
         ConfirmDialog(
             "Remover credenciais?",
-            "Desconecta este celular do SoundCloud e apaga o código e a senha do app daqui. O PC não é afetado.",
+            "Desconecta só este celular. O PC continua conectado.",
             confirm = "Remover",
             onDismiss = { forgetting = false },
         ) {

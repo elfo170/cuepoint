@@ -86,7 +86,7 @@ export function TracksPage() {
     <>
       <PageHeader title="Músicas" subtitle={`${snapshot.tracks.length} música(s) na biblioteca`} />
       <div className="mb-4 grid gap-3 md:grid-cols-[minmax(0,18rem)_1fr]">
-        <label className="relative">
+        <label className="relative self-start">
           <Search
             size={14}
             className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-neutral-400"
@@ -113,9 +113,7 @@ export function TracksPage() {
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState>
-          Nenhuma música. As faixas entram na biblioteca ao serem avaliadas no widget.
-        </EmptyState>
+        <EmptyState>Nenhuma música avaliada ainda.</EmptyState>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
           <table className="w-full text-sm" data-testid="tracks-table">

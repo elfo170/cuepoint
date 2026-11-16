@@ -44,9 +44,10 @@ export async function send<T>(request: Request): Promise<T> {
     if (/context invalidated/i.test(msg) || !chrome.runtime?.id) {
       throw new Error('O CuePoint foi atualizado. Recarregue a página para continuar.');
     }
-    throw new Error(`Não foi possível falar com o CuePoint: ${msg}`);
+    console.warn('CuePoint: falha ao enviar mensagem', msg);
+    throw new Error('O CuePoint não respondeu. Recarregue a página.');
   }
-  if (!res) throw new Error('Sem resposta do CuePoint (service worker indisponível).');
+  if (!res) throw new Error('O CuePoint não respondeu. Recarregue a página.');
   if (!res.ok) throw new Error(res.error);
   return res.data;
 }

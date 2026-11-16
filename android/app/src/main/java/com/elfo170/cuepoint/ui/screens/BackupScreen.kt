@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elfo170.cuepoint.backup.BackupRecord
 import com.elfo170.cuepoint.backup.BackupSettings
 import com.elfo170.cuepoint.container
+import com.elfo170.cuepoint.core.BackupException
 import com.elfo170.cuepoint.core.BackupFile
 import com.elfo170.cuepoint.ui.EmptyState
 import com.elfo170.cuepoint.ui.Reject
@@ -44,8 +45,31 @@ import java.util.Date
 
 private val LABELS = mapOf(
     "track" to "músicas", "research" to "pesquisas", "decision" to "decisões", "category" to "categorias",
-    "track_category" to "classificações", "playlist" to "playlists", "playlist_track" to "itens de playlist", "ops" to "operações",
+    "track_category" to "classificações", "playlist" to "playlists", "playlist_track" to "itens de playlist",
 )
+
+private const val FOLDER_LOST = "A pasta de backup não está acessível. Escolha a pasta de novo."
+const val BACKUP_INVALID = "Arquivo de backup inválido ou corrompido."
+const val BACKUP_WRITE_FAILED = "Não foi possível gravar o backup."
+const val BACKUP_OPEN_FAILED = "Não foi possível abrir o arquivo."
+
+/**
+ * Mensagem amigável para uma falha de backup/restauração. Mantém as mensagens que já são claras
+ * (não é backup, versão não suportada, arquivo/pasta inacessível); as demais validações do núcleo
+ * viram [BACKUP_INVALID] e as falhas de gravação viram [BACKUP_WRITE_FAILED]. Outros erros usam
+ * o [fallback] da ação.
+ */
+fun backupErrorText(e: Throwable, fallback: String): String {
+    val msg = e.message.orEmpty()
+    return when {
+        msg == "Não é um backup do CuePoint." || msg.startsWith("Versão de backup não suportada") ||
+            msg == BACKUP_OPEN_FAILED || msg == FOLDER_LOST -> msg
+        e is BackupException -> BACKUP_INVALID
+        msg.startsWith("já existe um backup chamado") || msg.startsWith("não foi possível gravar") ||
+            msg.startsWith("não foi possível renomear") -> BACKUP_WRITE_FAILED
+        else -> fallback
+    }
+}
 
 private fun formatIso(iso: String): String = runCatching {
     DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date.from(java.time.Instant.parse(iso)))
@@ -79,24 +103,24 @@ fun BackupScreen() {
         changes = manager.changesSinceLast()
     }
 
-    fun act(block: suspend () -> Unit) = scope.launch {
+    fun act(fallback: String = "Não foi possível concluir. Tente de novo.", block: suspend () -> Unit) = scope.launch {
         error = null
         message = null
-        runCatching { block() }.onFailure { error = it.message ?: it.toString() }
+        runCatching { block() }.onFailure { error = backupErrorText(it, fallback) }
         refresh++
     }
 
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
-        if (uri != null) act { manager.setTree(uri); message = "Pasta de backup definida." }
+        if (uri != null) act("Não foi possível usar esta pasta.") { manager.setTree(uri); message = "Pasta de backup definida." }
     }
     val pickFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
-        if (uri != null) act { pending = manager.read(uri) }
+        if (uri != null) act(BACKUP_OPEN_FAILED) { pending = manager.read(uri) }
     }
 
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Backup", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Arquivo único com toda a biblioteca, no mesmo formato do Chrome: um backup do PC pode ser restaurado aqui e vice-versa. Backups antigos nunca são apagados.",
+            "O backup também pode ser restaurado no PC.",
             style = MaterialTheme.typography.bodySmall,
         )
 
@@ -104,9 +128,9 @@ fun BackupScreen() {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Pasta", style = MaterialTheme.typography.titleMedium)
                 when {
-                    folderLost -> Text("A pasta escolhida não está mais acessível. Escolha de novo; até lá, os backups vão para o armazenamento do app.", color = MaterialTheme.colorScheme.error)
-                    folder != null -> Text("Gravando em: $folder")
-                    else -> Text("Nenhuma pasta escolhida: os backups ficam no armazenamento do app e são apagados se o app for desinstalado.")
+                    folderLost -> Text("Pasta inacessível. Escolha de novo.", color = MaterialTheme.colorScheme.error)
+                    folder != null -> Text("Pasta: $folder")
+                    else -> Text("Escolha uma pasta para não perder os backups ao desinstalar o app.")
                 }
                 OutlinedButton(onClick = { pickFolder.launch(null) }) { Text(if (folder == null) "Escolher pasta" else "Trocar pasta") }
             }
@@ -118,7 +142,7 @@ fun BackupScreen() {
                     Column(Modifier.weight(1f)) {
                         Text("Backup automático", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "Diário e a cada ${settings.everyChanges} alterações (só quando houve mudança).",
+                            "Diário e a cada ${settings.everyChanges} alterações.",
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
@@ -130,8 +154,8 @@ fun BackupScreen() {
                         }
                     })
                 }
-                Text("Alterações desde o último backup: $changes", style = MaterialTheme.typography.bodySmall)
-                Button(onClick = { act { val r = manager.run("manual"); message = "Backup gravado: ${r.filename}" } }, enabled = !running) {
+                Text("Alterações não processadas: $changes", style = MaterialTheme.typography.bodySmall)
+                Button(onClick = { act(BACKUP_WRITE_FAILED) { manager.run("manual"); message = "Backup gravado." } }, enabled = !running) {
                     Text(if (running) "Gravando…" else "Fazer backup agora")
                 }
             }
@@ -141,7 +165,7 @@ fun BackupScreen() {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Restaurar", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "Escolha um arquivo cuepoint-backup (do celular ou do Chrome). Ele é conferido antes (checksum, formato e referências) e um backup de segurança é feito antes de substituir a biblioteca. Este aparelho mantém o próprio id e os pareamentos.",
+                    "Escolha um arquivo de backup do CuePoint.",
                     style = MaterialTheme.typography.bodySmall,
                 )
                 OutlinedButton(onClick = { pickFile.launch(arrayOf("application/json", "application/octet-stream", "text/plain", "*/*")) }, enabled = !running) {
@@ -157,9 +181,8 @@ fun BackupScreen() {
         if (history.isEmpty()) EmptyState("Nenhum backup feito ainda.")
         history.take(30).forEach { r ->
             Column(Modifier.padding(vertical = 4.dp)) {
-                Text(r.filename, style = MaterialTheme.typography.bodyMedium)
                 val kind = when (r.reason) { "manual" -> "manual"; "pre-restore" -> "segurança (antes de restaurar)"; else -> "automático" }
-                Text("${formatIso(r.at)} · $kind · ${r.ops} operações · ${r.bytes / 1024} KB · ${r.destination}", style = MaterialTheme.typography.bodySmall)
+                Text("${formatIso(r.at)} · $kind · ${r.bytes / 1024} KB", style = MaterialTheme.typography.bodyMedium)
             }
             HorizontalDivider()
         }
@@ -172,16 +195,16 @@ fun BackupScreen() {
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text("Criado em ${formatIso(b.createdAt)}.")
-                    Text(b.counts().filterValues { it > 0 }.entries.joinToString(" · ") { (k, v) -> "$v ${LABELS[k] ?: k}" })
-                    Text("A biblioteca atual deste celular será substituída por completo (um backup de segurança é feito antes).", color = Reject)
+                    Text(b.counts().filter { (k, v) -> v > 0 && k in LABELS }.entries.joinToString(" · ") { (k, v) -> "$v ${LABELS.getValue(k)}" })
+                    Text("A biblioteca atual será substituída (antes é feito um backup de segurança).", color = Reject)
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
                     pending = null
-                    act {
-                        val safety = manager.restore(b)
-                        message = "Backup restaurado. Backup de segurança: ${safety.filename}"
+                    act("Não foi possível restaurar o backup.") {
+                        manager.restore(b)
+                        message = "Backup restaurado."
                     }
                 }) { Text("Restaurar", color = Reject) }
             },

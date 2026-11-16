@@ -56,9 +56,7 @@ test('backup manual gera arquivo válido e a restauração recupera a biblioteca
   await seedTwoApproved(context);
   const lib = await openLibrary(context, '/backup');
   await lib.getByRole('button', { name: 'Fazer backup agora' }).click();
-  await expect(lib.getByTestId('backup-message')).toContainText(
-    'CuePoint/backups/cuepoint-backup-',
-  );
+  await expect(lib.getByTestId('backup-message')).toHaveText('Backup salvo.');
   await expect(lib.getByTestId('backup-history').locator('li')).toHaveCount(1);
 
   // Localiza o arquivo baixado pelo chrome.downloads
@@ -89,7 +87,9 @@ test('backup manual gera arquivo válido e a restauração recupera a biblioteca
   const corrupted = join(tmpdir(), `cuepoint-corrupted-${Date.now()}.json`);
   writeFileSync(corrupted, content.replace('Latin Bass', 'Latin Bas'));
   await lib2.getByTestId('restore-input').setInputFiles(corrupted);
-  await expect(lib2.getByTestId('backup-message')).toContainText('Checksum não confere');
+  await expect(lib2.getByTestId('backup-message')).toHaveText(
+    'Arquivo de backup inválido ou corrompido.',
+  );
 
   const valid = join(tmpdir(), `cuepoint-valid-${Date.now()}.json`);
   writeFileSync(valid, content);
