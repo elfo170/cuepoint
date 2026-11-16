@@ -128,7 +128,8 @@ Script: `node packages/helper/scripts/soundiiz-poc.mjs --help`.
   - a contagem de faixas certas, erradas e não encontradas;
   - se a conta do SoundCloud usada era gratuita;
   - se o Soundiiz exigiu conta própria.
-  - Conferir na validação real da Sprint 18.
+  - Na validação real da Sprint 18 (16/11/2026), o fluxo completo pela extensão também
+    funcionou, e esses números continuaram sem registro.
 
 **O que se espera dos metadados do SoundCloud** (dry-run da biblioteca real):
 - O "artista" costuma ser quem publicou (`Mixmag premiere`, `Hugues`, um selo), às vezes com

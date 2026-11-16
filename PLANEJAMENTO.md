@@ -25,7 +25,7 @@ as próximas etapas.
 
 | Etapa | Situação |
 |---|---|
-| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026. Sprint 18 (PC) implementada e testada; falta instalar e validar no uso real. Ver *Nova feat: exportação via Soundiiz*. |
+| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026. Sprint 18 (PC) concluída e validada no uso real. Sprint 19 (celular) em curso. Ver *Nova feat: exportação via Soundiiz*. |
 | Testar à mão o pareamento entre dois PCs | Pendente. Precisa de um segundo PC com o CuePoint recém-instalado (extensão e serviço vazios). Roteiro no `prox_sessao.md`. |
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
@@ -339,7 +339,9 @@ aprovar o resultado.
   - Suíte completa verde: lint, typecheck, unitários e 28 e2e.
   - Os testes rodaram com a extensão gerada fora da `dist` (`CUEPOINT_EXT_OUT`, ver *Como
     retomar*), porque o usuário estava usando a extensão.
-  - **Falta:** instalar (build na `dist` e ↻ em `chrome://extensions`) e a validação real.
+  - **Validação real (16/11/2026): aprovada.** Extensão instalada na `dist` (perfil "Profile
+    10"). Pelo cartão novo, o usuário abriu o link no Soundiiz e concluiu a transferência para o
+    SoundCloud. O cartão Artist Pro continua igual.
 
 **Sprint 19 — Celular (Android).**
 - **Core Kotlin:**
