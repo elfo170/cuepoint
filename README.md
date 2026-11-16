@@ -140,8 +140,8 @@ aparecer. Também dá para associar à mão em **Músicas → Identificar pela U
 ### Exportar para o SoundCloud sem Artist Pro (via Soundiiz)
 
 Na página de uma playlist, o cartão **SoundCloud sem Artist Pro (via Soundiiz)** envia a lista ao
-[Soundiiz](https://soundiiz.com), um serviço de transferência de playlists. Não precisa de
-configuração nem do serviço do PC.
+[Soundiiz](https://soundiiz.com), um serviço de transferência de playlists. Funciona igual no PC
+e no celular, sem configuração e sem o serviço do PC.
 
 1. Clique em **Abrir no Soundiiz**. O link de importação abre numa aba nova e vale 24 horas.
 2. No Soundiiz, **revise as músicas encontradas** e conclua a transferência para o SoundCloud.

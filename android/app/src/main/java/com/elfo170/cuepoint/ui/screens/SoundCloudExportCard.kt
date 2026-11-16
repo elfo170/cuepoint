@@ -182,7 +182,7 @@ fun SoundCloudExportPanel(
                 status.state == ScState.UNCONFIGURED -> {
                     Text(
                         "Para criar esta playlist na sua conta do SoundCloud, configure a exportação (exige Artist Pro). " +
-                            "Sem isso, use o botão de compartilhar a lista de links.",
+                            "Sem isso, use a exportação via Soundiiz (abaixo) ou o botão de compartilhar a lista de links.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     OutlinedButton(onClick = actions.onSettings) { Text("Configurar exportação") }

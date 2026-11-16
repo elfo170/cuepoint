@@ -216,6 +216,50 @@
           ]
         }
       }
+    },
+    {
+      "name": "espaços Unicode seguem o trim do JavaScript",
+      "input": {
+        "name": "﻿ Nome　",
+        "description": " ",
+        "tracks": [
+          {
+            "title": " Faixa ",
+            "artist": "\u001f"
+          },
+          {
+            "title": "　﻿",
+            "artist": " Artista "
+          }
+        ]
+      },
+      "expected": {
+        "url": "https://soundiiz.com/go/import-playlist",
+        "headers": {
+          "accept": "application/json",
+          "content-type": "application/json"
+        },
+        "payload": {
+          "title": "Nome",
+          "sourceName": "CuePoint",
+          "description": "Playlist exportada do CuePoint",
+          "destination": "soundcloud",
+          "tracklist": [
+            {
+              "title": "Faixa",
+              "artists": [
+                "\u001f"
+              ]
+            },
+            {
+              "title": "　﻿",
+              "artists": [
+                "Artista"
+              ]
+            }
+          ]
+        }
+      }
     }
   ],
   "checks": [

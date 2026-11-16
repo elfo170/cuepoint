@@ -169,6 +169,7 @@ fun PlaylistDetailScreen(playlistId: String, onBack: () -> Unit, onSoundCloud: (
             }
             notice?.let { Text(it, modifier = Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.bodySmall) }
             SoundCloudExportCard(playlist, items, onSettings = onSoundCloud)
+            SoundiizExportCard(playlist, items)
         }
         if (items.isEmpty()) item { EmptyState("Playlist vazia.") }
         itemsIndexed(items, key = { _, it -> it.first.id }) { index, (item, track) ->

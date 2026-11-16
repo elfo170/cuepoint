@@ -25,7 +25,7 @@ as próximas etapas.
 
 | Etapa | Situação |
 |---|---|
-| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026. Sprint 18 (PC) concluída e validada no uso real. Sprint 19 (celular) em curso. Ver *Nova feat: exportação via Soundiiz*. |
+| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026. Sprint 18 (PC) concluída e validada no uso real. Sprint 19 (celular) implementada e testada; falta instalar o APK e validar no Redmi. Ver *Nova feat: exportação via Soundiiz*. |
 | Testar à mão o pareamento entre dois PCs | Pendente. Precisa de um segundo PC com o CuePoint recém-instalado (extensão e serviço vazios). Roteiro no `prox_sessao.md`. |
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
@@ -360,6 +360,13 @@ aprovar o resultado.
     exclusão `ui.*PanelTest` do release.
 - **Validação real no Redmi:** APK de release instalado com `adb install -r`, com autorização.
 - Commit: `feat: exporta playlists para o soundcloud via soundiiz pelo celular`.
+- **Andamento (16/11/2026):** implementada.
+  - Paridade: `SoundiizVectorsTest` com 4 testes. O vetor ganhou um caso de espaços Unicode,
+    porque o `trim()` do Kotlin usa outro conjunto de caracteres que o do JavaScript; o
+    `SoundiizProtocol.jsTrim` reproduz o do JavaScript.
+  - Testes novos: `SoundiizClientTest` (7) e `SoundiizExportPanelTest` (7).
+  - `test assembleDebug` verde, com 183 testes Android no total.
+  - **Falta:** APK de release instalado no Redmi (com autorização) e a validação real.
 
 **Sprint 20 — Fechamento e release v1.2.0.**
 - Registrar a validação real neste documento.

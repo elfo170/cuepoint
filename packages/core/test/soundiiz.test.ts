@@ -65,6 +65,18 @@ const inputCases: { name: string; input: SoundiizPlaylistInput }[] = [
       ],
     },
   },
+  {
+    // `trim()` do JavaScript: remove \uFEFF, \u00A0 e \u3000, mas não \u001F (o Kotlin difere)
+    name: 'espaços Unicode seguem o trim do JavaScript',
+    input: {
+      name: '\uFEFF Nome\u3000',
+      description: '\u00A0',
+      tracks: [
+        { title: '\u00A0Faixa\u2003', artist: '\u001F' },
+        { title: '\u3000\uFEFF', artist: '\u2028Artista\u2029' },
+      ],
+    },
+  },
 ];
 const inputs = inputCases.map((c) => ({ ...c, expected: soundiizImportRequest(c.input) }));
 

@@ -116,7 +116,11 @@ private fun WithoutPro(onBack: () -> Unit) {
         "Para exportar direto para o SoundCloud, cada pessoa registra o próprio app na API do SoundCloud, " +
             "e o registro exige uma assinatura Artist Pro. Sem ela, o CuePoint não consegue criar playlists na sua conta.",
     )
-    Text("Você continua podendo compartilhar qualquer playlist como lista de links, na página da playlist.")
+    Text(
+        "Sem Artist Pro, use \"SoundCloud sem Artist Pro (via Soundiiz)\" na página da playlist: o Soundiiz procura as " +
+            "músicas no SoundCloud e você revisa a lista antes de transferir. A correspondência pode errar, então confira cada música.",
+    )
+    Text("Você também pode compartilhar qualquer playlist como lista de links, na página da playlist.")
     OutlinedButton(onClick = onBack) { Text("Voltar") }
 }
 
