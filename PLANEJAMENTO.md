@@ -30,6 +30,17 @@ as próximas etapas.
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
 
+**Licença (16/11/2026):** PolyForm Noncommercial License 1.0.0, com o projeto apresentado como
+*source-available*.
+- O texto oficial está em `LICENSE`, sem alterações. A primeira linha é `Required Notice: Copyright
+  2026 Leonardo Rodrigues Macieira - Maci (https://github.com/elfo170/cuepoint)`.
+- O SPDX `PolyForm-Noncommercial-1.0.0` está nos `package.json`.
+- O `LICENSE` vai dentro dos zips da release.
+- O README tem a seção *Licença*, com a permissão adicional do autor para uso profissional por DJs
+  (texto em inglês, definido pelo usuário).
+- Outros usos comerciais: contato bookings.maci@gmail.com.
+- Não entra nos créditos do app nem da extensão.
+
 **Decidido não fazer** (não retomar): publicação nas lojas (Chrome Web Store e Play Store) e
 compartilhamento de biblioteca entre pessoas por convite.
 

@@ -11,6 +11,8 @@ filtra o que aprovou, monta playlists e exporta.
   casa.
 - **Sem conta e sem servidor:** os dados ficam no seu computador e no seu celular.
 - O SoundCloud continua sendo o player. O CuePoint só observa o que está tocando.
+- **Código-fonte disponível (source-available)** sob a PolyForm Noncommercial 1.0.0, com permissão
+  de uso profissional para DJs ([licença](#10-licença)).
 
 **[⬇ Baixar a versão mais recente](https://github.com/elfo170/cuepoint/releases/latest)**
 
@@ -27,6 +29,7 @@ filtra o que aprovou, monta playlists e exporta.
 7. [Backup](#7-backup)
 8. [Problemas comuns](#8-problemas-comuns)
 9. [Para desenvolvedores](#9-para-desenvolvedores)
+10. [Licença](#10-licença)
 
 ---
 
@@ -297,3 +300,28 @@ npm run release:package  # monta os arquivos da release em release\<tag>\
 Mais contexto: [PRD](CuePoint_PRD_v1.0.md) · [planejamento e status](PLANEJAMENTO.md) ·
 [contrato TS ⇄ Kotlin](spec/README.md) · [API do SoundCloud](docs/SOUNDCLOUD_API.md) ·
 [multiusuário](docs/MULTIUSUARIO.md).
+
+## 10. Licença
+
+O CuePoint é **source-available** (código-fonte disponível): o código é público, mas não é open
+source, porque o uso comercial é restrito. Ele é licenciado sob a
+[PolyForm Noncommercial License 1.0.0](LICENSE).
+
+- **Permitido:** uso pessoal, estudo, hobby, pesquisa e uso por organizações sem fins lucrativos,
+  inclusive modificar e redistribuir para esses fins, desde que junto com o arquivo
+  [LICENSE](LICENSE) e a linha `Required Notice` dele.
+- **DJs:** podem usar profissionalmente, pela permissão adicional abaixo.
+- **Outros usos comerciais:** precisam de autorização do autor. Contato:
+  bookings.maci@gmail.com.
+
+**Permissão adicional para DJs:**
+
+> Commercial use of the software by DJs is permitted solely for personal professional activities,
+> including music research, curation, organization, preparation, rehearsal and performance of DJ
+> sets, whether paid or unpaid.
+>
+> This permission does not authorize the sale, licensing, sublicensing, hosting, distribution for
+> commercial consideration, or incorporation of the software into commercial products or services.
+
+Copyright 2026 Leonardo Rodrigues Macieira - Maci. As dependências do projeto continuam sob as
+próprias licenças.
