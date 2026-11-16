@@ -87,7 +87,8 @@ no widget. Nela você:
   categorias;
 - gerencia as **categorias**;
 - monta **playlists**: à mão ou a partir de uma pesquisa ou categoria. Dá para reordenar e exportar
-  como lista de links, CSV ou JSON, ou direto para o SoundCloud (requer Artist Pro, veja abaixo);
+  como lista de links, CSV ou JSON, ou para o SoundCloud: direto (requer Artist Pro) ou pelo
+  Soundiiz (sem Artist Pro), veja abaixo;
 - faz e restaura **backups** (seção 7);
 - pareia o celular em **Dispositivos** (seção 6).
 
@@ -99,8 +100,7 @@ O CuePoint cria e atualiza playlists na sua conta do SoundCloud, pelo PC ou pelo
 > exige um app registrado no SoundCloud, e só contas **Artist Pro** podem registrar apps. Como o
 > CuePoint não tem servidor, cada pessoa registra o **próprio** app; os termos do SoundCloud não
 > permitem distribuir um app único com a senha embutida. Sem Artist Pro, exporte a playlist como
-> lista de links, CSV ou JSON e monte-a no SoundCloud a partir deles. **Uma alternativa para quem
-> não tem Artist Pro está sendo planejada.**
+> lista de links, CSV ou JSON, ou use a [exportação via Soundiiz](#exportar-para-o-soundcloud-sem-artist-pro-via-soundiiz).
 
 No PC, a exportação usa o serviço do PC (seção 6.1), que guarda as credenciais cifradas com a sua
 conta do Windows.
@@ -136,6 +136,23 @@ O app Android também exporta e atualiza playlists, **sem o PC ligado**, depois 
 **Faixa "provisória":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
 internet). Ela entra como provisória e é associada sozinha à definitiva assim que o identificador
 aparecer. Também dá para associar à mão em **Músicas → Identificar pela URL**.
+
+### Exportar para o SoundCloud sem Artist Pro (via Soundiiz)
+
+Na página de uma playlist, o cartão **SoundCloud sem Artist Pro (via Soundiiz)** envia a lista ao
+[Soundiiz](https://soundiiz.com), um serviço de transferência de playlists. Não precisa de
+configuração nem do serviço do PC.
+
+1. Clique em **Abrir no Soundiiz**. O link de importação abre numa aba nova e vale 24 horas.
+2. No Soundiiz, **revise as músicas encontradas** e conclua a transferência para o SoundCloud.
+
+> ⚠️ **A correspondência pode errar.** O Soundiiz procura cada música pelo título e pelo artista,
+> e pode escolher outra versão ou outro remix. Confira a lista antes de transferir. A
+> transferência segue as regras e os limites da conta do Soundiiz.
+
+- Até **200 músicas** por envio. Playlists maiores precisam ser divididas.
+- O Soundiiz recebe o nome e a descrição da playlist e o título e o artista de cada música
+  ([privacidade](docs/PRIVACIDADE.md)). Detalhes: [docs/SOUNDIIZ_API.md](docs/SOUNDIIZ_API.md).
 
 ## 4. Instalar o app no celular (Android)
 

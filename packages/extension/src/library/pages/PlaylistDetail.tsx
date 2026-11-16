@@ -14,6 +14,7 @@ import {
 } from '../components';
 import { downloadText } from '../download';
 import { SoundCloudExport } from './SoundCloudExport';
+import { SoundiizExport } from './SoundiizExport';
 
 export function PlaylistDetailPage() {
   const { id = '' } = useParams();
@@ -97,6 +98,7 @@ export function PlaylistDetailPage() {
         }
       />
       <SoundCloudExport playlist={playlist} items={items} />
+      <SoundiizExport playlist={playlist} items={items} />
       {notice && (
         <p role="status" className="mb-3 text-sm text-neutral-500">
           {notice}

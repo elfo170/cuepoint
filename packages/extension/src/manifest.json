@@ -39,5 +39,5 @@
     "notifications",
     "nativeMessaging"
   ],
-  "host_permissions": ["https://soundcloud.com/*"]
+  "host_permissions": ["https://soundcloud.com/*", "https://soundiiz.com/*"]
 }

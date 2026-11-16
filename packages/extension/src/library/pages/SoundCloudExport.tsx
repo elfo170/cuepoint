@@ -116,7 +116,8 @@ export function SoundCloudExport({
         <Link to="/settings" className="text-orange-600 underline">
           configure a exportação
         </Link>{' '}
-        (exige Artist Pro). Sem isso, use os botões de exportar links, CSV ou JSON.
+        (exige Artist Pro). Sem isso, use a exportação via Soundiiz (abaixo) ou os botões de
+        exportar links, CSV ou JSON.
       </p>
     );
   } else if (view.status.state !== 'connected') {

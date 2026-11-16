@@ -25,7 +25,7 @@ as próximas etapas.
 
 | Etapa | Situação |
 |---|---|
-| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026; Sprint 18 (PC) em curso. Ver *Nova feat: exportação via Soundiiz*. |
+| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026. Sprint 18 (PC) implementada e testada; falta instalar e validar no uso real. Ver *Nova feat: exportação via Soundiiz*. |
 | Testar à mão o pareamento entre dois PCs | Pendente. Precisa de um segundo PC com o CuePoint recém-instalado (extensão e serviço vazios). Roteiro no `prox_sessao.md`. |
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
@@ -333,6 +333,13 @@ aprovar o resultado.
 - **Docs:** seção "O que é enviado ao Soundiiz" em `docs/PRIVACIDADE.md` e trecho no README.
 - **Validação real:** o usuário exporta uma playlist pelo PC e conclui a transferência.
 - Commit: `feat: exporta playlists para o soundcloud via soundiiz pelo pc`.
+- **Andamento (16/11/2026):** implementada.
+  - Testes passando: 9 unitários novos do cartão e do serviço, o do manifesto, e o e2e
+    `soundiiz-export.spec.ts`, que confere o payload na ordem, a aba aberta e o CSV intacto.
+  - Suíte completa verde: lint, typecheck, unitários e 28 e2e.
+  - Os testes rodaram com a extensão gerada fora da `dist` (`CUEPOINT_EXT_OUT`, ver *Como
+    retomar*), porque o usuário estava usando a extensão.
+  - **Falta:** instalar (build na `dist` e ↻ em `chrome://extensions`) e a validação real.
 
 **Sprint 19 — Celular (Android).**
 - **Core Kotlin:**
@@ -525,6 +532,13 @@ aparelho.
      não sobe).
   4. Rodar `npm run helper:install`, que mantém os dados.
 - **Atualizar a extensão:** `npm run build` e recarregar em `chrome://extensions`.
+  - ⚠️ **O Chrome do dia a dia (perfil "Profile 10") carrega a extensão desempacotada direto de
+    `packages/extension/dist`.** O `npm run build`, o `npm run e2e` e o build da raiz começam
+    apagando essa pasta.
+  - Com o usuário usando a extensão, gerar e testar fora dela:
+    `CUEPOINT_EXT_OUT=<pasta temporária> node packages/extension/scripts/build.mjs` e, para os
+    e2e, `CUEPOINT_EXT_OUT=<mesma pasta> npx playwright test` dentro de `packages/extension`.
+  - Só gerar na `dist` na hora de instalar, avisando o usuário antes.
 - **Celular real (Redmi Note 14 Pro 5G):**
   - Instalar com `adb install -r`, que mantém os dados. A release é assinada com a chave local
     (`android/keystore.properties`, fora do Git).

@@ -57,8 +57,13 @@ function WithoutPro({ onBack }: { onBack: () => void }) {
         CuePoint não consegue criar playlists na sua conta.
       </p>
       <p>
-        Você continua podendo exportar qualquer playlist como lista de links, CSV ou JSON (na página
-        da playlist) e montar a playlist no SoundCloud a partir desses links.
+        Sem Artist Pro, use <strong>SoundCloud sem Artist Pro (via Soundiiz)</strong> na página da
+        playlist: o Soundiiz procura as músicas no SoundCloud e você revisa a lista antes de
+        transferir. A correspondência pode errar, então confira cada música.
+      </p>
+      <p>
+        Você também pode exportar qualquer playlist como lista de links, CSV ou JSON (na página da
+        playlist) e montar a playlist no SoundCloud a partir desses links.
       </p>
       <button type="button" className={secondaryButtonClass} onClick={onBack}>
         Voltar

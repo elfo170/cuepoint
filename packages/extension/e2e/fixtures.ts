@@ -10,7 +10,10 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const EXTENSION_PATH = resolve(fileURLToPath(new URL('..', import.meta.url)), 'dist');
+/** `CUEPOINT_EXT_OUT`: extensão gerada fora da `dist` (ver scripts/build.mjs). */
+export const EXTENSION_PATH = process.env.CUEPOINT_EXT_OUT
+  ? resolve(process.env.CUEPOINT_EXT_OUT)
+  : resolve(fileURLToPath(new URL('..', import.meta.url)), 'dist');
 export const EXTENSION_ID = 'daaemjinbpmlbffnjbbonliiglbmjjmn';
 
 export async function launchWithExtension(userDataDir?: string): Promise<BrowserContext> {

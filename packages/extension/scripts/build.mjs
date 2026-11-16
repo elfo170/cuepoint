@@ -7,7 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const outDir = resolve(root, 'dist');
+// CUEPOINT_EXT_OUT gera em outra pasta: o Chrome do dia a dia carrega a `dist` desempacotada, e
+// este script a apaga antes de gerar. Testes com a extensão em uso não podem tocá-la.
+const outDir = process.env.CUEPOINT_EXT_OUT
+  ? resolve(process.env.CUEPOINT_EXT_OUT)
+  : resolve(root, 'dist');
 const watch = process.argv.includes('--watch') ? {} : null;
 
 rmSync(outDir, { recursive: true, force: true });

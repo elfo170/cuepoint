@@ -1,6 +1,6 @@
 # Política de privacidade do CuePoint
 
-Última atualização: 12/11/2026.
+Última atualização: 16/11/2026.
 
 O CuePoint é um programa de curadoria musical que roda nos seus aparelhos (extensão do Chrome,
 serviço do PC no Windows e app Android). Não existe servidor do CuePoint: nenhum dado seu vai para
@@ -29,6 +29,18 @@ Só quando você usa a exportação, e só depois de um clique seu:
 
 O CuePoint guarda do SoundCloud apenas o identificador da playlist exportada, para poder
 atualizá-la depois. O nome da sua conta é mostrado na tela e não é gravado.
+
+## O que é enviado ao Soundiiz
+
+Só quando você usa **SoundCloud sem Artist Pro (via Soundiiz)**, e só depois de um clique seu:
+
+- o nome e a descrição da playlist;
+- o título e o artista de cada música, na ordem da playlist.
+
+Não vão identificadores nem links do SoundCloud, tokens, nem dados de outras playlists. O Soundiiz
+devolve um link de importação temporário (24 horas), que o CuePoint abre e não guarda. O que
+acontece na página do Soundiiz segue a política de privacidade do próprio Soundiiz
+(https://soundiiz.com).
 
 ## Leitura no celular
 
