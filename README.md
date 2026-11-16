@@ -1,6 +1,16 @@
+<div align="center">
+
 # CuePoint
 
 **Curadoria de músicas enquanto você ouve o SoundCloud.**
+
+[![PolyForm Noncommercial](https://img.shields.io/badge/PolyForm%20Noncommercial-2b2b2b)](LICENSE)
+[![Source Available](https://img.shields.io/badge/Source%20Available-15803d)](#10-license)
+[![Chrome](https://img.shields.io/badge/Chrome-2b2b2b)](#2-instalar-a-extensão-do-chrome)
+[![Android](https://img.shields.io/badge/Android-2b2b2b)](#4-instalar-o-app-no-celular-android)
+[![Windows](https://img.shields.io/badge/Windows-2b2b2b)](#61-instalar-o-serviço-do-pc-uma-vez)
+
+</div>
 
 Você abre uma playlist no SoundCloud e, a cada faixa, toca em **✓ aprovar** ou **✗ rejeitar**. As
 aprovadas ganham **categorias** ("Vocal", "Para abrir o set"…), e tudo fica guardado numa
