@@ -1,6 +1,7 @@
 package com.elfo170.cuepoint.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -201,5 +203,18 @@ fun SettingsScreen(onDevices: () -> Unit = {}, onConflicts: () -> Unit = {}, onB
             }
         }
         DebugTools.Section()
+        Credits()
+    }
+}
+
+/** Créditos do autor, no fim das Configurações. */
+@Composable
+private fun Credits() {
+    HorizontalDivider(Modifier.padding(top = 12.dp))
+    SelectionContainer {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text("Criado por Maci - @maci.mp3", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Apoie o projeto - Pix: bookings.maci@gmail.com", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }

@@ -37,7 +37,7 @@ export function ResearchesPage() {
       >
         <input
           aria-label="Nome da pesquisa"
-          placeholder="Nome (ex.: Latin Bass)"
+          placeholder="Nome da pesquisa"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className={inputClass}

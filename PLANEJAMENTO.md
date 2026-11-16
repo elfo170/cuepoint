@@ -371,7 +371,10 @@ aprovar o resultado.
     transferência foi concluída.
 
 **Ajustes de interface (pedido do usuário em 16/11/2026, antes da Sprint 20).**
-1. **Créditos:** a fazer. O conteúdo será enviado pelo usuário.
+1. **Créditos:** concluído em 16/11/2026.
+   - Texto: "Criado por Maci - @maci.mp3 | Apoie o projeto - Pix: bookings.maci@gmail.com".
+   - Extensão: no rodapé do menu lateral, em todas as telas. O menu ficou fixo na altura da tela.
+   - App: no fim das Configurações, com o texto selecionável.
 2. **Enxugar textos:** concluído em 16/11/2026, ainda sem instalar.
    - Levantamento de 63 pontos (Chrome e app), aprovado com ajustes do usuário em 7 deles.
    - Saíram subtítulos explicativos, identificadores crus (ids, URN, Client ID, hash), contagens
@@ -382,7 +385,17 @@ aprovar o resultado.
    - No Android, "Ler outros players" ficou só no build de debug.
    - A mensagem de bibliotecas diferentes (TS e Kotlin) ficou "Os aparelhos têm bibliotecas
      diferentes. Apague a do aparelho novo para parear."
-3. **Ícone novo do app e da extensão:** a fazer.
+3. **Ícone novo do app e da extensão:** concluído em 16/11/2026.
+   - Origem: `cuepoint.png` na raiz, ignorado pelo Git. Os tamanhos foram gerados a partir dele e
+     estão no repositório.
+   - Extensão: `public/icons/icon{16,48,128}.png`, recortados no logo. O ícone também aparece no
+     menu lateral e no popup.
+   - App: ícone adaptativo (`mipmap-anydpi-v26/ic_launcher.xml`), com fundo `#0B0B0A` e o logo
+     centrado a 95%, para caber nas máscaras redondas. Substitui o vetor antigo.
+4. **Ajustes pedidos na validação (16/11/2026):**
+   - sem exemplos nos campos de nova pesquisa e nova categoria;
+   - a busca de Músicas (e da Pesquisa) não perde mais o ícone da lupa quando a lista de
+     categorias quebra em várias linhas.
 
 **Sprint 20 — Fechamento e release v1.2.0.**
 - Registrar a validação real neste documento.

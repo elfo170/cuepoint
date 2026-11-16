@@ -36,7 +36,7 @@ export function CategoriesPage() {
       >
         <input
           aria-label="Nova categoria"
-          placeholder="Nova categoria (ex.: Vocal)"
+          placeholder="Nova categoria"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className={inputClass}

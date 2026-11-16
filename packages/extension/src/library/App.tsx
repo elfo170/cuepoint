@@ -6,7 +6,6 @@ import {
   MonitorSmartphone,
   ListMusic,
   ListOrdered,
-  Music2,
   Settings,
   Tags,
 } from 'lucide-react';
@@ -69,14 +68,27 @@ export interface ExtraRoute {
   element: ReactNode;
 }
 
+/** Créditos do autor, em todas as telas da biblioteca. */
+function Credits() {
+  return (
+    <footer
+      data-testid="credits"
+      className="space-y-0.5 px-4 py-3 text-xs text-neutral-500 md:mt-auto dark:text-neutral-400"
+    >
+      <p>Criado por Maci - @maci.mp3</p>
+      <p>
+        Apoie o projeto - Pix: <span className="select-all">bookings.maci@gmail.com</span>
+      </p>
+    </footer>
+  );
+}
+
 export function Layout(props: { children: ReactNode; nav?: NavItem[] }) {
   return (
     <div className="flex min-h-screen flex-col bg-white text-neutral-900 md:flex-row dark:bg-neutral-950 dark:text-neutral-100">
-      <aside className="border-b border-neutral-200 md:w-56 md:shrink-0 md:border-r md:border-b-0 dark:border-neutral-800">
+      <aside className="flex flex-col border-b border-neutral-200 md:sticky md:top-0 md:h-screen md:w-56 md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 dark:border-neutral-800">
         <div className="flex items-center gap-2 px-4 py-4">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white">
-            <Music2 size={16} aria-hidden />
-          </span>
+          <img src="icons/icon48.png" alt="" className="h-8 w-8 rounded-lg" />
           <span className="text-lg font-semibold tracking-tight">CuePoint</span>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-col" aria-label="Seções">
@@ -99,6 +111,7 @@ export function Layout(props: { children: ReactNode; nav?: NavItem[] }) {
             </NavLink>
           ))}
         </nav>
+        <Credits />
       </aside>
       <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{props.children}</main>
     </div>

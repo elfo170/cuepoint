@@ -86,7 +86,7 @@ export function TracksPage() {
     <>
       <PageHeader title="Músicas" subtitle={`${snapshot.tracks.length} música(s) na biblioteca`} />
       <div className="mb-4 grid gap-3 md:grid-cols-[minmax(0,18rem)_1fr]">
-        <label className="relative">
+        <label className="relative self-start">
           <Search
             size={14}
             className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-neutral-400"
