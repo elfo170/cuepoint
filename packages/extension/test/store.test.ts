@@ -263,7 +263,7 @@ describe('isolamento por usuário', () => {
     });
     theirs.put('research', '20000000-0000-4000-8000-000000000002', { ...fields, user_id: OTHER });
     await expect(store.receive([...mine.log, ...theirs.log])).rejects.toThrow(
-      /usuários diferentes/,
+      /bibliotecas diferentes/,
     );
     expect(await db.researches.count()).toBe(0);
     expect(await store.versionVector()).toEqual({});

@@ -32,7 +32,7 @@ atualizá-la depois. O nome da sua conta é mostrado na tela e não é gravado.
 
 ## O que é enviado ao Soundiiz
 
-Só quando você usa **SoundCloud sem Artist Pro (via Soundiiz)**, na extensão ou no app Android, e
+Só quando você usa **SoundCloud via Soundiiz**, na extensão ou no app Android, e
 só depois de um clique (ou toque) seu:
 
 - o nome e a descrição da playlist;

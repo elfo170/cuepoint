@@ -133,13 +133,13 @@ O app Android também exporta e atualiza playlists, **sem o PC ligado**, depois 
 4. Na página de uma playlist, o cartão **Exportar para o SoundCloud** funciona como no PC. O vínculo
    com a playlist publicada sincroniza: PC e celular atualizam a mesma.
 
-**Faixa "provisória":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
-internet). Ela entra como provisória e é associada sozinha à definitiva assim que o identificador
+**Faixa "não identificada":** às vezes o CuePoint não consegue o identificador da faixa (ex.: sem
+internet). Ela entra assim e é associada sozinha à faixa certa assim que o identificador
 aparecer. Também dá para associar à mão em **Músicas → Identificar pela URL**.
 
 ### Exportar para o SoundCloud sem Artist Pro (via Soundiiz)
 
-Na página de uma playlist, o cartão **SoundCloud sem Artist Pro (via Soundiiz)** envia a lista ao
+Na página de uma playlist, o cartão **SoundCloud via Soundiiz** envia a lista ao
 [Soundiiz](https://soundiiz.com), um serviço de transferência de playlists. Funciona igual no PC
 e no celular, sem configuração e sem o serviço do PC.
 
@@ -254,13 +254,13 @@ celular antigo.
 | Sintoma                                                       | O que fazer                                                                                                                                                                      |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | O widget não aparece no SoundCloud                            | Recarregue a aba do SoundCloud (F5). Confira em `chrome://extensions` se o CuePoint está ligado.                                                                                 |
-| **Dispositivos** mostra o serviço auxiliar como "não instalado" | Normal se você não instalou o serviço do PC (seção 6.1). Se instalou, clique em ↻ no CuePoint em `chrome://extensions`.                                                          |
+| **Dispositivos** mostra o serviço de sincronização como "não instalado" | Normal se você não instalou o serviço do PC (seção 6.1). Se instalou, clique em ↻ no CuePoint em `chrome://extensions`.                                                          |
 | `Instalar.cmd` diz que o Node.js não foi encontrado ou é antigo | Instale o Node.js LTS em [nodejs.org](https://nodejs.org), feche a janela e rode `Instalar.cmd` de novo.                                                                         |
 | O celular não encontra o PC                                   | Os dois precisam estar na mesma rede (rede de convidados isola os aparelhos). Permita o Node.js no Firewall do Windows em redes privadas. Abra o app do CuePoint para forçar uma tentativa. |
 | A notificação do CuePoint não aparece no celular              | Confira o cartão de configuração no app: acesso às notificações, permissão de notificações e, em Xiaomi, início automático e bateria sem restrições. Depois abra o app uma vez. |
 | A notificação do CuePoint sumiu e não volta                   | Ela foi dispensada ou o SoundCloud foi fechado. Abra o CuePoint (e o SoundCloud) para ela voltar.                                                                                 |
 | A notificação some da tela bloqueada                          | Limitação de alguns sistemas, como o HyperOS: ela some quando chega outra notificação. Continua disponível na cortina.                                                             |
-| Uma faixa aparece como "provisória"                           | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
+| Uma faixa aparece como "não identificada"                     | O identificador do SoundCloud ainda não foi obtido. Ela se resolve sozinha ou por **Identificar pela URL**.                                                                       |
 | Pareamento recusado: "os aparelhos são de usuários diferentes" | O aparelho novo já tem a biblioteca de outra pessoa (ou outra biblioteca sua). Apague a biblioteca dele ou restaure nele um backup do PC e pareie de novo. |
 | A exportação pede para **Reconectar**                         | O acesso ao SoundCloud caiu (Artist Pro vencido, senha do app trocada ou autorização revogada). Clique em **Reconectar**; se falhar, confira as credenciais do app. |
 

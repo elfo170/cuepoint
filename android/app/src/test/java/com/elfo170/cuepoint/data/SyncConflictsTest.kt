@@ -108,8 +108,35 @@ class SyncConflictsTest {
         fromOther()
         val c = Conflicts.load(store).single()
         assertEquals("Decisão", c.kind)
-        assertTrue(c.subject.contains("Deep Groove") && c.subject.contains("Latin Bass"))
+        assertEquals("Deep Groove — Fixture Artist", c.subject)
         assertEquals(listOf("Aprovada", "Rejeitada"), c.options.map { it.label }.sorted())
+    }
+
+    @Test
+    fun technicalValuesNeverShowRawIdentifiers() = runTest {
+        connect()
+        val pl = curation.createPlaylist("Warmup", null, null)
+        fromHere()
+        replica.put(EntityType.PLAYLIST, pl.id, mapOf("external_playlist_id" to p("soundcloud:playlists:2")))
+        curation.setExternalPlaylistId(pl.id, "soundcloud:playlists:1")
+        fromOther()
+
+        val c = Conflicts.load(store).single()
+        assertEquals("Warmup", c.subject)
+        assertEquals("Playlist no SoundCloud", c.fieldLabel)
+        assertTrue(c.options.all { it.technical && it.label == Conflicts.TECHNICAL })
+        val texts = c.options.map { Conflicts.optionText(it, emptyMap()) }
+        assertEquals(listOf("Versão de outro aparelho", "Versão de outro aparelho"), texts)
+        assertTrue(texts.none { it.contains("soundcloud:") || it.contains(other.take(8)) })
+        assertEquals("Versão de Pixel", Conflicts.optionText(c.options.first { other in it.origins }, mapOf(other to "Pixel")))
+    }
+
+    @Test
+    fun idLikeTextIsDetected() {
+        assertTrue(Conflicts.isIdLike(other))
+        assertTrue(Conflicts.isIdLike("soundcloud:tracks:123"))
+        assertTrue(!Conflicts.isIdLike("Techno Peak"))
+        assertEquals("outro aparelho", Conflicts.originName(other, emptyMap()))
     }
 
     @Test

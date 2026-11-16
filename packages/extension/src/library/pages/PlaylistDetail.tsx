@@ -84,7 +84,7 @@ export function PlaylistDetailPage() {
                 className={secondaryButtonClass}
                 onClick={() => doExport(f)}
               >
-                <Download size={14} aria-hidden /> {f === 'urls' ? 'URLs' : f.toUpperCase()}
+                <Download size={14} aria-hidden /> {f === 'urls' ? 'Links' : f.toUpperCase()}
               </button>
             ))}
             <ConfirmButton

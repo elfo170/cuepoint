@@ -370,6 +370,20 @@ aprovar o resultado.
     `adb install -r`, por cima, mantendo os dados. Pelo cartão novo, o link abriu no navegador e a
     transferência foi concluída.
 
+**Ajustes de interface (pedido do usuário em 16/11/2026, antes da Sprint 20).**
+1. **Créditos:** a fazer. O conteúdo será enviado pelo usuário.
+2. **Enxugar textos:** concluído em 16/11/2026, ainda sem instalar.
+   - Levantamento de 63 pontos (Chrome e app), aprovado com ajustes do usuário em 7 deles.
+   - Saíram subtítulos explicativos, identificadores crus (ids, URN, Client ID, hash), contagens
+     de operações, porta e pasta.
+   - Erros técnicos passaram a ter mensagens simples.
+   - "provisória" virou "não identificada".
+   - Os cartões passaram a se chamar "SoundCloud via Soundiiz" e "Serviço de sincronização".
+   - No Android, "Ler outros players" ficou só no build de debug.
+   - A mensagem de bibliotecas diferentes (TS e Kotlin) ficou "Os aparelhos têm bibliotecas
+     diferentes. Apague a do aparelho novo para parear."
+3. **Ícone novo do app e da extensão:** a fazer.
+
 **Sprint 20 — Fechamento e release v1.2.0.**
 - Registrar a validação real neste documento.
 - Notas em `docs/releases/v1.2.0.md`, no formato da 1.1.0, com o aviso sobre a correspondência e

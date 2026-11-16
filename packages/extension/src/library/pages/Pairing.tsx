@@ -1,13 +1,4 @@
-import {
-  Check,
-  Copy,
-  Link2,
-  QrCode,
-  RefreshCw,
-  ShieldAlert,
-  Smartphone,
-  Trash2,
-} from 'lucide-react';
+import { Check, Copy, Link2, QrCode, RefreshCw, ShieldAlert, Smartphone } from 'lucide-react';
 import { FOREIGN_USER_MESSAGE } from '@cuepoint/core';
 import QRCode from 'qrcode';
 import { useCallback, useEffect, useState } from 'react';
@@ -45,28 +36,25 @@ export interface PeerView {
   } | null;
 }
 
-const RUN_STATUS: Record<string, string> = {
-  ok: 'concluída',
-  error: 'falhou',
-  running: 'em andamento',
-  approval_required: 'aguardando aprovação',
-};
-
 /** Erros conhecidos da sync, em linguagem simples. */
 const RUN_ERRORS: Record<string, string> = {
   foreign_user: FOREIGN_USER_MESSAGE,
-  pending_confirmation: 'confirme o pareamento no outro aparelho',
-  revoked: 'aparelho revogado',
+  pending_confirmation: 'Confirme o pareamento no outro aparelho.',
+  revoked: 'Aparelho revogado.',
 };
 
-/** "Última execução: concluída · 3 recebidas, 2 enviadas" (ou o erro). */
-export function describeRun(run: NonNullable<PeerView['last_run']>): string {
-  const status = RUN_STATUS[run.status] ?? run.status;
-  if (run.status === 'error') {
-    const error = run.error ? (RUN_ERRORS[run.error] ?? run.error) : '';
-    return `${status}${error ? ` (${error})` : ''}`;
-  }
-  return `${status} · ${run.received} recebida(s), ${run.sent} enviada(s)`;
+/** Situação da sincronização com o aparelho, em linguagem simples. */
+export function peerSyncText(p: Pick<PeerView, 'pending' | 'last_sync_at' | 'last_run'>): string {
+  const run = p.last_run;
+  if (run?.status === 'error')
+    return (
+      (run.error && RUN_ERRORS[run.error]) ||
+      'A última sincronização falhou. O aparelho está ligado e na mesma rede?'
+    );
+  if (run?.status === 'running') return 'Sincronizando…';
+  if (run?.status === 'approval_required') return 'Aguardando aprovação.';
+  if (p.pending == null || p.pending > 0 || !p.last_sync_at) return 'Aguardando sincronizar';
+  return `Sincronizado em ${fmt(p.last_sync_at)}`;
 }
 
 const helperRequest = <T,>(req: Record<string, unknown>) =>
@@ -123,7 +111,7 @@ function AddDevice({ onDone }: { onDone: () => void }) {
                 No celular, abra o CuePoint → Configurações → Dispositivos →{' '}
                 <strong>Parear com PC</strong>.
               </li>
-              <li>Escaneie o QR (ou cole o código abaixo).</li>
+              <li>Escaneie o QR ou copie o código abaixo.</li>
               <li>
                 Confira se o código de 6 dígitos é o mesmo nos dois aparelhos e confirme aqui.
               </li>
@@ -131,26 +119,21 @@ function AddDevice({ onDone }: { onDone: () => void }) {
             <p className="text-neutral-500">
               {left > 0
                 ? `Válido por mais ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`
-                : 'Expirado.'}{' '}
-              O QR só estabelece a confiança entre os aparelhos — ele não contém a sua biblioteca.
+                : 'Expirado.'}
             </p>
             <div className="flex gap-2">
-              <input
-                readOnly
-                value={pairing.uri}
-                aria-label="Código de pareamento"
-                className={`${inputClass} font-mono text-xs`}
-                data-testid="pairing-uri"
-              />
               <button
                 type="button"
                 className={secondaryButtonClass}
+                data-testid="pairing-uri"
+                data-uri={pairing.uri}
                 onClick={() => {
                   void navigator.clipboard.writeText(pairing.uri);
                   setCopied(true);
                 }}
               >
-                {copied ? <Check size={14} aria-hidden /> : <Copy size={14} aria-hidden />} Copiar
+                {copied ? <Check size={14} aria-hidden /> : <Copy size={14} aria-hidden />}{' '}
+                {copied ? 'Copiado' : 'Copiar código'}
               </button>
             </div>
             <div className="flex gap-2">
@@ -210,7 +193,7 @@ function JoinDevice({ onDone }: { onDone: () => void }) {
           computador.
           {result.adoptedUserId && (
             <span className="mt-1 block text-neutral-500">
-              Este PC estava vazio e passou a usar a mesma biblioteca de {result.name}.
+              Este PC agora usa a biblioteca de {result.name}.
             </span>
           )}
         </p>
@@ -281,9 +264,7 @@ export function PeersSection() {
       {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
       {peers && visible.length === 0 ? (
-        <EmptyState>
-          Nenhum aparelho pareado. Use “Adicionar dispositivo” e escaneie o QR no celular.
-        </EmptyState>
+        <EmptyState>Nenhum aparelho pareado.</EmptyState>
       ) : (
         <ul
           data-testid="peer-list"
@@ -299,24 +280,10 @@ export function PeersSection() {
                     aguardando confirmação
                   </span>
                 )}
-                <span className="ml-auto text-sm text-neutral-500">
-                  Última sync: {fmt(p.last_sync_at)}
-                </span>
               </div>
               {p.status === 'paired' && (
                 <p className="text-sm text-neutral-500" data-testid="peer-sync-state">
-                  {p.pending == null
-                    ? 'Ainda sem troca de dados com este aparelho.'
-                    : p.pending === 0
-                      ? 'Tudo em dia: nenhuma alteração a enviar.'
-                      : `${p.pending} alteração(ões) a enviar.`}
-                  {p.last_run && (
-                    <>
-                      {' '}
-                      Última execução ({fmt(p.last_run.finished_at ?? p.last_run.started_at)}):{' '}
-                      {describeRun(p.last_run)}.
-                    </>
-                  )}
+                  {peerSyncText(p)}
                 </p>
               )}
               {p.status === 'pending' && (
@@ -394,10 +361,6 @@ export function PeersSection() {
           ))}
         </ul>
       )}
-      <p className="mt-3 flex items-center gap-1 text-xs text-neutral-500">
-        <Trash2 size={12} aria-hidden /> Revogar impede novas sincronizações e invalida as
-        credenciais do aparelho.
-      </p>
     </section>
   );
 }

@@ -67,38 +67,25 @@ fun PermissionsCard() {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Configurar o CuePoint", style = MaterialTheme.typography.titleMedium)
             if (!listener) {
-                Text(
-                    "Libere o acesso às notificações para o CuePoint identificar a faixa que toca no SoundCloud.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                Text("Libere o acesso às notificações.", style = MaterialTheme.typography.bodySmall)
                 Button(onClick = { Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).startSafely(context) }) {
                     Text("Liberar acesso às notificações")
                 }
             } else if (disconnected) {
-                Text(
-                    "O acesso está liberado, mas a leitura da faixa está desconectada — o sistema encerrou o serviço do CuePoint. " +
-                        "Toque em Reconectar. Para não voltar a acontecer, tire o app da economia de bateria (abaixo).",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                Text("A leitura da faixa parou.", style = MaterialTheme.typography.bodySmall)
                 Button(onClick = {
                     ListenerHealth.requestReconnect(context)
                     ListenerHealth.forceRebind(context)
                 }) { Text("Reconectar leitura da faixa") }
             }
             if (!battery) {
-                Text(
-                    "Economia de bateria: o sistema pode encerrar o CuePoint em segundo plano e parar a leitura das faixas.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                Text("Tire o CuePoint da economia de bateria.", style = MaterialTheme.typography.bodySmall)
                 Button(onClick = {
                     Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}"))
                         .startSafely(context, fallback = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                 }) { Text("Permitir em segundo plano") }
                 if (xiaomi) {
-                    Text(
-                        "Xiaomi/Redmi/POCO: também ative \"Início automático\" e deixe a economia de bateria do app em \"Sem restrições\".",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
+                    Text("Ative \"Início automático\" e \"Sem restrições\" na bateria.", style = MaterialTheme.typography.bodySmall)
                     OutlinedButton(onClick = {
                         Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"))
                             .startSafely(context, fallback = details)
@@ -106,7 +93,6 @@ fun PermissionsCard() {
                 }
             }
             if (!post && Build.VERSION.SDK_INT >= 33) {
-                Text("Permita notificações para classificar pela notificação e pela tela bloqueada.", style = MaterialTheme.typography.bodySmall)
                 Button(onClick = { request.launch(Manifest.permission.POST_NOTIFICATIONS) }) { Text("Permitir notificações") }
             }
         }

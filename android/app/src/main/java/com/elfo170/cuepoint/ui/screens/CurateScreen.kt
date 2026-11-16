@@ -78,7 +78,7 @@ fun CurateScreen(extraTop: @Composable () -> Unit = {}) {
                 if (track == null) {
                     Text("Nenhuma faixa identificada", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Dê play no SoundCloud (com o acesso a notificações liberado) ou informe a faixa manualmente.",
+                        "Dê play no SoundCloud.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 } else {

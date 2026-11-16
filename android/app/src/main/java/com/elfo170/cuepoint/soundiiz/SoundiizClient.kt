@@ -56,18 +56,14 @@ object SoundiizTexts {
     fun block(block: SoundiizProtocol.Block): String = when (block) {
         SoundiizProtocol.Block.Empty -> "Playlist vazia: adicione músicas para exportar."
         is SoundiizProtocol.Block.TooMany ->
-            "O Soundiiz aceita até ${block.max} músicas por envio; esta playlist tem ${block.count}. " +
-                "Divida-a em playlists menores para exportar."
+            "Máximo de ${block.max} músicas por envio (esta tem ${block.count})."
     }
 
     fun error(e: SoundiizProtocol.Result.Error): String = when (e.code) {
-        SoundiizProtocol.ErrorCode.INVALID ->
-            "O Soundiiz recusou a playlist${e.message?.let { ": $it" } ?: "."}"
-        SoundiizProtocol.ErrorCode.UNAVAILABLE ->
-            "O Soundiiz está indisponível no momento (excesso de pedidos ou manutenção). Tente de novo em alguns minutos."
+        SoundiizProtocol.ErrorCode.INVALID -> "O Soundiiz recusou a playlist."
+        SoundiizProtocol.ErrorCode.UNAVAILABLE -> "Soundiiz indisponível. Tente em alguns minutos."
         SoundiizProtocol.ErrorCode.NETWORK ->
             "Não foi possível falar com o Soundiiz. Confira a conexão e tente de novo."
-        SoundiizProtocol.ErrorCode.HTTP ->
-            "Resposta inesperada do Soundiiz (HTTP ${e.status}). Tente de novo mais tarde."
+        SoundiizProtocol.ErrorCode.HTTP -> "Erro no Soundiiz. Tente mais tarde."
     }
 }

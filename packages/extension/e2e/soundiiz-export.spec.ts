@@ -48,7 +48,7 @@ test('exporta via Soundiiz: envia a playlist na ordem e abre o link', async ({ c
   ]);
 
   const card = lib.getByTestId('soundiiz-export-card');
-  await expect(card).toContainText('SoundCloud sem Artist Pro (via Soundiiz)');
+  await expect(card).toContainText('SoundCloud via Soundiiz');
   // o cartão Artist Pro continua lá
   await expect(lib.getByTestId('sc-export-card')).toBeVisible();
 

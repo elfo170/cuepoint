@@ -66,7 +66,7 @@ export function TrackCell({ track }: { track: Track }) {
               data-testid="provisional-badge"
               className="rounded bg-amber-100 px-1.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
             >
-              provisória
+              não identificada
             </span>
           )}
         </div>

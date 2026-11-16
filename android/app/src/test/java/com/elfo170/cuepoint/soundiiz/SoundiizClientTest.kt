@@ -60,11 +60,11 @@ class SoundiizClientTest {
     }
 
     @Test
-    fun badRequestCarriesSoundiizMessage() = runBlocking {
+    fun badRequestIsInvalidWithoutServerMessageInText() = runBlocking {
         respond(400, """{"status":"error","message":"Missing track title at index 1."}""")
         val r = client().export("House", null, tracks) as SoundiizProtocol.Result.Error
         assertEquals(ErrorCode.INVALID, r.code)
-        assertEquals("O Soundiiz recusou a playlist: Missing track title at index 1.", SoundiizTexts.error(r))
+        assertEquals("O Soundiiz recusou a playlist.", SoundiizTexts.error(r))
     }
 
     @Test
@@ -73,6 +73,7 @@ class SoundiizClientTest {
         val r = client().export("House", null, tracks) as SoundiizProtocol.Result.Error
         assertEquals(ErrorCode.UNAVAILABLE, r.code)
         assertEquals(1, server.requestCount)
+        assertEquals("Soundiiz indisponível. Tente em alguns minutos.", SoundiizTexts.error(r))
     }
 
     @Test
@@ -87,6 +88,7 @@ class SoundiizClientTest {
         respond(200, """{"status":"success","nbTracks":2,"shareUrl":"https://example.com/x","expiresAt":1}""")
         val r = client().export("House", null, tracks) as SoundiizProtocol.Result.Error
         assertEquals(ErrorCode.HTTP, r.code)
+        assertEquals("Erro no Soundiiz. Tente mais tarde.", SoundiizTexts.error(r))
     }
 
     @Test
@@ -101,7 +103,7 @@ class SoundiizClientTest {
     fun blockTextsMatchExtension() {
         assertEquals("Playlist vazia: adicione músicas para exportar.", SoundiizTexts.block(SoundiizProtocol.Block.Empty))
         assertEquals(
-            "O Soundiiz aceita até 200 músicas por envio; esta playlist tem 201. Divida-a em playlists menores para exportar.",
+            "Máximo de 200 músicas por envio (esta tem 201).",
             SoundiizTexts.block(SoundiizProtocol.check(201)!!),
         )
     }

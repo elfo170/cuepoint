@@ -62,13 +62,11 @@ export function SoundiizExport({ playlist, items }: { playlist: Playlist; items:
       className="mb-4 space-y-2 rounded-xl border border-neutral-200 p-3 text-sm dark:border-neutral-800"
     >
       <div className="flex items-center gap-2">
-        <h2 className="font-semibold">SoundCloud sem Artist Pro (via Soundiiz)</h2>
+        <h2 className="font-semibold">SoundCloud via Soundiiz</h2>
         <FreeBadge />
       </div>
       <p className="text-neutral-600 dark:text-neutral-400">
-        Envia o nome da playlist e o título e o artista de cada música ao Soundiiz, que procura as
-        faixas no SoundCloud. <strong>A correspondência pode errar</strong> (outra versão ou outro
-        remix): revise a lista no Soundiiz antes de transferir. O link vale 24 horas.
+        O Soundiiz busca as músicas pelo nome e pode errar a versão. Revise antes de transferir.
       </p>
       {block && (
         <p className="text-amber-700" data-testid="soundiiz-blocked">

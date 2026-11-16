@@ -156,7 +156,7 @@ chrome.runtime.onMessage.addListener((request: Request, _sender, sendResponse) =
   if (request.type === 'helper:request') {
     const req = request.req as { type?: string };
     if (!req?.type || !HELPER_FORWARD.has(req.type)) {
-      reply(Promise.reject(new Error('operação não permitida')));
+      reply(Promise.reject(new Error('Ação não permitida.')));
       return true;
     }
     if (req.type === 'pairing:join') {

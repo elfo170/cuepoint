@@ -113,9 +113,7 @@ export function TracksPage() {
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState>
-          Nenhuma música. As faixas entram na biblioteca ao serem avaliadas no widget.
-        </EmptyState>
+        <EmptyState>Nenhuma música avaliada ainda.</EmptyState>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
           <table className="w-full text-sm" data-testid="tracks-table">

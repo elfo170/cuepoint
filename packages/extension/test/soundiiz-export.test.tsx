@@ -66,13 +66,13 @@ describe('soundiizExport', () => {
   });
 });
 
-describe('cartão "SoundCloud sem Artist Pro (via Soundiiz)"', () => {
+describe('cartão "SoundCloud via Soundiiz"', () => {
   it('sucesso abre o link numa aba nova e mostra a validade', async () => {
     fetchMock.mockResolvedValue(
       json(200, { status: 'success', nbTracks: 2, shareUrl: SHARE, expiresAt: 1782220923 }),
     );
     render(<SoundiizExport playlist={playlist} items={items(2)} />);
-    expect(screen.getByText(/A correspondência pode errar/)).toBeTruthy();
+    expect(screen.getByText(/pode errar a versão/)).toBeTruthy();
     await click();
     expect(create).toHaveBeenCalledWith({ url: SHARE });
     expect(screen.getByRole('status').textContent).toMatch(/Link criado com 2 música\(s\)/);
@@ -95,9 +95,7 @@ describe('cartão "SoundCloud sem Artist Pro (via Soundiiz)"', () => {
     );
     render(<SoundiizExport playlist={playlist} items={items(2)} />);
     await click();
-    expect(screen.getByRole('alert').textContent).toBe(
-      'O Soundiiz recusou a playlist: Missing track title at index 1.',
-    );
+    expect(screen.getByRole('alert').textContent).toBe('O Soundiiz recusou a playlist.');
     expect(create).not.toHaveBeenCalled();
   });
 
@@ -105,7 +103,9 @@ describe('cartão "SoundCloud sem Artist Pro (via Soundiiz)"', () => {
     fetchMock.mockResolvedValue(json(429, { status: 'error', message: 'Too many requests.' }));
     render(<SoundiizExport playlist={playlist} items={items(2)} />);
     await click();
-    expect(screen.getByRole('alert').textContent).toMatch(/indisponível no momento/);
+    expect(screen.getByRole('alert').textContent).toBe(
+      'Soundiiz indisponível. Tente em alguns minutos.',
+    );
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
@@ -123,7 +123,7 @@ describe('cartão "SoundCloud sem Artist Pro (via Soundiiz)"', () => {
     render(<SoundiizExport playlist={playlist} items={items(1)} />);
     await click();
     expect(create).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert').textContent).toMatch(/Resposta inesperada/);
+    expect(screen.getByRole('alert').textContent).toBe('Erro no Soundiiz. Tente mais tarde.');
   });
 
   it('playlist vazia: botão desabilitado', () => {
@@ -136,7 +136,7 @@ describe('cartão "SoundCloud sem Artist Pro (via Soundiiz)"', () => {
     render(<SoundiizExport playlist={playlist} items={items(201)} />);
     expect((screen.getByTestId('soundiiz-export') as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByTestId('soundiiz-blocked').textContent).toBe(
-      'O Soundiiz aceita até 200 músicas por envio; esta playlist tem 201. Divida-a em playlists menores para exportar.',
+      'Máximo de 200 músicas por envio (esta tem 201).',
     );
     await click();
     expect(fetchMock).not.toHaveBeenCalled();

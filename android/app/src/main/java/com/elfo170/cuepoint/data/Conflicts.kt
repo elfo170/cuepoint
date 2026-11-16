@@ -14,7 +14,7 @@ import kotlinx.serialization.json.booleanOrNull
 /** Um dos valores possíveis de um campo em conflito. */
 data class ConflictOption(
     val value: JsonElement,
-    /** Texto legível do valor (ex.: "Aprovada", "Excluída"). */
+    /** Texto legível do valor (ex.: "Aprovada", "Excluída"); nunca um identificador cru. */
     val label: String,
     /** Aparelhos que gravaram este valor (device_id). */
     val origins: List<String>,
@@ -22,6 +22,8 @@ data class ConflictOption(
     val at: String,
     /** É o valor exibido hoje (vencedor provisório: o mais recente). */
     val current: Boolean,
+    /** Valor técnico (id, URN, JSON) sem nome legível: a tela mostra "Versão de <aparelho>". */
+    val technical: Boolean = false,
 )
 
 /** Conflito pronto para a tela: o que é, qual campo e as opções lado a lado. */
@@ -31,6 +33,7 @@ data class ConflictView(
     val entityId: String,
     val field: String,
     val kind: String,
+    /** Nome legível do registro (título da faixa, nome da pesquisa…); sem nome, o tipo. */
     val subject: String,
     val fieldLabel: String,
     val options: List<ConflictOption>,
@@ -53,6 +56,26 @@ object Conflicts {
         "external_playlist_id" to "Playlist no SoundCloud", "user_id" to "Usuário",
     )
 
+    /** Campos cujo valor é sempre técnico (chave de ordenação, ids). */
+    private val TECHNICAL_FIELDS = setOf("position", "user_id", "soundcloud_urn", "external_playlist_id")
+
+    private val UUID_RE = Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
+    const val TECHNICAL = "(valor técnico)"
+
+    /** Texto parecido com identificador (UUID ou URN do SoundCloud), que não se mostra cru. */
+    fun isIdLike(text: String): Boolean = text.trim().let { UUID_RE.matches(it) || it.startsWith("soundcloud:", ignoreCase = true) }
+
+    /** Nome do aparelho de origem; desconhecido vira "outro aparelho" (nunca o id). */
+    fun originName(id: String, names: Map<String, String>): String = names[id] ?: "outro aparelho"
+
+    /** Texto de uma opção na tela: valores técnicos viram "Versão de <aparelho>". */
+    fun optionText(option: ConflictOption, names: Map<String, String>): String = when {
+        !option.technical -> option.label
+        option.origins.isEmpty() -> TECHNICAL
+        else -> "Versão de ${option.origins.map { originName(it, names) }.distinct().joinToString()}"
+    }
+
     private val REFS = mapOf(
         "research_id" to EntityType.RESEARCH, "category_id" to EntityType.CATEGORY, "playlist_id" to EntityType.PLAYLIST,
     )
@@ -67,25 +90,20 @@ object Conflicts {
             if (key !in cache) cache[key] = store.get(type, id)
             return cache[key]
         }
-        suspend fun title(trackId: String?): String = get(EntityType.TRACK, trackId)?.let { t ->
+        suspend fun title(trackId: String?): String? = get(EntityType.TRACK, trackId)?.let { t ->
+            val title = Merge.str(t, "title")?.takeIf { it.isNotBlank() } ?: return@let null
             val artist = Merge.str(t, "artist").orEmpty()
-            "${Merge.str(t, "title")}${if (artist.isNotBlank()) " — $artist" else ""}"
-        } ?: "faixa desconhecida"
-        suspend fun name(type: EntityType, id: String?) = get(type, id)?.let { Merge.str(it, "name") } ?: "desconhecida"
-
-        suspend fun describe(type: EntityType, r: JsonObject): String = when (type) {
-            EntityType.TRACK -> title(Merge.str(r, "id"))
-            EntityType.RESEARCH, EntityType.CATEGORY, EntityType.PLAYLIST -> Merge.str(r, "name").orEmpty()
-            EntityType.DECISION ->
-                "${title(Merge.str(r, "track_id"))} · pesquisa ${name(EntityType.RESEARCH, Merge.str(r, "research_id"))}"
-            EntityType.TRACK_CATEGORY ->
-                "${name(EntityType.CATEGORY, Merge.str(r, "category_id"))} em ${title(Merge.str(r, "track_id"))} · " +
-                    "pesquisa ${name(EntityType.RESEARCH, Merge.str(r, "research_id"))}"
-            EntityType.PLAYLIST_TRACK ->
-                "${title(Merge.str(r, "track_id"))} na playlist ${name(EntityType.PLAYLIST, Merge.str(r, "playlist_id"))}"
+            "$title${if (artist.isNotBlank()) " — $artist" else ""}"
         }
 
-        suspend fun label(type: EntityType, field: String, value: JsonElement): String {
+        suspend fun describe(type: EntityType, r: JsonObject): String? = when (type) {
+            EntityType.TRACK -> title(Merge.str(r, "id"))
+            EntityType.RESEARCH, EntityType.CATEGORY, EntityType.PLAYLIST -> Merge.str(r, "name")?.takeIf { it.isNotBlank() }
+            EntityType.DECISION, EntityType.TRACK_CATEGORY, EntityType.PLAYLIST_TRACK -> title(Merge.str(r, "track_id"))
+        }
+
+        /** Texto legível do valor; null = valor técnico sem nome (nunca mostrado cru). */
+        suspend fun label(type: EntityType, field: String, value: JsonElement): String? {
             val prim = value as? JsonPrimitive
             val text = prim?.takeIf { it.isString }?.content
             return when {
@@ -95,10 +113,12 @@ object Conflicts {
                 else "Associada a ${get(EntityType.TRACK, text)?.let { Merge.str(it, "title") } ?: "outra faixa"}"
                 field in REFS -> if (value is JsonNull) "Nenhuma"
                 else get(REFS.getValue(field), text)?.let { Merge.str(it, "name") } ?: "Desconhecida"
+                field == "track_id" && text != null -> get(EntityType.TRACK, text)?.let { Merge.str(it, "title") }
                 prim?.booleanOrNull != null && !prim.isString -> if (prim.booleanOrNull == true) "Sim" else "Não"
                 value is JsonNull -> "(vazio)"
-                text != null -> text.ifBlank { "(vazio)" }
-                else -> Merge.canonicalJson(value)
+                field in TECHNICAL_FIELDS -> null
+                text != null -> if (isIdLike(text)) null else text.ifBlank { "(vazio)" }
+                else -> null // número, objeto ou lista sem rótulo legível
             }
         }
 
@@ -109,12 +129,14 @@ object Conflicts {
             val candidates = Merge.candidates(rec)[row.field]
             if (candidates == null || candidates.size < 2) continue
             val options = group(row.field, candidates).map { g ->
-                ConflictOption(g.value, label(type, row.field, g.value), g.origins.toList(), Hlc.toIso(g.hlc), g.current)
+                val label = label(type, row.field, g.value)
+                ConflictOption(g.value, label ?: TECHNICAL, g.origins.toList(), Hlc.toIso(g.hlc), g.current, technical = label == null)
             }
             if (options.size < 2) continue
+            val kind = KIND[type] ?: "Registro"
             out += ConflictView(
-                row.id, type, row.entity_id, row.field, KIND[type] ?: type.key, describe(type, rec),
-                FIELD[row.field] ?: row.field, options, row.created_at,
+                row.id, type, row.entity_id, row.field, kind, describe(type, rec) ?: kind,
+                FIELD[row.field] ?: "Outro dado", options, row.created_at,
             )
         }
         return out.sortedByDescending { it.createdAt }

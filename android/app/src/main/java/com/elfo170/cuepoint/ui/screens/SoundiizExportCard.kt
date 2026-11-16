@@ -52,7 +52,7 @@ class SoundiizExportActions(
 )
 
 /**
- * "SoundCloud sem Artist Pro (via Soundiiz)" na página da playlist (Sprint 19), com paridade com
+ * "SoundCloud via Soundiiz" na página da playlist (Sprint 19), com paridade com
  * a extensão. Sempre visível, abaixo do cartão Artist Pro. Nada do Soundiiz é guardado.
  */
 @Composable
@@ -109,13 +109,11 @@ fun SoundiizExportPanel(
     Card(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("SoundCloud sem Artist Pro (via Soundiiz)", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                Text("SoundCloud via Soundiiz", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                 FreeBadge()
             }
             Text(
-                "Envia o nome da playlist e o título e o artista de cada música ao Soundiiz, que procura as faixas no " +
-                    "SoundCloud. A correspondência pode errar (outra versão ou outro remix): revise a lista no Soundiiz " +
-                    "antes de transferir. O link vale 24 horas.",
+                "O Soundiiz busca as músicas pelo nome e pode errar a versão. Revise antes de transferir.",
                 style = MaterialTheme.typography.bodySmall,
             )
             block?.let { Text(SoundiizTexts.block(it), color = WARNING, style = MaterialTheme.typography.bodySmall) }

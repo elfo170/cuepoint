@@ -24,7 +24,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.ZoneOffset
 
-/** Cartão "SoundCloud sem Artist Pro (via Soundiiz)" no celular (Sprint 19): estados e ações. */
+/** Cartão "SoundCloud via Soundiiz" no celular (Sprint 19): estados e ações. */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [34], application = android.app.Application::class)
@@ -56,7 +56,8 @@ class SoundiizExportPanelTest {
     fun warnsAboutMatchingAndExportsOnTap() {
         show()
         compose.onNodeWithText("Gratuito").assertExists()
-        compose.onNodeWithText("A correspondência pode errar", substring = true).assertExists()
+        compose.onNodeWithText("SoundCloud via Soundiiz").assertExists()
+        compose.onNodeWithText("O Soundiiz busca as músicas pelo nome e pode errar a versão. Revise antes de transferir.").assertExists()
         button().assertIsEnabled().performScrollTo().performClick()
         assertEquals(listOf("export"), events)
     }
@@ -71,9 +72,7 @@ class SoundiizExportPanelTest {
     @Test
     fun moreThan200TracksIsBlockedWithWarning() {
         show(trackCount = 201)
-        compose.onNodeWithText(
-            "O Soundiiz aceita até 200 músicas por envio; esta playlist tem 201. Divida-a em playlists menores para exportar.",
-        ).assertExists()
+        compose.onNodeWithText("Máximo de 200 músicas por envio (esta tem 201).").assertExists()
         button().assertIsNotEnabled()
     }
 

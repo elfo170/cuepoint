@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { CheckCircle2, GitMerge } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { loadConflicts, type ConflictView } from '../../data/conflicts';
+import { loadConflicts, TECHNICAL_LABEL, type ConflictView } from '../../data/conflicts';
 import { send } from '../../shared/messages';
 import { db, mutate, store } from '../api';
 import { EmptyState, PageHeader, secondaryButtonClass } from '../components';
@@ -28,14 +28,12 @@ function useDeviceNames(): Map<string, string> {
 
 function ConflictCard({ c, names }: { c: ConflictView; names: Map<string, string> }) {
   const [busy, setBusy] = useState(false);
-  const origin = (id: string) => names.get(id) ?? `aparelho ${id.slice(0, 8)}`;
+  const origin = (id: string) => names.get(id) ?? 'outro aparelho';
   return (
     <li className="space-y-3 p-4" data-testid="conflict-row">
       <div>
-        <p className="text-xs tracking-wide text-neutral-500 uppercase">
-          {c.kind} · {c.fieldLabel}
-        </p>
         <p className="font-medium">{c.subject}</p>
+        <p className="text-sm text-neutral-500">{c.fieldLabel}</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {c.options.map((o, i) => (
@@ -48,7 +46,11 @@ function ConflictCard({ c, names }: { c: ConflictView; names: Map<string, string
                 : 'border-neutral-200 dark:border-neutral-800'
             }`}
           >
-            <p className="font-medium break-words">{o.label}</p>
+            <p className="font-medium break-words">
+              {o.label === TECHNICAL_LABEL
+                ? `Versão de ${o.origins.map(origin).join(', ')}`
+                : o.label}
+            </p>
             <p className="text-xs text-neutral-500">
               {o.origins.map(origin).join(', ')} · {fmt(o.at)}
               {o.current && ' · exibido agora'}
@@ -84,14 +86,11 @@ export function ConflictsPage() {
   if (!conflicts) return null;
   return (
     <>
-      <PageHeader
-        title="Conflitos"
-        subtitle="O mesmo dado mudou em dois aparelhos antes de sincronizar. Até você escolher, vale o mais recente."
-      />
+      <PageHeader title="Conflitos" subtitle="Escolha qual versão manter." />
       {conflicts.length === 0 ? (
         <EmptyState>
           <GitMerge size={20} className="mx-auto mb-2 text-neutral-400" aria-hidden />
-          Nenhum conflito. Tudo o que foi alterado nos aparelhos combinou sem divergência.
+          Nenhum conflito.
         </EmptyState>
       ) : (
         <ul

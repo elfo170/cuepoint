@@ -190,7 +190,7 @@ fun OpenInSoundCloudButton(urn: String?, url: String?, modifier: Modifier = Modi
 @Composable
 fun ProvisionalBadge() {
     Surface(shape = RoundedCornerShape(4.dp), color = Color(0xFFFEF3C7)) {
-        Text("provisória", color = Color(0xFF92400E), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 4.dp))
+        Text("não identificada", color = Color(0xFF92400E), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 4.dp))
     }
 }
 

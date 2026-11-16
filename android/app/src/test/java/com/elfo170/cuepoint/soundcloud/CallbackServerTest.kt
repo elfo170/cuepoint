@@ -45,7 +45,7 @@ class CallbackServerTest {
         assertEquals(404, get(server.port, "/outra").first)
         val (wrong, page) = get(server.port, "/callback?code=x&state=antigo")
         assertEquals(400, wrong)
-        assertTrue(page.contains("não corresponde"))
+        assertTrue(page.contains("Login inválido. Volte ao app e tente de novo."))
         assertFalse(server.code.isCompleted) // uma aba antiga não encerra o login
         val (ok, done) = get(server.port, "/callback?code=c%2F0de&state=st4te")
         assertEquals(200, ok)

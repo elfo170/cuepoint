@@ -46,6 +46,25 @@ import kotlinx.coroutines.launch
 
 private fun fmt(iso: String?) = iso?.replace('T', ' ')?.take(16) ?: "—"
 
+const val PAIR_FAILED = "Não foi possível parear. Gere um novo código no PC."
+const val PC_UNREACHABLE = "Não foi possível falar com o PC. Ele está ligado e na mesma rede?"
+
+private val PAIR_KEEP = setOf("Código expirado ou já usado. Gere um novo no PC.", "Código de pareamento inválido.", FOREIGN_USER_MESSAGE)
+
+/** Mensagem amigável de uma falha de pareamento: códigos crus e erros de rede/TLS viram [PAIR_FAILED]. */
+fun pairErrorText(e: Throwable): String = e.message?.takeIf { it in PAIR_KEEP } ?: PAIR_FAILED
+
+/** Linha de estado de um aparelho pareado; `second` = é erro. */
+fun peerStatusText(pending: Int?, lastSyncAt: String?, status: String?, error: String?): Pair<String, Boolean> = when (status) {
+    null, "ok" ->
+        if (pending == null || pending > 0 || lastSyncAt == null) "Aguardando sincronizar" to false
+        else "Sincronizado em ${fmt(lastSyncAt)}" to false
+    "approval_required" -> "Aguardando aprovação no PC (Biblioteca → Dispositivos → Permitir)" to true
+    "pending_confirmation" -> "Confirme o pareamento no PC" to true
+    "revoked" -> "Este aparelho foi revogado no PC" to true
+    else -> (if (error == "foreign_user") FOREIGN_USER_MESSAGE else PC_UNREACHABLE) to true
+}
+
 /** Pareamento com o PC e estado da sincronização (PRD §4, §5). */
 @Composable
 fun DevicesScreen() {
@@ -67,7 +86,7 @@ fun DevicesScreen() {
         scope.launch {
             runCatching { app.syncEngine.pair(uri) }
                 .onSuccess { pairing = it }
-                .onFailure { error = it.message }
+                .onFailure { error = pairErrorText(it) }
             busy = false
         }
     }
@@ -84,7 +103,7 @@ fun DevicesScreen() {
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Dispositivos", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Sincronização direta pela rede Wi-Fi local, sem servidor externo. No PC, abra a biblioteca do CuePoint → Dispositivos → Adicionar dispositivo.",
+            "No PC: Biblioteca → Dispositivos → Adicionar dispositivo.",
             style = MaterialTheme.typography.bodySmall,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -109,38 +128,18 @@ fun DevicesScreen() {
                         Icon(Icons.Filled.Computer, contentDescription = null)
                         Text("  ${peer.device_name}", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                     }
-                    Text("Última sincronização: ${fmt(peer.last_sync_at)}", style = MaterialTheme.typography.bodySmall)
                     // Pendências e última execução vêm do banco: valem mesmo depois de reabrir o app.
                     val state by produceState<Pair<Int?, SyncRun?>>(
                         null to null, peer.id, peer.last_sync_at, ops, results[peer.id],
                     ) { value = app.syncEngine.pendingFor(peer.id) to app.syncEngine.lastRun(peer.id) }
+                    val status = results[peer.id]?.status ?: state.second?.status
+                    val err = results[peer.id]?.error ?: state.second?.error
+                    val (line, failed) = peerStatusText(state.first, peer.last_sync_at ?: state.second?.at, status, err)
                     Text(
-                        when (val n = state.first) {
-                            null -> "Ainda sem troca de dados com este aparelho."
-                            0 -> "Tudo em dia: nenhuma alteração a enviar."
-                            else -> "$n alteração(ões) a enviar."
-                        },
+                        line,
                         style = MaterialTheme.typography.bodySmall,
+                        color = if (failed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    val last = results[peer.id]?.let { Triple(it.status, it.received to it.sent, it.error) }
-                        ?: state.second?.let { Triple(it.status, it.received to it.sent, it.error) }
-                    last?.let { (status, counts, err) ->
-                        val msg = when (status) {
-                            "ok" -> "Última execução: ${counts.first} recebida(s), ${counts.second} enviada(s)"
-                            "approval_required" -> "Aguardando aprovação no PC (Biblioteca → Dispositivos → Permitir)"
-                            "pending_confirmation" -> "Confirme o pareamento no PC"
-                            "revoked" -> "Este aparelho foi revogado no PC"
-                            "skipped" -> "Sem endereço conhecido do PC"
-                            else -> if (err == "foreign_user") FOREIGN_USER_MESSAGE
-                            else "Falhou: ${err ?: "erro"} (o PC está ligado e na mesma rede?)"
-                        }
-                        val when_ = state.second?.at?.let { " (${fmt(it)})" }.orEmpty()
-                        Text(
-                            msg + if (results[peer.id] == null) when_ else "",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (status == "ok") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                        )
-                    }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Sincronizar automaticamente", modifier = Modifier.weight(1f))
                         Switch(peer.sync_policy == "auto", { auto -> scope.launch { app.syncEngine.setPolicy(peer.id, if (auto) "auto" else "ask") } })
@@ -162,7 +161,7 @@ fun DevicesScreen() {
         AlertDialog(
             onDismissRequest = { pasting = false },
             title = { Text("Código de pareamento") },
-            text = { OutlinedTextField(text, { text = it }, label = { Text("cuepoint://pair?…") }) },
+            text = { OutlinedTextField(text, { text = it }, label = { Text("Código de pareamento") }) },
             confirmButton = { TextButton(onClick = { pasting = false; pair(text.trim()) }, enabled = text.isNotBlank()) { Text("Parear") } },
             dismissButton = { TextButton(onClick = { pasting = false }) { Text("Cancelar") } },
         )
@@ -186,7 +185,7 @@ fun DevicesScreen() {
         )
     }
     revoking?.let { id ->
-        ConfirmDialog("Revogar aparelho?", "As sincronizações com ele param e as credenciais são invalidadas.", confirm = "Revogar", onDismiss = { revoking = null }) {
+        ConfirmDialog("Revogar aparelho?", "O aparelho deixa de sincronizar com este.", confirm = "Revogar", onDismiss = { revoking = null }) {
             revoking = null
             scope.launch { app.syncEngine.revoke(id) }
         }

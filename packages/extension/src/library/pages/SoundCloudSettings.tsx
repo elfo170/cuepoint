@@ -52,18 +52,7 @@ function WithoutPro({ onBack }: { onBack: () => void }) {
   return (
     <div className="space-y-2 text-sm">
       <p>
-        Para exportar direto para o SoundCloud, cada pessoa registra o próprio app na API do
-        SoundCloud, e o registro exige uma assinatura <strong>Artist Pro</strong>. Sem ela, o
-        CuePoint não consegue criar playlists na sua conta.
-      </p>
-      <p>
-        Sem Artist Pro, use <strong>SoundCloud sem Artist Pro (via Soundiiz)</strong> na página da
-        playlist: o Soundiiz procura as músicas no SoundCloud e você revisa a lista antes de
-        transferir. A correspondência pode errar, então confira cada música.
-      </p>
-      <p>
-        Você também pode exportar qualquer playlist como lista de links, CSV ou JSON (na página da
-        playlist) e montar a playlist no SoundCloud a partir desses links.
+        Sem Artist Pro, use o cartão <strong>SoundCloud via Soundiiz</strong> na página da playlist.
       </p>
       <button type="button" className={secondaryButtonClass} onClick={onBack}>
         Voltar
@@ -141,11 +130,7 @@ function CredentialsForm({ status, onSaved }: { status: ScStatus; onSaved: () =>
                 className={inputClass}
               />
             </label>
-            <p className="text-neutral-500">
-              Os dois ficam neste PC, guardados pelo serviço do CuePoint e cifrados com a sua conta
-              do Windows. Você pode enviá-los uma vez a um celular pareado; nunca vão pela
-              sincronização nem para nenhum servidor.
-            </p>
+            <p className="text-neutral-500">Ficam guardados só neste PC, protegidos.</p>
             {error && <p className="text-red-600">{error}</p>}
             <button
               type="submit"
@@ -243,8 +228,7 @@ export function PhoneShare({ status, reload }: { status: ScStatus; reload: () =>
       {status.devices.length ? (
         <>
           <p className="text-neutral-500">
-            Envie o código e a senha do app para um celular pareado, uma vez. O envio vale por 10
-            minutos e passa só pela conexão cifrada do pareamento; o celular faz o próprio login.
+            Envie as credenciais para o celular. O envio vale por 10 minutos.
           </p>
           <ul className="space-y-2">
             {status.devices.map((d) => (
@@ -331,10 +315,7 @@ function Connection({ status, reload }: { status: ScStatus; reload: () => Promis
     main = (
       <div className="space-y-2">
         {reconnect && (
-          <p className="text-amber-700">
-            O acesso ao SoundCloud caiu (senha do app trocada, Artist Pro vencido ou autorização
-            revogada). Entre de novo; se continuar falhando, confira as credenciais.
-          </p>
+          <p className="text-amber-700">O acesso ao SoundCloud expirou. Entre de novo.</p>
         )}
         {status.loginPending ? (
           <p>Aguardando você autorizar o CuePoint na aba do SoundCloud…</p>
@@ -353,7 +334,6 @@ function Connection({ status, reload }: { status: ScStatus; reload: () => Promis
       {(error ?? status.lastError) && <p className="text-red-600">{error ?? status.lastError}</p>}
       <PhoneShare status={status} reload={reload} />
       <div className="flex flex-wrap items-center gap-2 border-t border-neutral-200 pt-3 text-neutral-500 dark:border-neutral-800">
-        <span>App: {status.clientId}</span>
         <button
           type="button"
           className={`${secondaryButtonClass} ml-auto`}
@@ -378,11 +358,10 @@ function Body({ view, reload }: { view: ScView; reload: () => Promise<void> }) {
   if (view.kind === 'no-helper')
     return (
       <p className="text-sm">
-        A exportação usa o serviço do CuePoint neste PC. {view.reason} Veja em{' '}
+        Requer o serviço do PC.{' '}
         <Link to="/devices" className="text-orange-600 underline">
-          Dispositivos
+          Ver Dispositivos
         </Link>
-        .
       </p>
     );
   const { status } = view;
@@ -391,10 +370,7 @@ function Body({ view, reload }: { view: ScView; reload: () => Promise<void> }) {
   if (pro === 'yes') return <CredentialsForm status={status} onSaved={() => void reload()} />;
   return (
     <div className="space-y-2 text-sm">
-      <p>
-        O CuePoint pode criar e atualizar playlists na sua conta do SoundCloud. Para isso você
-        registra o seu próprio app na API do SoundCloud, o que exige <strong>Artist Pro</strong>.
-      </p>
+      <p>Crie e atualize playlists na sua conta do SoundCloud.</p>
       <p className="font-medium">Você tem Artist Pro?</p>
       <div className="flex gap-2">
         <button type="button" className={buttonClass} onClick={() => setPro('yes')}>

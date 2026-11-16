@@ -24,10 +24,7 @@ export function CategoriesPage() {
 
   return (
     <>
-      <PageHeader
-        title="Categorias"
-        subtitle="Globais e reutilizáveis entre pesquisas. Uma música aprovada pode ter várias."
-      />
+      <PageHeader title="Categorias" subtitle="Globais e reutilizáveis entre pesquisas." />
       <form
         className="mb-6 flex max-w-lg gap-2"
         onSubmit={(e) => {
@@ -56,8 +53,7 @@ export function CategoriesPage() {
         >
           <p className="font-medium">Categorias com o mesmo nome</p>
           <p className="mt-1 mb-3 text-neutral-600 dark:text-neutral-400">
-            Provavelmente criadas em aparelhos diferentes. Juntar move todas as classificações para
-            a mais antiga e exclui as outras.
+            Juntar mantém a mais antiga com todas as classificações.
           </p>
           <ul className="space-y-2">
             {duplicates.map((group) => (

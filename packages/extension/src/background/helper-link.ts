@@ -71,7 +71,7 @@ export class HelperLink {
         this.port = null;
         for (const p of this.pending.values()) {
           clearTimeout(p.timer);
-          p.reject(new Error(err ?? 'serviço desconectado'));
+          p.reject(new Error(err ?? 'Serviço do PC desconectado.'));
         }
         this.pending.clear();
         const absent = !err || /not found|não encontrado|forbidden/i.test(err);
@@ -98,12 +98,12 @@ export class HelperLink {
 
   request<T = unknown>(req: Record<string, unknown>, timeoutMs = 20_000): Promise<T> {
     const port = this.port;
-    if (!port) return Promise.reject(new Error('serviço auxiliar não conectado'));
+    if (!port) return Promise.reject(new Error('Serviço do PC desconectado.'));
     const id = this.nextId++;
     return new Promise<T>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error('serviço auxiliar não respondeu'));
+        reject(new Error('O serviço do PC não respondeu.'));
       }, timeoutMs);
       this.pending.set(id, { resolve: resolve as (v: unknown) => void, reject, timer });
       port.postMessage({ id, req });

@@ -22,10 +22,7 @@ export function PlaylistsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Playlists"
-        subtitle="Playlists internas do CuePoint, montadas à mão ou a partir de uma pesquisa e/ou categoria."
-      />
+      <PageHeader title="Playlists" subtitle="Playlists internas do CuePoint." />
       <form
         data-testid="playlist-form"
         className="mb-6 grid gap-2 rounded-xl border border-neutral-200 p-4 md:grid-cols-[1fr_1fr_1fr_auto] dark:border-neutral-800"

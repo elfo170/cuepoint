@@ -158,7 +158,7 @@ class SoundCloudServiceTest {
         pcAnswer = { throw PeerHttpException(409, "sc_not_shared") }
         val notShared = runCatching { service.receiveFromPc(pc) }.exceptionOrNull() as ScException
         assertEquals("sc_not_shared", notShared.code)
-        assertTrue(notShared.message!!.contains("Enviar para este celular"))
+        assertEquals("Libere o envio no PC e tente de novo.", notShared.message)
 
         pcAnswer = { throw PeerHttpException(404, "sc_not_configured") }
         assertEquals("sc_not_configured", (runCatching { service.receiveFromPc(pc) }.exceptionOrNull() as ScException).code)

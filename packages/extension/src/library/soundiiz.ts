@@ -57,20 +57,19 @@ export async function soundiizExport(
 export function soundiizBlockText(block: SoundiizBlock): string {
   return block.code === 'empty'
     ? 'Playlist vazia: adicione músicas para exportar.'
-    : `O Soundiiz aceita até ${block.max} músicas por envio; esta playlist tem ${block.count}. ` +
-        'Divida-a em playlists menores para exportar.';
+    : `Máximo de ${block.max} músicas por envio (esta tem ${block.count}).`;
 }
 
 export function soundiizErrorText(r: Extract<SoundiizResult, { ok: false }>): string {
   switch (r.code) {
     case 'invalid':
-      return `O Soundiiz recusou a playlist${r.message ? `: ${r.message}` : '.'}`;
+      return 'O Soundiiz recusou a playlist.';
     case 'unavailable':
-      return 'O Soundiiz está indisponível no momento (excesso de pedidos ou manutenção). Tente de novo em alguns minutos.';
+      return 'Soundiiz indisponível. Tente em alguns minutos.';
     case 'network':
       return 'Não foi possível falar com o Soundiiz. Confira a conexão e tente de novo.';
     default:
-      return `Resposta inesperada do Soundiiz (HTTP ${r.status}). Tente de novo mais tarde.`;
+      return 'Erro no Soundiiz. Tente mais tarde.';
   }
 }
 
