@@ -49,9 +49,9 @@ Na [página de releases](https://github.com/elfo170/cuepoint/releases/latest), e
 
 | Arquivo                         | Precisa?                                    | Requisitos                    |
 | ------------------------------- | ------------------------------------------- | ----------------------------- |
-| `cuepoint-extensao-1.1.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
-| `cuepoint-1.1.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
-| `cuepoint-servico-pc-1.1.0.zip` | Para sincronizar o celular com o PC e para exportar para o SoundCloud pelo PC | Windows 10/11 e Node.js 22.13+ |
+| `cuepoint-extensao-1.2.0.zip`   | Sim, para usar no computador                | Google Chrome 116 ou mais novo |
+| `cuepoint-1.2.0.apk`            | Se quiser usar no celular                   | Android 8.0 ou mais novo       |
+| `cuepoint-servico-pc-1.2.0.zip` | Para sincronizar o celular com o PC e para exportar para o SoundCloud pelo PC | Windows 10/11 e Node.js 22.13+ |
 
 Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os dois juntos.
 
@@ -59,7 +59,7 @@ Cada parte funciona sozinha: dá para usar só a extensão, só o celular ou os 
 
 A extensão não está na Chrome Web Store. Ela é instalada a partir da pasta baixada:
 
-1. Baixe `cuepoint-extensao-1.1.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
+1. Baixe `cuepoint-extensao-1.2.0.zip` e **extraia** (botão direito → *Extrair tudo…*) num lugar
    fixo, por exemplo `Documentos\CuePoint`. Vai aparecer a pasta `CuePoint-extensao`.
    **Não apague essa pasta:** o Chrome carrega a extensão a partir dela.
 2. No Chrome, abra o endereço `chrome://extensions`.
