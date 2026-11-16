@@ -1,0 +1,367 @@
+{
+  "version": 1,
+  "description": "Pedido à API de importação do Soundiiz, compartilhado entre a extensão (TS) e o app Android (Kotlin). Gerado por packages/core/test/soundiiz.test.ts.",
+  "constants": {
+    "importUrl": "https://soundiiz.com/go/import-playlist",
+    "maxTracks": 200,
+    "destination": "soundcloud",
+    "sourceName": "CuePoint",
+    "defaultDescription": "Playlist exportada do CuePoint",
+    "sharePrefix": "https://soundiiz.com/"
+  },
+  "requests": [
+    {
+      "name": "ordem preservada, artista único",
+      "input": {
+        "name": "Warm-up de sábado",
+        "description": "Abertura do set",
+        "tracks": [
+          {
+            "title": "Faixa B",
+            "artist": "Artista 2"
+          },
+          {
+            "title": "Faixa A",
+            "artist": "Artista 1"
+          },
+          {
+            "title": "Faixa C",
+            "artist": "Artista 1"
+          }
+        ]
+      },
+      "expected": {
+        "url": "https://soundiiz.com/go/import-playlist",
+        "headers": {
+          "accept": "application/json",
+          "content-type": "application/json"
+        },
+        "payload": {
+          "title": "Warm-up de sábado",
+          "sourceName": "CuePoint",
+          "description": "Abertura do set",
+          "destination": "soundcloud",
+          "tracklist": [
+            {
+              "title": "Faixa B",
+              "artists": [
+                "Artista 2"
+              ]
+            },
+            {
+              "title": "Faixa A",
+              "artists": [
+                "Artista 1"
+              ]
+            },
+            {
+              "title": "Faixa C",
+              "artists": [
+                "Artista 1"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "descrição só com espaços usa a padrão",
+      "input": {
+        "name": "Sem descrição",
+        "description": "   ",
+        "tracks": [
+          {
+            "title": "X",
+            "artist": "Y"
+          }
+        ]
+      },
+      "expected": {
+        "url": "https://soundiiz.com/go/import-playlist",
+        "headers": {
+          "accept": "application/json",
+          "content-type": "application/json"
+        },
+        "payload": {
+          "title": "Sem descrição",
+          "sourceName": "CuePoint",
+          "description": "Playlist exportada do CuePoint",
+          "destination": "soundcloud",
+          "tracklist": [
+            {
+              "title": "X",
+              "artists": [
+                "Y"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "descrição nula",
+      "input": {
+        "name": "Nula",
+        "description": null,
+        "tracks": [
+          {
+            "title": "X",
+            "artist": "Y"
+          }
+        ]
+      },
+      "expected": {
+        "url": "https://soundiiz.com/go/import-playlist",
+        "headers": {
+          "accept": "application/json",
+          "content-type": "application/json"
+        },
+        "payload": {
+          "title": "Nula",
+          "sourceName": "CuePoint",
+          "description": "Playlist exportada do CuePoint",
+          "destination": "soundcloud",
+          "tracklist": [
+            {
+              "title": "X",
+              "artists": [
+                "Y"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "artista vazio é omitido e espaços são aparados",
+      "input": {
+        "name": "  Aparar  ",
+        "description": "",
+        "tracks": [
+          {
+            "title": "  Só título  ",
+            "artist": "   "
+          },
+          {
+            "title": "Com artista",
+            "artist": " Selo "
+          }
+        ]
+      },
+      "expected": {
+        "url": "https://soundiiz.com/go/import-playlist",
+        "headers": {
+          "accept": "application/json",
+          "content-type": "application/json"
+        },
+        "payload": {
+          "title": "Aparar",
+          "sourceName": "CuePoint",
+          "description": "Playlist exportada do CuePoint",
+          "destination": "soundcloud",
+          "tracklist": [
+            {
+              "title": "Só título"
+            },
+            {
+              "title": "Com artista",
+              "artists": [
+                "Selo"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "caracteres especiais e título no formato \"Artista - Música\"",
+      "input": {
+        "name": "Ação & \"aspas\" / barra — 🎧",
+        "description": "Linha 1\nLinha 2",
+        "tracks": [
+          {
+            "title": "Artista X - Música (Remix) [Edit]",
+            "artist": "Selo Ç"
+          },
+          {
+            "title": "Ñandú ☆ 東京",
+            "artist": "Earth, Wind & Fire"
+          }
+        ]
+      },
+      "expected": {
+        "url": "https://soundiiz.com/go/import-playlist",
+        "headers": {
+          "accept": "application/json",
+          "content-type": "application/json"
+        },
+        "payload": {
+          "title": "Ação & \"aspas\" / barra — 🎧",
+          "sourceName": "CuePoint",
+          "description": "Linha 1\nLinha 2",
+          "destination": "soundcloud",
+          "tracklist": [
+            {
+              "title": "Artista X - Música (Remix) [Edit]",
+              "artists": [
+                "Selo Ç"
+              ]
+            },
+            {
+              "title": "Ñandú ☆ 東京",
+              "artists": [
+                "Earth, Wind & Fire"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "checks": [
+    {
+      "count": 0,
+      "expected": {
+        "code": "empty"
+      }
+    },
+    {
+      "count": 1,
+      "expected": null
+    },
+    {
+      "count": 200,
+      "expected": null
+    },
+    {
+      "count": 201,
+      "expected": {
+        "code": "too_many",
+        "count": 201,
+        "max": 200
+      }
+    }
+  ],
+  "responses": [
+    {
+      "name": "sucesso",
+      "status": 200,
+      "body": {
+        "status": "success",
+        "nbTracks": 3,
+        "shareUrl": "https://soundiiz.com/go/import-playlist/0123456789abcdef0123456789abcdef",
+        "expiresAt": 1782220923
+      },
+      "expected": {
+        "ok": true,
+        "shareUrl": "https://soundiiz.com/go/import-playlist/0123456789abcdef0123456789abcdef",
+        "nbTracks": 3,
+        "expiresAt": 1782220923
+      }
+    },
+    {
+      "name": "sucesso com link fora do Soundiiz é recusado",
+      "status": 200,
+      "body": {
+        "status": "success",
+        "nbTracks": 3,
+        "shareUrl": "https://exemplo.com/x",
+        "expiresAt": 1
+      },
+      "expected": {
+        "ok": false,
+        "code": "http",
+        "status": 200,
+        "message": null
+      }
+    },
+    {
+      "name": "sucesso sem campos",
+      "status": 200,
+      "body": {
+        "status": "success"
+      },
+      "expected": {
+        "ok": false,
+        "code": "http",
+        "status": 200,
+        "message": null
+      }
+    },
+    {
+      "name": "400 com mensagem",
+      "status": 400,
+      "body": {
+        "status": "error",
+        "message": "Missing track title at index 1."
+      },
+      "expected": {
+        "ok": false,
+        "code": "invalid",
+        "status": 400,
+        "message": "Missing track title at index 1."
+      }
+    },
+    {
+      "name": "400 sem JSON",
+      "status": 400,
+      "body": null,
+      "expected": {
+        "ok": false,
+        "code": "invalid",
+        "status": 400,
+        "message": null
+      }
+    },
+    {
+      "name": "429",
+      "status": 429,
+      "body": null,
+      "expected": {
+        "ok": false,
+        "code": "unavailable",
+        "status": 429,
+        "message": null
+      }
+    },
+    {
+      "name": "503",
+      "status": 503,
+      "body": {
+        "status": "error",
+        "message": "Maintenance"
+      },
+      "expected": {
+        "ok": false,
+        "code": "unavailable",
+        "status": 503,
+        "message": "Maintenance"
+      }
+    },
+    {
+      "name": "404",
+      "status": 404,
+      "body": null,
+      "expected": {
+        "ok": false,
+        "code": "http",
+        "status": 404,
+        "message": null
+      }
+    },
+    {
+      "name": "200 com status de erro",
+      "status": 200,
+      "body": {
+        "status": "error",
+        "message": "x"
+      },
+      "expected": {
+        "ok": false,
+        "code": "http",
+        "status": 200,
+        "message": "x"
+      }
+    }
+  ]
+}

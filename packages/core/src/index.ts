@@ -11,3 +11,4 @@ export * from './backup';
 export * from './protocol';
 export * from './compaction';
 export * from './soundcloud';
+export * from './soundiiz';

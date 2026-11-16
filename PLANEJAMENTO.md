@@ -25,7 +25,7 @@ as próximas etapas.
 
 | Etapa | Situação |
 |---|---|
-| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Planejada: Sprints 17–20.** A Sprint 17 (PoC) aguarda autorização. Ver *Nova feat: exportação via Soundiiz*. |
+| Exportação via Soundiiz para quem não tem Artist Pro (Issue #4) | **Em andamento.** Sprint 17 (PoC) concluída e aprovada em 16/11/2026; Sprint 18 (PC) em curso. Ver *Nova feat: exportação via Soundiiz*. |
 | Testar à mão o pareamento entre dois PCs | Pendente. Precisa de um segundo PC com o CuePoint recém-instalado (extensão e serviço vazios). Roteiro no `prox_sessao.md`. |
 | Nova feat: tags no Rekordbox | **A planejar.** Ver *Nova feat: tags no Rekordbox*. |
 | Notificações em foco (HyperOS) | Mapeada, sem data. Só retomar com decisão do usuário. Ver *Notificação do Android*. |
@@ -291,6 +291,15 @@ aprovar o resultado.
 - **Registro** em `docs/SOUNDIIZ_API.md`: contrato e fonte, tabela de resultados por playlist e
   limitações (precisão, 24 h, 200 faixas e plano do Soundiiz).
 - Commit: `feat: prova de conceito da exportação via soundiiz`.
+- **Resultado (16/11/2026): aprovada.** Detalhes em `docs/SOUNDIIZ_API.md`.
+  - **API:** 9 pedidos válidos aceitos, com `nbTracks` igual ao enviado (1, 3, 10, 21, 76 e 200
+    faixas, artista vazio, caracteres especiais). Com 201 faixas, veio 400.
+  - **Limite de requisições não documentado:** 429 depois de 10 pedidos em cerca de 3 s; liberou
+    entre 1 e 3 min depois.
+  - **CORS:** a extensão só alcança a API com `https://soundiiz.com/*` em `host_permissions`.
+  - **Correspondências:** as variantes A (título bruto) e B (divisão "Artista - Música") deram o
+    mesmo resultado, e **fica a A**. A transferência para o SoundCloud foi concluída.
+  - **Nada foi criado na biblioteca:** as playlists `[Teste Soundiiz]` existiram só no Soundiiz.
 
 **Sprint 18 — Extensão (PC).**
 - **Permissão:** `https://soundiiz.com/*` em `host_permissions` (`src/manifest.json`), com o
