@@ -102,8 +102,9 @@ no widget. Nela você:
 - monta **playlists**: à mão ou a partir de uma pesquisa ou categoria. Dá para reordenar e exportar
   como lista de links, CSV ou JSON, ou para o SoundCloud: direto (requer Artist Pro) ou pelo
   Soundiiz (sem Artist Pro), veja abaixo;
-- faz e restaura **backups** (seção 7);
-- pareia o celular em **Dispositivos** (seção 6).
+- pareia o celular em **Dispositivos** (seção 6);
+- faz e restaura **backups** (seção 7).
+
 
 ### Exportar para o SoundCloud (requer Artist Pro)
 
@@ -170,7 +171,7 @@ e no celular, sem configuração e sem o serviço do PC.
 ## 4. Instalar o app no celular (Android)
 
 1. No celular, abra a [página de releases](https://github.com/elfo170/cuepoint/releases/latest) e
-   baixe `cuepoint-1.0.1.apk`. Também dá para copiar o arquivo do computador para o celular.
+   baixe `cuepoint-1.2.0.apk`. Também dá para copiar o arquivo do computador para o celular.
 2. Toque no arquivo baixado. O Android pede para **permitir a instalação de apps desconhecidos**
    pelo navegador ou gerenciador de arquivos: permita e volte.
 3. Se o Play Protect avisar que o app não foi verificado, toque em **Mais detalhes → Instalar mesmo
