@@ -1,7 +1,7 @@
 {
   "name": "cuepoint",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "license": "PolyForm-Noncommercial-1.0.0",
   "description": "CuePoint — curadoria musical sobre o SoundCloud",
   "type": "module",
@@ -24,6 +24,7 @@
     "android": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gradle.ps1",
     "android:check": "npm run android -- test assembleDebug",
     "dev": "npm run dev -w @cuepoint/extension",
+    "icons": "node scripts/gen-icons.mjs",
     "helper:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-helper.ps1",
     "sc:dev": "node packages/helper/scripts/sc-dev.mjs",
     "helper:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-helper.ps1",

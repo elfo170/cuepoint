@@ -8,6 +8,7 @@ playwright-report/
 .DS_Store
 .vscode/
 .idea/
+video/
 
 # Android
 android/.gradle/

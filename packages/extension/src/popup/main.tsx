@@ -18,7 +18,7 @@ function Popup() {
   }, []);
 
   return (
-    <main className="w-72 space-y-3 p-4 font-sans text-sm text-neutral-900">
+    <main className="w-72 space-y-3 bg-white p-4 font-sans text-sm text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
       <header className="flex items-center gap-2">
         <img src="icons/icon48.png" alt="" className="h-7 w-7 rounded-md" />
         <h1 className="text-base font-semibold">CuePoint</h1>
@@ -33,7 +33,7 @@ function Popup() {
             await send({ type: 'widget:setActiveResearch', researchId: e.target.value || null });
             await load();
           }}
-          className="w-full rounded-md border border-neutral-300 px-2 py-1.5"
+          className="w-full rounded-md border border-neutral-300 px-2 py-1.5 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
         >
           <option value="">Nenhuma</option>
           {state?.researches.map((r) => (
@@ -63,7 +63,7 @@ function Popup() {
           placeholder="Nova pesquisa"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="min-w-0 flex-1 rounded-md border border-neutral-300 px-2 py-1.5"
+          className="min-w-0 flex-1 rounded-md border border-neutral-300 px-2 py-1.5 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500"
         />
         <button
           type="submit"
@@ -77,11 +77,11 @@ function Popup() {
       <button
         type="button"
         onClick={() => void send({ type: 'openLibrary' }).then(() => window.close())}
-        className="flex w-full items-center justify-center gap-2 rounded-md border border-neutral-300 py-2 hover:bg-neutral-50"
+        className="flex w-full items-center justify-center gap-2 rounded-md border border-neutral-300 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
       >
         <FolderSearch size={15} aria-hidden /> Abrir biblioteca
       </button>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
     </main>
   );
 }

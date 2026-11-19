@@ -16,8 +16,8 @@ android {
         applicationId = "com.elfo170.cuepoint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.2.0"
+        versionCode = 6
+        versionName = "1.2.1"
     }
 
     // Chave local de release: android/keystore.properties + .keystore (fora do git). Sem o arquivo,
