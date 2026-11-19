@@ -171,7 +171,7 @@ e no celular, sem configuração e sem o serviço do PC.
 ## 4. Instalar o app no celular (Android)
 
 1. No celular, abra a [página de releases](https://github.com/elfo170/cuepoint/releases/latest) e
-   baixe `cuepoint-1.2.0.apk`. Também dá para copiar o arquivo do computador para o celular.
+   baixe `cuepoint-1.2.1.apk`. Também dá para copiar o arquivo do computador para o celular.
 2. Toque no arquivo baixado. O Android pede para **permitir a instalação de apps desconhecidos**
    pelo navegador ou gerenciador de arquivos: permita e volte.
 3. Se o Play Protect avisar que o app não foi verificado, toque em **Mais detalhes → Instalar mesmo
